@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 README.md
 docs/APIKeysApi.md
 docs/AcceptInviteInput.md
@@ -128,6 +127,7 @@ docs/CustomerInput.md
 docs/CustomerListResponse.md
 docs/CustomerResponse.md
 docs/CustomerUpdate.md
+docs/CustomersApi.md
 docs/Delivery.md
 docs/DeliveryInput.md
 docs/DeliveryInputLinesInner.md
@@ -175,7 +175,6 @@ docs/JournalLine.md
 docs/LoginInput.md
 docs/LoginResult.md
 docs/LoginResultResponse.md
-docs/MasterDataApi.md
 docs/Me.md
 docs/MeResponse.md
 docs/Membership.md
@@ -202,6 +201,7 @@ docs/PlatformApi.md
 docs/PpnReport.md
 docs/PpnReportLinesInner.md
 docs/PpnReportResponse.md
+docs/ProductItemsApi.md
 docs/ProfitAndLoss.md
 docs/ProfitAndLossResponse.md
 docs/PurchaseOrder.md
@@ -227,6 +227,10 @@ docs/QuotationListResponse.md
 docs/QuotationResponse.md
 docs/QuotationUpdate.md
 docs/RefreshInput.md
+docs/Region.md
+docs/RegionListResponse.md
+docs/RegionResponse.md
+docs/RegionsApi.md
 docs/RegisterInput.md
 docs/RegistrationLoginAction.md
 docs/RegistrationMeta.md
@@ -271,6 +275,7 @@ docs/SubscriptionResponse.md
 docs/SubscriptionUpdate.md
 docs/SwitchTenantInput.md
 docs/SwitchTenantResponse.md
+docs/TaxAndCurrenciesApi.md
 docs/TaxApi.md
 docs/TaxExport.md
 docs/TaxExportInput.md
@@ -334,6 +339,7 @@ docs/VendorInput.md
 docs/VendorListResponse.md
 docs/VendorResponse.md
 docs/VendorUpdate.md
+docs/VendorsApi.md
 docs/VerifyEmailInput.md
 docs/VerifyEmailMeta.md
 docs/VerifyEmailResponse.md
@@ -367,22 +373,26 @@ src/apis/ApprovalsApi.ts
 src/apis/AuthenticationApi.ts
 src/apis/BankReconciliationApi.ts
 src/apis/BillingApi.ts
+src/apis/CustomersApi.ts
 src/apis/FixedAssetsApi.ts
 src/apis/ForgotPasswordApi.ts
 src/apis/GeneralLedgerApi.ts
 src/apis/InventoryApi.ts
-src/apis/MasterDataApi.ts
 src/apis/NotificationsApi.ts
 src/apis/PlansApi.ts
 src/apis/PlatformApi.ts
+src/apis/ProductItemsApi.ts
 src/apis/PurchasingApi.ts
+src/apis/RegionsApi.ts
 src/apis/ReportsApi.ts
 src/apis/RolesAndPermissionsApi.ts
 src/apis/SalesApi.ts
+src/apis/TaxAndCurrenciesApi.ts
 src/apis/TaxApi.ts
 src/apis/TenantApi.ts
 src/apis/TenantsApi.ts
 src/apis/UsersApi.ts
+src/apis/VendorsApi.ts
 src/apis/WebhooksApi.ts
 src/apis/index.ts
 src/index.ts
@@ -595,6 +605,9 @@ src/models/QuotationListResponse.ts
 src/models/QuotationResponse.ts
 src/models/QuotationUpdate.ts
 src/models/RefreshInput.ts
+src/models/Region.ts
+src/models/RegionListResponse.ts
+src/models/RegionResponse.ts
 src/models/RegisterInput.ts
 src/models/RegistrationLoginAction.ts
 src/models/RegistrationMeta.ts

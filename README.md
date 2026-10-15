@@ -132,6 +132,11 @@ All URIs are relative to *https://api.zerpto.com*
 *BillingApi* | [**receiveGatewayWebhook**](docs/BillingApi.md#receivegatewaywebhook) | **POST** /v1/billing/gateway-webhook | Payment gateway callback
 *BillingApi* | [**updateSubscription**](docs/BillingApi.md#updatesubscription) | **PATCH** /v1/billing/subscription | Change plan, seats or add-on
 *BillingApi* | [**updateUsageAlerts**](docs/BillingApi.md#updateusagealerts) | **PATCH** /v1/billing/usage-alerts | Update usage alert settings
+*CustomersApi* | [**archiveCustomer**](docs/CustomersApi.md#archivecustomer) | **DELETE** /v1/customers/{id} | Archive Customer
+*CustomersApi* | [**createCustomer**](docs/CustomersApi.md#createcustomer) | **POST** /v1/customers | Create customer
+*CustomersApi* | [**getCustomer**](docs/CustomersApi.md#getcustomer) | **GET** /v1/customers/{id} | Get Customer
+*CustomersApi* | [**listCustomers**](docs/CustomersApi.md#listcustomers) | **GET** /v1/customers | List customers
+*CustomersApi* | [**updateCustomer**](docs/CustomersApi.md#updatecustomer) | **PATCH** /v1/customers/{id} | Update Customer
 *FixedAssetsApi* | [**createAsset**](docs/FixedAssetsApi.md#createasset) | **POST** /v1/assets | Register an asset
 *FixedAssetsApi* | [**createAssetCategory**](docs/FixedAssetsApi.md#createassetcategory) | **POST** /v1/assets/categories | Create asset category
 *FixedAssetsApi* | [**createAssetFromBill**](docs/FixedAssetsApi.md#createassetfrombill) | **POST** /v1/assets/from-bill | Register asset from a bill
@@ -171,31 +176,15 @@ All URIs are relative to *https://api.zerpto.com*
 *InventoryApi* | [**postStockAdjustment**](docs/InventoryApi.md#poststockadjustment) | **POST** /v1/inventory/adjustments/{id}/post | Post a stock adjustment
 *InventoryApi* | [**postStockTransfer**](docs/InventoryApi.md#poststocktransfer) | **POST** /v1/inventory/transfers/{id}/post | Post transfer
 *InventoryApi* | [**updateWarehouse**](docs/InventoryApi.md#updatewarehouse) | **PATCH** /v1/inventory/warehouses/{id} | Update warehouse
-*MasterDataApi* | [**archiveCustomer**](docs/MasterDataApi.md#archivecustomer) | **DELETE** /v1/customers/{id} | Archive Customer
-*MasterDataApi* | [**archiveItem**](docs/MasterDataApi.md#archiveitem) | **DELETE** /v1/items/{id} | Archive Item
-*MasterDataApi* | [**archiveTaxRate**](docs/MasterDataApi.md#archivetaxrate) | **DELETE** /v1/tax-rates/{id} | Archive TaxRate
-*MasterDataApi* | [**archiveVendor**](docs/MasterDataApi.md#archivevendor) | **DELETE** /v1/vendors/{id} | Archive Vendor
-*MasterDataApi* | [**createCustomer**](docs/MasterDataApi.md#createcustomer) | **POST** /v1/customers | Create customer
-*MasterDataApi* | [**createItem**](docs/MasterDataApi.md#createitem) | **POST** /v1/items | Create item
-*MasterDataApi* | [**createTaxRate**](docs/MasterDataApi.md#createtaxrate) | **POST** /v1/tax-rates | Create tax rate
-*MasterDataApi* | [**createVendor**](docs/MasterDataApi.md#createvendor) | **POST** /v1/vendors | Create vendor
-*MasterDataApi* | [**getCustomer**](docs/MasterDataApi.md#getcustomer) | **GET** /v1/customers/{id} | Get Customer
-*MasterDataApi* | [**getItem**](docs/MasterDataApi.md#getitem) | **GET** /v1/items/{id} | Get Item
-*MasterDataApi* | [**getTaxRate**](docs/MasterDataApi.md#gettaxrate) | **GET** /v1/tax-rates/{id} | Get TaxRate
-*MasterDataApi* | [**getVendor**](docs/MasterDataApi.md#getvendor) | **GET** /v1/vendors/{id} | Get Vendor
-*MasterDataApi* | [**listCurrencies**](docs/MasterDataApi.md#listcurrencies) | **GET** /v1/currencies | List supported currencies
-*MasterDataApi* | [**listCustomers**](docs/MasterDataApi.md#listcustomers) | **GET** /v1/customers | List customers
-*MasterDataApi* | [**listItems**](docs/MasterDataApi.md#listitems) | **GET** /v1/items | List items
-*MasterDataApi* | [**listTaxRates**](docs/MasterDataApi.md#listtaxrates) | **GET** /v1/tax-rates | List tax rates
-*MasterDataApi* | [**listVendors**](docs/MasterDataApi.md#listvendors) | **GET** /v1/vendors | List vendors
-*MasterDataApi* | [**updateCustomer**](docs/MasterDataApi.md#updatecustomer) | **PATCH** /v1/customers/{id} | Update Customer
-*MasterDataApi* | [**updateItem**](docs/MasterDataApi.md#updateitem) | **PATCH** /v1/items/{id} | Update Item
-*MasterDataApi* | [**updateTaxRate**](docs/MasterDataApi.md#updatetaxrate) | **PATCH** /v1/tax-rates/{id} | Update TaxRate
-*MasterDataApi* | [**updateVendor**](docs/MasterDataApi.md#updatevendor) | **PATCH** /v1/vendors/{id} | Update Vendor
 *NotificationsApi* | [**getNotificationSettings**](docs/NotificationsApi.md#getnotificationsettings) | **GET** /v1/notification-settings | Get notification settings
 *NotificationsApi* | [**updateNotificationSettings**](docs/NotificationsApi.md#updatenotificationsettings) | **PATCH** /v1/notification-settings | Update notification settings
 *PlansApi* | [**listPlans**](docs/PlansApi.md#listplans) | **GET** /v1/plans | List plans and prices
 *PlatformApi* | [**getHealth**](docs/PlatformApi.md#gethealth) | **GET** /v1/health | Health check
+*ProductItemsApi* | [**archiveItem**](docs/ProductItemsApi.md#archiveitem) | **DELETE** /v1/items/{id} | Archive Item
+*ProductItemsApi* | [**createItem**](docs/ProductItemsApi.md#createitem) | **POST** /v1/items | Create item
+*ProductItemsApi* | [**getItem**](docs/ProductItemsApi.md#getitem) | **GET** /v1/items/{id} | Get Item
+*ProductItemsApi* | [**listItems**](docs/ProductItemsApi.md#listitems) | **GET** /v1/items | List items
+*ProductItemsApi* | [**updateItem**](docs/ProductItemsApi.md#updateitem) | **PATCH** /v1/items/{id} | Update Item
 *PurchasingApi* | [**cancelPurchaseOrder**](docs/PurchasingApi.md#cancelpurchaseorder) | **POST** /v1/purchasing/orders/{id}/cancel | Cancel purchase order
 *PurchasingApi* | [**cancelPurchaseReturn**](docs/PurchasingApi.md#cancelpurchasereturn) | **POST** /v1/purchasing/returns/{id}/cancel | Cancel purchase return
 *PurchasingApi* | [**closePurchaseOrder**](docs/PurchasingApi.md#closepurchaseorder) | **POST** /v1/purchasing/orders/{id}/close | Close purchase order
@@ -220,6 +209,8 @@ All URIs are relative to *https://api.zerpto.com*
 *PurchasingApi* | [**updatePurchaseReturn**](docs/PurchasingApi.md#updatepurchasereturn) | **PATCH** /v1/purchasing/returns/{id} | Update purchase return
 *PurchasingApi* | [**updatePurchasingSettings**](docs/PurchasingApi.md#updatepurchasingsettings) | **PATCH** /v1/purchasing/settings | Update purchasing settings
 *PurchasingApi* | [**uploadInvoiceDocument**](docs/PurchasingApi.md#uploadinvoicedocument) | **POST** /v1/purchasing/invoice-documents | Upload a vendor invoice file
+*RegionsApi* | [**getRegion**](docs/RegionsApi.md#getregion) | **GET** /v1/regions/{id} | Get a region
+*RegionsApi* | [**listRegions**](docs/RegionsApi.md#listregions) | **GET** /v1/regions | List regions
 *ReportsApi* | [**getApAging**](docs/ReportsApi.md#getapaging) | **GET** /v1/reports/ap-aging | AP aging
 *ReportsApi* | [**getArAging**](docs/ReportsApi.md#getaraging) | **GET** /v1/reports/ar-aging | AR aging
 *ReportsApi* | [**getAssetRegister**](docs/ReportsApi.md#getassetregister) | **GET** /v1/reports/asset-register | Asset register report
@@ -263,6 +254,12 @@ All URIs are relative to *https://api.zerpto.com*
 *TaxApi* | [**listTaxWithholdings**](docs/TaxApi.md#listtaxwithholdings) | **GET** /v1/tax/withholdings | List PPh 23 withholdings
 *TaxApi* | [**updateTaxInvoice**](docs/TaxApi.md#updatetaxinvoice) | **PATCH** /v1/tax/invoices/{id} | Record tax invoice number
 *TaxApi* | [**updateTaxSettings**](docs/TaxApi.md#updatetaxsettings) | **PATCH** /v1/tax/settings | Update tenant tax profile
+*TaxAndCurrenciesApi* | [**archiveTaxRate**](docs/TaxAndCurrenciesApi.md#archivetaxrate) | **DELETE** /v1/tax-rates/{id} | Archive TaxRate
+*TaxAndCurrenciesApi* | [**createTaxRate**](docs/TaxAndCurrenciesApi.md#createtaxrate) | **POST** /v1/tax-rates | Create tax rate
+*TaxAndCurrenciesApi* | [**getTaxRate**](docs/TaxAndCurrenciesApi.md#gettaxrate) | **GET** /v1/tax-rates/{id} | Get TaxRate
+*TaxAndCurrenciesApi* | [**listCurrencies**](docs/TaxAndCurrenciesApi.md#listcurrencies) | **GET** /v1/currencies | List supported currencies
+*TaxAndCurrenciesApi* | [**listTaxRates**](docs/TaxAndCurrenciesApi.md#listtaxrates) | **GET** /v1/tax-rates | List tax rates
+*TaxAndCurrenciesApi* | [**updateTaxRate**](docs/TaxAndCurrenciesApi.md#updatetaxrate) | **PATCH** /v1/tax-rates/{id} | Update TaxRate
 *TenantApi* | [**listMyTenants**](docs/TenantApi.md#listmytenants) | **GET** /v1/auth/tenants | List tenants you belong to
 *TenantApi* | [**switchTenant**](docs/TenantApi.md#switchtenant) | **POST** /v1/auth/switch-tenant | Switch the active tenant
 *TenantsApi* | [**createTenant**](docs/TenantsApi.md#createtenant) | **POST** /v1/tenants | Create a tenant
@@ -273,6 +270,11 @@ All URIs are relative to *https://api.zerpto.com*
 *UsersApi* | [**getUser**](docs/UsersApi.md#getuser) | **GET** /v1/users/{id} | Get User
 *UsersApi* | [**listUsers**](docs/UsersApi.md#listusers) | **GET** /v1/users | List users
 *UsersApi* | [**updateUser**](docs/UsersApi.md#updateuser) | **PATCH** /v1/users/{id} | Update User
+*VendorsApi* | [**archiveVendor**](docs/VendorsApi.md#archivevendor) | **DELETE** /v1/vendors/{id} | Archive Vendor
+*VendorsApi* | [**createVendor**](docs/VendorsApi.md#createvendor) | **POST** /v1/vendors | Create vendor
+*VendorsApi* | [**getVendor**](docs/VendorsApi.md#getvendor) | **GET** /v1/vendors/{id} | Get Vendor
+*VendorsApi* | [**listVendors**](docs/VendorsApi.md#listvendors) | **GET** /v1/vendors | List vendors
+*VendorsApi* | [**updateVendor**](docs/VendorsApi.md#updatevendor) | **PATCH** /v1/vendors/{id} | Update Vendor
 *WebhooksApi* | [**createWebhook**](docs/WebhooksApi.md#createwebhook) | **POST** /v1/webhooks | Register a webhook endpoint
 *WebhooksApi* | [**deleteWebhook**](docs/WebhooksApi.md#deletewebhook) | **DELETE** /v1/webhooks/{id} | Remove webhook endpoint
 *WebhooksApi* | [**getWebhook**](docs/WebhooksApi.md#getwebhook) | **GET** /v1/webhooks/{id} | Get webhook endpoint
@@ -495,6 +497,9 @@ All URIs are relative to *https://api.zerpto.com*
 - [QuotationResponse](docs/QuotationResponse.md)
 - [QuotationUpdate](docs/QuotationUpdate.md)
 - [RefreshInput](docs/RefreshInput.md)
+- [Region](docs/Region.md)
+- [RegionListResponse](docs/RegionListResponse.md)
+- [RegionResponse](docs/RegionResponse.md)
 - [RegisterInput](docs/RegisterInput.md)
 - [RegistrationLoginAction](docs/RegistrationLoginAction.md)
 - [RegistrationMeta](docs/RegistrationMeta.md)

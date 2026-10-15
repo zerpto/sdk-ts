@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { TenantSummary } from './TenantSummary';
-import {
-    TenantSummaryFromJSON,
-    TenantSummaryFromJSONTyped,
-    TenantSummaryToJSON,
-    TenantSummaryToJSONTyped,
-} from './TenantSummary';
 import type { AuthUser } from './AuthUser';
 import {
     AuthUserFromJSON,
@@ -55,9 +48,9 @@ export interface LoginResult {
      */
     user: AuthUser;
     /**
-     * 
+     * The tenant the tokens are scoped to. Null when the user does not belong to a tenant yet.
      */
-    tenant: TenantSummary;
+    tenant: object | null;
 }
 
 
@@ -100,7 +93,7 @@ export function LoginResultFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'tokenType': json['token_type'],
         'expiresIn': json['expires_in'],
         'user': AuthUserFromJSON(json['user']),
-        'tenant': TenantSummaryFromJSON(json['tenant']),
+        'tenant': json['tenant'],
     };
 }
 
@@ -120,7 +113,7 @@ export function LoginResultToJSONTyped(value?: LoginResult | null, ignoreDiscrim
         'token_type': value['tokenType'],
         'expires_in': value['expiresIn'],
         'user': AuthUserToJSON(value['user']),
-        'tenant': TenantSummaryToJSON(value['tenant']),
+        'tenant': value['tenant'],
     };
 }
 

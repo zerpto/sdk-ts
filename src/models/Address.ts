@@ -14,13 +14,26 @@
 
 import { mapValues } from '../runtime';
 /**
+ * A postal address, built on the region hierarchy (`GET /v1/regions`).
+ * 
+ * With a `region_id`, the address points to the deepest region the person picked. The server fills `country`, `province`, `district`, `sub_district`, `village` and `postal_code` from that region and the ones above it, and replaces any text sent for them, so a response always carries them.
+ * 
+ * A country that has region data requires a `region_id` that reaches the `required_depth` of that country, which is the sub-district for Indonesia, where the postal code is recorded.
+ * 
+ * A country without region data is typed by hand: leave `region_id` out, send `country`, and fill the other fields as text.
+ * 
+ * Error codes: `unknown_region`, `region_required`, `region_too_shallow`, `country_required`.
  * 
  * @export
  * @interface Address
  */
 export interface Address {
     /**
-     * 
+     * Deepest region picked, from `GET /v1/regions`. Null when the address is typed by hand.
+     */
+    regionId?: string | null;
+    /**
+     * Street, number and other detail below the village.
      */
     line1?: string;
     /**
@@ -28,21 +41,29 @@ export interface Address {
      */
     line2?: string | null;
     /**
-     * 
-     */
-    city?: string;
-    /**
-     * 
-     */
-    province?: string;
-    /**
-     * 
-     */
-    postalCode?: string;
-    /**
-     * ISO 3166-1 alpha-2.
+     * ISO 3166-1 alpha-2. Required when the address is typed by hand.
      */
     country?: string;
+    /**
+     * 
+     */
+    province?: string | null;
+    /**
+     * 
+     */
+    district?: string | null;
+    /**
+     * 
+     */
+    subDistrict?: string | null;
+    /**
+     * 
+     */
+    village?: string | null;
+    /**
+     * 
+     */
+    postalCode?: string | null;
 }
 
 /**
@@ -62,12 +83,15 @@ export function AddressFromJSONTyped(json: any, ignoreDiscriminator: boolean): A
     }
     return {
         
+        'regionId': json['region_id'] === undefined ? undefined : json['region_id'] === null ? null : json['region_id'],
         'line1': json['line1'] == null ? undefined : json['line1'],
         'line2': json['line2'] === undefined ? undefined : json['line2'] === null ? null : json['line2'],
-        'city': json['city'] == null ? undefined : json['city'],
-        'province': json['province'] == null ? undefined : json['province'],
-        'postalCode': json['postal_code'] == null ? undefined : json['postal_code'],
         'country': json['country'] == null ? undefined : json['country'],
+        'province': json['province'] === undefined ? undefined : json['province'] === null ? null : json['province'],
+        'district': json['district'] === undefined ? undefined : json['district'] === null ? null : json['district'],
+        'subDistrict': json['sub_district'] === undefined ? undefined : json['sub_district'] === null ? null : json['sub_district'],
+        'village': json['village'] === undefined ? undefined : json['village'] === null ? null : json['village'],
+        'postalCode': json['postal_code'] === undefined ? undefined : json['postal_code'] === null ? null : json['postal_code'],
     };
 }
 
@@ -82,12 +106,15 @@ export function AddressToJSONTyped(value?: Address | null, ignoreDiscriminator: 
 
     return {
         
+        'region_id': value['regionId'],
         'line1': value['line1'],
         'line2': value['line2'],
-        'city': value['city'],
-        'province': value['province'],
-        'postal_code': value['postalCode'],
         'country': value['country'],
+        'province': value['province'],
+        'district': value['district'],
+        'sub_district': value['subDistrict'],
+        'village': value['village'],
+        'postal_code': value['postalCode'],
     };
 }
 

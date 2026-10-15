@@ -11,7 +11,7 @@ Name | Type
 `tokenType` | string
 `expiresIn` | number
 `user` | [AuthUser](AuthUser.md)
-`tenant` | [TenantSummary](TenantSummary.md)
+`tenant` | object
 
 ## Example
 
