@@ -1,6 +1,6 @@
-.gitignore
 .npmignore
 README.md
+docs/APIApi.md
 docs/APIKeysApi.md
 docs/AcceptInviteInput.md
 docs/Account.md
@@ -188,6 +188,8 @@ docs/NotificationsApi.md
 docs/PageListMeta.md
 docs/PagePagination.md
 docs/PaymentAllocation.md
+docs/PaymentMethod.md
+docs/PaymentMethodListResponse.md
 docs/Period.md
 docs/PeriodListResponse.md
 docs/PeriodResponse.md
@@ -366,6 +368,7 @@ docs/WithholdingReport.md
 docs/WithholdingReportLinesInner.md
 docs/WithholdingReportResponse.md
 package.json
+src/apis/APIApi.ts
 src/apis/APIKeysApi.ts
 src/apis/AccountsPayableApi.ts
 src/apis/AccountsReceivableApi.ts
@@ -570,6 +573,8 @@ src/models/NotificationSettingsUpdate.ts
 src/models/PageListMeta.ts
 src/models/PagePagination.ts
 src/models/PaymentAllocation.ts
+src/models/PaymentMethod.ts
+src/models/PaymentMethodListResponse.ts
 src/models/Period.ts
 src/models/PeriodListResponse.ts
 src/models/PeriodResponse.ts

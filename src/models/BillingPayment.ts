@@ -40,9 +40,17 @@ export interface BillingPayment {
      */
     amount: Money;
     /**
-     * 
+     * How the customer paid. Set once they have chosen on the payment page, so it is absent while the payment is `pending`.
      */
-    method: BillingPaymentMethodEnum;
+    method?: BillingPaymentMethodEnum;
+    /**
+     * Name of the e-wallet, bank or other channel, such as `OVO`. Absent while the payment is `pending`.
+     */
+    channel?: string;
+    /**
+     * `checkout` when the person paid on the payment page, `auto_charge` when Zerpto charged a saved payment method.
+     */
+    source: BillingPaymentSourceEnum;
     /**
      * 
      */
@@ -66,13 +74,23 @@ export interface BillingPayment {
  * @export
  */
 export const BillingPaymentMethodEnum = {
-    VirtualAccount: 'virtual_account',
-    BankTransfer: 'bank_transfer',
-    Qris: 'qris',
     Ewallet: 'ewallet',
+    Qris: 'qris',
+    VirtualAccount: 'virtual_account',
     Card: 'card',
+    DirectDebit: 'direct_debit',
+    Other: 'other',
 } as const;
 export type BillingPaymentMethodEnum = typeof BillingPaymentMethodEnum[keyof typeof BillingPaymentMethodEnum];
+
+/**
+ * @export
+ */
+export const BillingPaymentSourceEnum = {
+    Checkout: 'checkout',
+    AutoCharge: 'auto_charge',
+} as const;
+export type BillingPaymentSourceEnum = typeof BillingPaymentSourceEnum[keyof typeof BillingPaymentSourceEnum];
 
 /**
  * @export
@@ -93,7 +111,7 @@ export function instanceOfBillingPayment(value: object): value is BillingPayment
     if (!('id' in value) || value['id'] === undefined) return false;
     if ((!('invoiceId' in (value as Record<string, any>)) && !('invoice_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['invoiceId'] === undefined && (value as Record<string, any>)['invoice_id'] === undefined)) return false;
     if (!('amount' in value) || value['amount'] === undefined) return false;
-    if (!('method' in value) || value['method'] === undefined) return false;
+    if (!('source' in value) || value['source'] === undefined) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
     return true;
@@ -112,7 +130,9 @@ export function BillingPaymentFromJSONTyped(json: any, ignoreDiscriminator: bool
         'id': json['id'],
         'invoiceId': json['invoice_id'],
         'amount': MoneyFromJSON(json['amount']),
-        'method': json['method'],
+        'method': json['method'] == null ? undefined : json['method'],
+        'channel': json['channel'] == null ? undefined : json['channel'],
+        'source': json['source'],
         'status': json['status'],
         'gatewayPaymentId': json['gateway_payment_id'] == null ? undefined : json['gateway_payment_id'],
         'createdAt': (json['created_at'] == null ? json['created_at'] : parseDateTime(json['created_at'])),
@@ -134,6 +154,8 @@ export function BillingPaymentToJSONTyped(value?: Omit<BillingPayment, 'id'|'cre
         'invoice_id': value['invoiceId'],
         'amount': MoneyToJSON(value['amount']),
         'method': value['method'],
+        'channel': value['channel'],
+        'source': value['source'],
         'status': value['status'],
         'gateway_payment_id': value['gatewayPaymentId'],
         'paid_at': value['paidAt'] == null ? value['paidAt'] : serializeDateTime(value['paidAt']),

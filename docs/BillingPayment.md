@@ -10,6 +10,8 @@ Name | Type
 `invoiceId` | string
 `amount` | [Money](Money.md)
 `method` | string
+`channel` | string
+`source` | string
 `status` | string
 `gatewayPaymentId` | string
 `createdAt` | Date
@@ -26,6 +28,8 @@ const example = {
   "invoiceId": null,
   "amount": null,
   "method": null,
+  "channel": OVO,
+  "source": null,
   "status": null,
   "gatewayPaymentId": null,
   "createdAt": null,

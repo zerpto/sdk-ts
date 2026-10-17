@@ -14,21 +14,6 @@
 
 import * as runtime from '../runtime';
 import {
-    type ApiPlanChangeInput,
-    ApiPlanChangeInputFromJSON,
-    ApiPlanChangeInputToJSON,
-} from '../models/ApiPlanChangeInput';
-import {
-    type ApiPlanChangeResponse,
-    ApiPlanChangeResponseFromJSON,
-    ApiPlanChangeResponseToJSON,
-} from '../models/ApiPlanChangeResponse';
-import {
-    type ApiPlanListResponse,
-    ApiPlanListResponseFromJSON,
-    ApiPlanListResponseToJSON,
-} from '../models/ApiPlanListResponse';
-import {
     type BillingInvoiceDetailResponse,
     BillingInvoiceDetailResponseFromJSON,
     BillingInvoiceDetailResponseToJSON,
@@ -54,6 +39,11 @@ import {
     CheckoutResponseToJSON,
 } from '../models/CheckoutResponse';
 import {
+    type PaymentMethodListResponse,
+    PaymentMethodListResponseFromJSON,
+    PaymentMethodListResponseToJSON,
+} from '../models/PaymentMethodListResponse';
+import {
     type SubscribeInput,
     SubscribeInputFromJSON,
     SubscribeInputToJSON,
@@ -68,39 +58,8 @@ import {
     SubscriptionUpdateFromJSON,
     SubscriptionUpdateToJSON,
 } from '../models/SubscriptionUpdate';
-import {
-    type UsageAlertSettingsResponse,
-    UsageAlertSettingsResponseFromJSON,
-    UsageAlertSettingsResponseToJSON,
-} from '../models/UsageAlertSettingsResponse';
-import {
-    type UsageAlertSettingsUpdate,
-    UsageAlertSettingsUpdateFromJSON,
-    UsageAlertSettingsUpdateToJSON,
-} from '../models/UsageAlertSettingsUpdate';
-import {
-    type UsagePeriodListResponse,
-    UsagePeriodListResponseFromJSON,
-    UsagePeriodListResponseToJSON,
-} from '../models/UsagePeriodListResponse';
-import {
-    type UsageSummaryResponse,
-    UsageSummaryResponseFromJSON,
-    UsageSummaryResponseToJSON,
-} from '../models/UsageSummaryResponse';
 
 export interface CancelSubscriptionRequest {
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
-export interface ChangeApiPlanRequest {
-    /**
-     * 
-     */
-    apiPlanChangeInput: ApiPlanChangeInput;
     /**
      * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
      */
@@ -129,6 +88,13 @@ export interface CreateSubscriptionRequest {
     idempotencyKey?: string;
 }
 
+export interface DeletePaymentMethodRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+}
+
 export interface GetBillingInvoiceRequest {
     /**
      * Resource ID.
@@ -136,25 +102,11 @@ export interface GetBillingInvoiceRequest {
     id: string;
 }
 
-export interface GetBillingUsageRequest {
-    /**
-     * Break usage down by API key or by OAuth app. Defaults to `key`.
-     */
-    groupBy?: GetBillingUsageGroupByEnum;
-}
-
-export interface ListApiPlansRequest {
-    /**
-     * Page size.
-     */
-    perPage?: number;
-    /**
-     * Page number, starting at 1.
-     */
-    page?: number;
-}
-
 export interface ListBillingInvoicesRequest {
+    /**
+     * Only invoices with this status. Omit it to get every status.
+     */
+    status?: ListBillingInvoicesStatusEnum;
     /**
      * Page size.
      */
@@ -180,7 +132,7 @@ export interface ListBillingPaymentsRequest {
     invoiceId?: string;
 }
 
-export interface ListBillingUsageHistoryRequest {
+export interface ListPaymentMethodsRequest {
     /**
      * Page size.
      */
@@ -191,11 +143,11 @@ export interface ListBillingUsageHistoryRequest {
     page?: number;
 }
 
-export interface ReceiveGatewayWebhookRequest {
+export interface ReceiveXenditWebhookRequest {
     /**
-     * Gateway callback token or HMAC signature. Header name and algorithm follow the configured gateway adapter.
+     * Xendit callback token. Compared with the token configured for this account in Xendit.
      */
-    xCallbackToken: string;
+    xCALLBACKTOKEN: string;
     /**
      * 
      */
@@ -207,13 +159,6 @@ export interface UpdateSubscriptionRequest {
      * 
      */
     subscriptionUpdate: SubscriptionUpdate;
-}
-
-export interface UpdateUsageAlertsRequest {
-    /**
-     * 
-     */
-    usageAlertSettingsUpdate: UsageAlertSettingsUpdate;
 }
 
 /**
@@ -250,18 +195,18 @@ export class BillingApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/v1/billing/subscription/cancel`;
+        let urlPath = `/v1/billing/subscription`;
 
         return {
             path: urlPath,
-            method: 'POST',
+            method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
         };
     }
 
     /**
-     * Access continues until `current_period_end`, then the tenant becomes read-only; data stays exportable. Idempotent: cancelling an already-cancelling subscription returns 200. Returns 409 `subscription_not_active` if there is nothing to cancel.  **Response meta** - `meta` is empty. 
+     * Cancels the subscription at the end of the current period. The tenant keeps full access until `current_period_end`, then becomes read-only, and its data stays available for export and is not deleted. Calling it again on a subscription that is already being cancelled returns 200 and changes nothing.  After this call [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) shows `cancel_at_period_end` as true, and no further invoices are created or charged. A subscription that is already `canceled` has nothing to cancel. Send an `Idempotency-Key` header so a retry is safe.  Error codes: `subscription_not_active`.  **Response meta** - `meta` is empty. 
      * Cancel at period end
      */
     async cancelSubscriptionRaw(requestParameters: CancelSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
@@ -272,80 +217,11 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Access continues until `current_period_end`, then the tenant becomes read-only; data stays exportable. Idempotent: cancelling an already-cancelling subscription returns 200. Returns 409 `subscription_not_active` if there is nothing to cancel.  **Response meta** - `meta` is empty. 
+     * Cancels the subscription at the end of the current period. The tenant keeps full access until `current_period_end`, then becomes read-only, and its data stays available for export and is not deleted. Calling it again on a subscription that is already being cancelled returns 200 and changes nothing.  After this call [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) shows `cancel_at_period_end` as true, and no further invoices are created or charged. A subscription that is already `canceled` has nothing to cancel. Send an `Idempotency-Key` header so a retry is safe.  Error codes: `subscription_not_active`.  **Response meta** - `meta` is empty. 
      * Cancel at period end
      */
     async cancelSubscription(requestParameters: CancelSubscriptionRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
         const response = await this.cancelSubscriptionRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for changeApiPlan without sending the request
-     */
-    async changeApiPlanRequestOpts(requestParameters: ChangeApiPlanRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['apiPlanChangeInput'] == null) {
-            throw new runtime.RequiredError(
-                'apiPlanChangeInput',
-                'Required parameter "apiPlanChangeInput" was null or undefined when calling changeApiPlan().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/billing/api-plan`;
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: ApiPlanChangeInputToJSON(requestParameters['apiPlanChangeInput']),
-        };
-    }
-
-    /**
-     * Upgrades take effect immediately; downgrades at the end of the current period, and fail if current-period usage already exceeds the new quota only when `effective` is `immediate`. Error codes: `api_addon_required` (enable it with `PATCH /v1/billing/subscription`), `unknown_plan`.  **Response meta** - `meta` is empty. 
-     * Change API plan
-     */
-    async changeApiPlanRaw(requestParameters: ChangeApiPlanRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiPlanChangeResponse>> {
-        const requestOptions = await this.changeApiPlanRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ApiPlanChangeResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Upgrades take effect immediately; downgrades at the end of the current period, and fail if current-period usage already exceeds the new quota only when `effective` is `immediate`. Error codes: `api_addon_required` (enable it with `PATCH /v1/billing/subscription`), `unknown_plan`.  **Response meta** - `meta` is empty. 
-     * Change API plan
-     */
-    async changeApiPlan(requestParameters: ChangeApiPlanRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApiPlanChangeResponse> {
-        const response = await this.changeApiPlanRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -399,8 +275,8 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns a hosted payment page URL from the payment gateway; redirect the user to it. No card data touches our servers. Payment is confirmed only by the gateway webhook, not by the redirect back. Error codes: `invoice_not_payable` (already paid or void).  **Response meta** - `meta` is empty. 
-     * Pay an invoice via gateway
+     * Starts a payment for an open subscription invoice and returns the address of a payment page hosted by Xendit. Redirect the person to it. They choose how to pay on that page, such as an e-wallet like GoPay or OVO, QRIS, a bank virtual account or a card, and for a method that can be saved (an e-wallet or a card) they can choose to save it for the next period. No card or account data passes through this API.  The invoice id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). Each call creates a new payment attempt with its own `payment_url`, which stops working at `expires_at`. The redirect back to your site is not proof of payment: the payment becomes `paid` when Xendit confirms it through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). Follow it with [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments). A saved method is listed by [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods), and from then on renewals are charged to it without calling this. Send an `Idempotency-Key` header so a retry does not create two attempts.  Error codes: `invoice_not_payable` (already paid or void).  **Response meta** - `meta` is empty. 
+     * Pay an invoice on Xendit
      */
     async createCheckoutRaw(requestParameters: CreateCheckoutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckoutResponse>> {
         const requestOptions = await this.createCheckoutRequestOpts(requestParameters);
@@ -410,8 +286,8 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns a hosted payment page URL from the payment gateway; redirect the user to it. No card data touches our servers. Payment is confirmed only by the gateway webhook, not by the redirect back. Error codes: `invoice_not_payable` (already paid or void).  **Response meta** - `meta` is empty. 
-     * Pay an invoice via gateway
+     * Starts a payment for an open subscription invoice and returns the address of a payment page hosted by Xendit. Redirect the person to it. They choose how to pay on that page, such as an e-wallet like GoPay or OVO, QRIS, a bank virtual account or a card, and for a method that can be saved (an e-wallet or a card) they can choose to save it for the next period. No card or account data passes through this API.  The invoice id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). Each call creates a new payment attempt with its own `payment_url`, which stops working at `expires_at`. The redirect back to your site is not proof of payment: the payment becomes `paid` when Xendit confirms it through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). Follow it with [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments). A saved method is listed by [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods), and from then on renewals are charged to it without calling this. Send an `Idempotency-Key` header so a retry does not create two attempts.  Error codes: `invoice_not_payable` (already paid or void).  **Response meta** - `meta` is empty. 
+     * Pay an invoice on Xendit
      */
     async createCheckout(requestParameters: CreateCheckoutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckoutResponse> {
         const response = await this.createCheckoutRaw(requestParameters, initOverrides);
@@ -468,7 +344,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates the subscription and its first invoice. Pay it with `POST /v1/billing/checkout`. The tenant must not already have an active subscription (`subscription_exists`). Error codes: `subscription_exists`, `unknown_plan`.  **Response meta** - `meta` is empty. 
+     * Subscribes the current tenant to a plan and a billing cycle. The subscription starts as `trialing`, so the tenant uses the service straight away and pays later: the first invoice is created at the same time and falls due when the trial ends. `seats` defaults to the number of active users, or to the seats the plan includes if that is higher.  Plan ids and prices come from [`GET /v1/plans`](#tag/plans/GET/v1/plans). When the invoice is due, pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). The first confirmed payment moves the subscription to `active`, and the confirmation arrives through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). Send an `Idempotency-Key` header so a retry does not subscribe twice.  Error codes: `subscription_exists`, `unknown_plan`.  **Response meta** - `meta` is empty. 
      * Subscribe to a plan
      */
     async createSubscriptionRaw(requestParameters: CreateSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
@@ -479,12 +355,74 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates the subscription and its first invoice. Pay it with `POST /v1/billing/checkout`. The tenant must not already have an active subscription (`subscription_exists`). Error codes: `subscription_exists`, `unknown_plan`.  **Response meta** - `meta` is empty. 
+     * Subscribes the current tenant to a plan and a billing cycle. The subscription starts as `trialing`, so the tenant uses the service straight away and pays later: the first invoice is created at the same time and falls due when the trial ends. `seats` defaults to the number of active users, or to the seats the plan includes if that is higher.  Plan ids and prices come from [`GET /v1/plans`](#tag/plans/GET/v1/plans). When the invoice is due, pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). The first confirmed payment moves the subscription to `active`, and the confirmation arrives through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). Send an `Idempotency-Key` header so a retry does not subscribe twice.  Error codes: `subscription_exists`, `unknown_plan`.  **Response meta** - `meta` is empty. 
      * Subscribe to a plan
      */
     async createSubscription(requestParameters: CreateSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
         const response = await this.createSubscriptionRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Creates request options for deletePaymentMethod without sending the request
+     */
+    async deletePaymentMethodRequestOpts(requestParameters: DeletePaymentMethodRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling deletePaymentMethod().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/billing/payment-methods/{id}`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Removes a saved payment method, so it is not charged again. Use it when the person stops using that e-wallet, or wants to pay each invoice by hand. If it was the method used for renewals, the next newest `active` method takes over, and when there is none, each invoice has to be paid by hand.  The id comes from [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods). Payments already made with it stay in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments). To pay an invoice yourself, use [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout).  Error codes: `payment_method_not_found`.  **Response meta** - No response body, so no meta. 
+     * Remove a saved method
+     */
+    async deletePaymentMethodRaw(requestParameters: DeletePaymentMethodRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.deletePaymentMethodRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Removes a saved payment method, so it is not charged again. Use it when the person stops using that e-wallet, or wants to pay each invoice by hand. If it was the method used for renewals, the next newest `active` method takes over, and when there is none, each invoice has to be paid by hand.  The id comes from [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods). Payments already made with it stay in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments). To pay an invoice yourself, use [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout).  Error codes: `payment_method_not_found`.  **Response meta** - No response body, so no meta. 
+     * Remove a saved method
+     */
+    async deletePaymentMethod(requestParameters: DeletePaymentMethodRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.deletePaymentMethodRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -531,7 +469,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Invoice with lines, PPN and a PDF link.  **Response meta** - `meta` is empty. 
+     * Returns one subscription invoice in full: its lines, subtotal, PPN, total, billing period, due date, the time it was paid and a link to the PDF. Use it to show an invoice to the person, or to let them download it.  The id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). If the status is `open`, pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout); the attempts made so far are in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get subscription invoice
      */
     async getBillingInvoiceRaw(requestParameters: GetBillingInvoiceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BillingInvoiceDetailResponse>> {
@@ -542,70 +480,11 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Invoice with lines, PPN and a PDF link.  **Response meta** - `meta` is empty. 
+     * Returns one subscription invoice in full: its lines, subtotal, PPN, total, billing period, due date, the time it was paid and a link to the PDF. Use it to show an invoice to the person, or to let them download it.  The id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). If the status is `open`, pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout); the attempts made so far are in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get subscription invoice
      */
     async getBillingInvoice(requestParameters: GetBillingInvoiceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BillingInvoiceDetailResponse> {
         const response = await this.getBillingInvoiceRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for getBillingUsage without sending the request
-     */
-    async getBillingUsageRequestOpts(requestParameters: GetBillingUsageRequest): Promise<runtime.RequestOpts> {
-        const queryParameters: any = {};
-
-        if (requestParameters['groupBy'] != null) {
-            queryParameters['group_by'] = requestParameters['groupBy'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/billing/usage`;
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * Metered from usage logs. Per-call quota and rate-limit state is also in the `X-RateLimit-*` response headers; for the calling key only, see `GET /v1/usage`.  **Response meta** - `meta` is empty. 
-     * Usage for the current period
-     */
-    async getBillingUsageRaw(requestParameters: GetBillingUsageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UsageSummaryResponse>> {
-        const requestOptions = await this.getBillingUsageRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UsageSummaryResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Metered from usage logs. Per-call quota and rate-limit state is also in the `X-RateLimit-*` response headers; for the calling key only, see `GET /v1/usage`.  **Response meta** - `meta` is empty. 
-     * Usage for the current period
-     */
-    async getBillingUsage(requestParameters: GetBillingUsageRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UsageSummaryResponse> {
-        const response = await this.getBillingUsageRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -645,7 +524,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns the subscription of the current tenant: its plan, status, billing cycle, number of seats, whether paid API access is on, when the current period ends, when the trial ends during a trial, and the saved payment method charged for renewals. Use it to build the plan page, or to decide what a tenant may still do: a `past_due` or `canceled` subscription makes the tenant read-only.  A subscription is created with [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription), changed with [`PATCH /v1/billing/subscription`](#tag/billing/PATCH/v1/billing/subscription) and cancelled with [`DELETE /v1/billing/subscription`](#tag/billing/DELETE/v1/billing/subscription). The invoices behind it are listed by [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices), and the saved payment methods by [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get current plan and add-ons
      */
     async getSubscriptionRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
@@ -656,7 +535,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns the subscription of the current tenant: its plan, status, billing cycle, number of seats, whether paid API access is on, when the current period ends, when the trial ends during a trial, and the saved payment method charged for renewals. Use it to build the plan page, or to decide what a tenant may still do: a `past_due` or `canceled` subscription makes the tenant read-only.  A subscription is created with [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription), changed with [`PATCH /v1/billing/subscription`](#tag/billing/PATCH/v1/billing/subscription) and cancelled with [`DELETE /v1/billing/subscription`](#tag/billing/DELETE/v1/billing/subscription). The invoices behind it are listed by [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices), and the saved payment methods by [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get current plan and add-ons
      */
     async getSubscription(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
@@ -665,128 +544,14 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates request options for getUsageAlerts without sending the request
-     */
-    async getUsageAlertsRequestOpts(): Promise<runtime.RequestOpts> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/billing/usage-alerts`;
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Get usage alert settings
-     */
-    async getUsageAlertsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UsageAlertSettingsResponse>> {
-        const requestOptions = await this.getUsageAlertsRequestOpts();
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UsageAlertSettingsResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Get usage alert settings
-     */
-    async getUsageAlerts(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UsageAlertSettingsResponse> {
-        const response = await this.getUsageAlertsRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for listApiPlans without sending the request
-     */
-    async listApiPlansRequestOpts(requestParameters: ListApiPlansRequest): Promise<runtime.RequestOpts> {
-        const queryParameters: any = {};
-
-        if (requestParameters['perPage'] != null) {
-            queryParameters['per_page'] = requestParameters['perPage'];
-        }
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/billing/api-plans`;
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * Quota tiers and overage rates. Requires the Paid API add-on to subscribe.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List API quota plans
-     */
-    async listApiPlansRaw(requestParameters: ListApiPlansRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiPlanListResponse>> {
-        const requestOptions = await this.listApiPlansRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ApiPlanListResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Quota tiers and overage rates. Requires the Paid API add-on to subscribe.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List API quota plans
-     */
-    async listApiPlans(requestParameters: ListApiPlansRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApiPlanListResponse> {
-        const response = await this.listApiPlansRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
      * Creates request options for listBillingInvoices without sending the request
      */
     async listBillingInvoicesRequestOpts(requestParameters: ListBillingInvoicesRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
+
+        if (requestParameters['status'] != null) {
+            queryParameters['status'] = requestParameters['status'];
+        }
 
         if (requestParameters['perPage'] != null) {
             queryParameters['per_page'] = requestParameters['perPage'];
@@ -826,7 +591,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the subscription invoices of the current tenant. Each one is the full invoice: its number, status (`open`, `paid` or `void`), billing period, due date, lines, PPN, total and a link to the PDF. Use it for the billing history page, or to find the invoice that has to be paid: filter with `status=open`.  A single invoice is returned by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) in the same shape as the items of this list. Pay an open one with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and see what was paid in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List subscription invoices
      */
     async listBillingInvoicesRaw(requestParameters: ListBillingInvoicesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BillingInvoiceListResponse>> {
@@ -837,7 +602,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the subscription invoices of the current tenant. Each one is the full invoice: its number, status (`open`, `paid` or `void`), billing period, due date, lines, PPN, total and a link to the PDF. Use it for the billing history page, or to find the invoice that has to be paid: filter with `status=open`.  A single invoice is returned by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) in the same shape as the items of this list. Pay an open one with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and see what was paid in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List subscription invoices
      */
     async listBillingInvoices(requestParameters: ListBillingInvoicesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BillingInvoiceListResponse> {
@@ -893,7 +658,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the payment attempts for subscription invoices, with their amount, how they were paid (`method` and `channel`), whether the person paid on the payment page or Zerpto charged a saved method (`source`), status (`pending`, `paid`, `expired` or `failed`) and time. One invoice can have several attempts, for example an expired payment page followed by a new one. Filter with `invoice_id` to see the attempts for one invoice.  Every attempt is created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and its status is updated when Xendit reports back through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). The invoice itself is shown by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List payment history
      */
     async listBillingPaymentsRaw(requestParameters: ListBillingPaymentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BillingPaymentListResponse>> {
@@ -904,7 +669,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the payment attempts for subscription invoices, with their amount, how they were paid (`method` and `channel`), whether the person paid on the payment page or Zerpto charged a saved method (`source`), status (`pending`, `paid`, `expired` or `failed`) and time. One invoice can have several attempts, for example an expired payment page followed by a new one. Filter with `invoice_id` to see the attempts for one invoice.  Every attempt is created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and its status is updated when Xendit reports back through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). The invoice itself is shown by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List payment history
      */
     async listBillingPayments(requestParameters: ListBillingPaymentsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BillingPaymentListResponse> {
@@ -913,9 +678,9 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates request options for listBillingUsageHistory without sending the request
+     * Creates request options for listPaymentMethods without sending the request
      */
-    async listBillingUsageHistoryRequestOpts(requestParameters: ListBillingUsageHistoryRequest): Promise<runtime.RequestOpts> {
+    async listPaymentMethodsRequestOpts(requestParameters: ListPaymentMethodsRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         if (requestParameters['perPage'] != null) {
@@ -945,7 +710,7 @@ export class BillingApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/v1/billing/usage/history`;
+        let urlPath = `/v1/billing/payment-methods`;
 
         return {
             path: urlPath,
@@ -956,40 +721,40 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * Past usage periods
+     * Lists the payment methods the tenant has saved for renewals, such as an e-wallet linked on the Xendit payment page. Each one shows its type, channel, a masked label, its status (`active`, `invalid` or `expired`), when it expires and when it was last used. Use it for the billing settings page.  A method is saved when the person ticks the option to save it on the payment page opened by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). The newest `active` method is charged automatically for each renewal, and [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) shows which one in `payment_method_id`. To stop using one, call [`DELETE /v1/billing/payment-methods/{id}`](#tag/billing/DELETE/v1/billing/payment-methods/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * List saved payment methods
      */
-    async listBillingUsageHistoryRaw(requestParameters: ListBillingUsageHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UsagePeriodListResponse>> {
-        const requestOptions = await this.listBillingUsageHistoryRequestOpts(requestParameters);
+    async listPaymentMethodsRaw(requestParameters: ListPaymentMethodsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaymentMethodListResponse>> {
+        const requestOptions = await this.listPaymentMethodsRequestOpts(requestParameters);
         const response = await this.request(requestOptions, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UsagePeriodListResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaymentMethodListResponseFromJSON(jsonValue));
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * Past usage periods
+     * Lists the payment methods the tenant has saved for renewals, such as an e-wallet linked on the Xendit payment page. Each one shows its type, channel, a masked label, its status (`active`, `invalid` or `expired`), when it expires and when it was last used. Use it for the billing settings page.  A method is saved when the person ticks the option to save it on the payment page opened by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). The newest `active` method is charged automatically for each renewal, and [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) shows which one in `payment_method_id`. To stop using one, call [`DELETE /v1/billing/payment-methods/{id}`](#tag/billing/DELETE/v1/billing/payment-methods/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * List saved payment methods
      */
-    async listBillingUsageHistory(requestParameters: ListBillingUsageHistoryRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UsagePeriodListResponse> {
-        const response = await this.listBillingUsageHistoryRaw(requestParameters, initOverrides);
+    async listPaymentMethods(requestParameters: ListPaymentMethodsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaymentMethodListResponse> {
+        const response = await this.listPaymentMethodsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * Creates request options for receiveGatewayWebhook without sending the request
+     * Creates request options for receiveXenditWebhook without sending the request
      */
-    async receiveGatewayWebhookRequestOpts(requestParameters: ReceiveGatewayWebhookRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['xCallbackToken'] == null) {
+    async receiveXenditWebhookRequestOpts(requestParameters: ReceiveXenditWebhookRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['xCALLBACKTOKEN'] == null) {
             throw new runtime.RequiredError(
-                'xCallbackToken',
-                'Required parameter "xCallbackToken" was null or undefined when calling receiveGatewayWebhook().'
+                'xCALLBACKTOKEN',
+                'Required parameter "xCALLBACKTOKEN" was null or undefined when calling receiveXenditWebhook().'
             );
         }
 
         if (requestParameters['requestBody'] == null) {
             throw new runtime.RequiredError(
                 'requestBody',
-                'Required parameter "requestBody" was null or undefined when calling receiveGatewayWebhook().'
+                'Required parameter "requestBody" was null or undefined when calling receiveXenditWebhook().'
             );
         }
 
@@ -999,12 +764,12 @@ export class BillingApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (requestParameters['xCallbackToken'] != null) {
-            headerParameters['X-Callback-Token'] = String(requestParameters['xCallbackToken']);
+        if (requestParameters['xCALLBACKTOKEN'] != null) {
+            headerParameters['X-CALLBACK-TOKEN'] = String(requestParameters['xCALLBACKTOKEN']);
         }
 
 
-        let urlPath = `/v1/billing/gateway-webhook`;
+        let urlPath = `/v1/billing/webhooks/xendit`;
 
         return {
             path: urlPath,
@@ -1016,22 +781,22 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Called by the payment gateway, not by clients. Not tenant-authenticated: the request is verified with the gateway signature or callback token in the header, and rejected with 401 if invalid. This is the source of truth for \"paid\". Handling is idempotent on the gateway payment ID, so duplicate, late and out-of-order callbacks are safe. Return 200 for any verified callback, including ones that change nothing, so the gateway stops retrying.
-     * Payment gateway callback
+     * Receives payment events from Xendit. Xendit calls it when a payment page is completed or expires, when a saved payment method becomes active, fails or expires, and when an automatic renewal charge succeeds or fails. Zerpto then updates the payment, the invoice and the saved method, and moves the subscription to `active` when an invoice is paid. It is meant for Xendit only, not for your own code, and it is the only way a payment becomes `paid`. If Zerpto adds another payment provider, that provider gets its own endpoint next to this one.  Xendit reports on every payment page created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout) and on every automatic renewal charge, and the outcome shows up in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments), [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) and [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods). The call is not tenant-authenticated: the `X-CALLBACK-TOKEN` header carries the callback token set up in Xendit, and a wrong token is rejected with 401. Handling is idempotent on the Xendit ids, so duplicate, late and out-of-order calls are safe, and any verified call gets 200 even when nothing changes, so that Xendit stops retrying.  Error codes: none specific.  **Response meta** - No response body, so no meta. 
+     * Receive Xendit payment events
      */
-    async receiveGatewayWebhookRaw(requestParameters: ReceiveGatewayWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        const requestOptions = await this.receiveGatewayWebhookRequestOpts(requestParameters);
+    async receiveXenditWebhookRaw(requestParameters: ReceiveXenditWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.receiveXenditWebhookRequestOpts(requestParameters);
         const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.VoidApiResponse(response);
     }
 
     /**
-     * Called by the payment gateway, not by clients. Not tenant-authenticated: the request is verified with the gateway signature or callback token in the header, and rejected with 401 if invalid. This is the source of truth for \"paid\". Handling is idempotent on the gateway payment ID, so duplicate, late and out-of-order callbacks are safe. Return 200 for any verified callback, including ones that change nothing, so the gateway stops retrying.
-     * Payment gateway callback
+     * Receives payment events from Xendit. Xendit calls it when a payment page is completed or expires, when a saved payment method becomes active, fails or expires, and when an automatic renewal charge succeeds or fails. Zerpto then updates the payment, the invoice and the saved method, and moves the subscription to `active` when an invoice is paid. It is meant for Xendit only, not for your own code, and it is the only way a payment becomes `paid`. If Zerpto adds another payment provider, that provider gets its own endpoint next to this one.  Xendit reports on every payment page created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout) and on every automatic renewal charge, and the outcome shows up in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments), [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) and [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods). The call is not tenant-authenticated: the `X-CALLBACK-TOKEN` header carries the callback token set up in Xendit, and a wrong token is rejected with 401. Handling is idempotent on the Xendit ids, so duplicate, late and out-of-order calls are safe, and any verified call gets 200 even when nothing changes, so that Xendit stops retrying.  Error codes: none specific.  **Response meta** - No response body, so no meta. 
+     * Receive Xendit payment events
      */
-    async receiveGatewayWebhook(requestParameters: ReceiveGatewayWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.receiveGatewayWebhookRaw(requestParameters, initOverrides);
+    async receiveXenditWebhook(requestParameters: ReceiveXenditWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.receiveXenditWebhookRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -1080,7 +845,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Changes the plan, billing cycle, number of seats or paid API access of the current subscription. Send only the fields you want to change. Use it when a team grows, moves to a bigger plan, or switches between monthly and annual. A change that costs more produces an invoice for the difference.  Plans and prices come from [`GET /v1/plans`](#tag/plans/GET/v1/plans). An invoice created by a change shows up in [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices) and is paid with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). To stop the subscription instead of changing it, call [`DELETE /v1/billing/subscription`](#tag/billing/DELETE/v1/billing/subscription).  Error codes: `unknown_plan`, `subscription_not_active`.  **Response meta** - `meta` is empty. 
      * Change plan, seats or add-on
      */
     async updateSubscriptionRaw(requestParameters: UpdateSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
@@ -1091,76 +856,11 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Changes the plan, billing cycle, number of seats or paid API access of the current subscription. Send only the fields you want to change. Use it when a team grows, moves to a bigger plan, or switches between monthly and annual. A change that costs more produces an invoice for the difference.  Plans and prices come from [`GET /v1/plans`](#tag/plans/GET/v1/plans). An invoice created by a change shows up in [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices) and is paid with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). To stop the subscription instead of changing it, call [`DELETE /v1/billing/subscription`](#tag/billing/DELETE/v1/billing/subscription).  Error codes: `unknown_plan`, `subscription_not_active`.  **Response meta** - `meta` is empty. 
      * Change plan, seats or add-on
      */
     async updateSubscription(requestParameters: UpdateSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
         const response = await this.updateSubscriptionRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for updateUsageAlerts without sending the request
-     */
-    async updateUsageAlertsRequestOpts(requestParameters: UpdateUsageAlertsRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['usageAlertSettingsUpdate'] == null) {
-            throw new runtime.RequiredError(
-                'usageAlertSettingsUpdate',
-                'Required parameter "usageAlertSettingsUpdate" was null or undefined when calling updateUsageAlerts().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/billing/usage-alerts`;
-
-        return {
-            path: urlPath,
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: UsageAlertSettingsUpdateToJSON(requestParameters['usageAlertSettingsUpdate']),
-        };
-    }
-
-    /**
-     * An email is sent to `recipients` the first time usage crosses each threshold in a period.  **Response meta** - `meta` is empty. 
-     * Update usage alert settings
-     */
-    async updateUsageAlertsRaw(requestParameters: UpdateUsageAlertsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UsageAlertSettingsResponse>> {
-        const requestOptions = await this.updateUsageAlertsRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UsageAlertSettingsResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * An email is sent to `recipients` the first time usage crosses each threshold in a period.  **Response meta** - `meta` is empty. 
-     * Update usage alert settings
-     */
-    async updateUsageAlerts(requestParameters: UpdateUsageAlertsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UsageAlertSettingsResponse> {
-        const response = await this.updateUsageAlertsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -1169,8 +869,9 @@ export class BillingApi extends runtime.BaseAPI {
 /**
  * @export
  */
-export const GetBillingUsageGroupByEnum = {
-    Key: 'key',
-    App: 'app',
+export const ListBillingInvoicesStatusEnum = {
+    Open: 'open',
+    Paid: 'paid',
+    Void: 'void',
 } as const;
-export type GetBillingUsageGroupByEnum = typeof GetBillingUsageGroupByEnum[keyof typeof GetBillingUsageGroupByEnum];
+export type ListBillingInvoicesStatusEnum = typeof ListBillingInvoicesStatusEnum[keyof typeof ListBillingInvoicesStatusEnum];

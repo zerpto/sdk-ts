@@ -7,9 +7,8 @@
 Name | Type
 ------------ | -------------
 `invoiceId` | string
-`paymentMethod` | string
 `successUrl` | string
-`failureUrl` | string
+`cancelUrl` | string
 
 ## Example
 
@@ -19,9 +18,8 @@ import type { CheckoutInput } from '@zerpto/sdk'
 // TODO: Update the object below with actual values
 const example = {
   "invoiceId": null,
-  "paymentMethod": null,
   "successUrl": null,
-  "failureUrl": null,
+  "cancelUrl": null,
 } satisfies CheckoutInput
 
 console.log(example)

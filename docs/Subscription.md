@@ -14,6 +14,7 @@ Name | Type
 `billingCycle` | string
 `cancelAtPeriodEnd` | boolean
 `trialEndsAt` | Date
+`paymentMethodId` | string
 
 ## Example
 
@@ -30,6 +31,7 @@ const example = {
   "billingCycle": null,
   "cancelAtPeriodEnd": null,
   "trialEndsAt": null,
+  "paymentMethodId": pmt-0192f3a1-5d2c-7e44-8b1f-3c9a6e0d7b25,
 } satisfies Subscription
 
 console.log(example)

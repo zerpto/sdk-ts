@@ -20,13 +20,13 @@ import {
     PageListMetaToJSON,
     PageListMetaToJSONTyped,
 } from './PageListMeta';
-import type { BillingInvoice } from './BillingInvoice';
+import type { BillingInvoiceDetail } from './BillingInvoiceDetail';
 import {
-    BillingInvoiceFromJSON,
-    BillingInvoiceFromJSONTyped,
-    BillingInvoiceToJSON,
-    BillingInvoiceToJSONTyped,
-} from './BillingInvoice';
+    BillingInvoiceDetailFromJSON,
+    BillingInvoiceDetailFromJSONTyped,
+    BillingInvoiceDetailToJSON,
+    BillingInvoiceDetailToJSONTyped,
+} from './BillingInvoiceDetail';
 
 /**
  * 
@@ -37,7 +37,7 @@ export interface BillingInvoiceListResponse {
     /**
      * 
      */
-    data: Array<BillingInvoice>;
+    data: Array<BillingInvoiceDetail>;
     /**
      * 
      */
@@ -63,7 +63,7 @@ export function BillingInvoiceListResponseFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
-        'data': ((json['data'] as Array<any>).map(BillingInvoiceFromJSON)),
+        'data': ((json['data'] as Array<any>).map(BillingInvoiceDetailFromJSON)),
         'meta': PageListMetaFromJSON(json['meta']),
     };
 }
@@ -79,7 +79,7 @@ export function BillingInvoiceListResponseToJSONTyped(value?: BillingInvoiceList
 
     return {
         
-        'data': ((value['data'] as Array<any>).map(BillingInvoiceToJSON)),
+        'data': ((value['data'] as Array<any>).map(BillingInvoiceDetailToJSON)),
         'meta': PageListMetaToJSON(value['meta']),
     };
 }

@@ -174,6 +174,8 @@ export * from './NotificationSettingsUpdate';
 export * from './PageListMeta';
 export * from './PagePagination';
 export * from './PaymentAllocation';
+export * from './PaymentMethod';
+export * from './PaymentMethodListResponse';
 export * from './Period';
 export * from './PeriodListResponse';
 export * from './PeriodResponse';

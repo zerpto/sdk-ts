@@ -44,13 +44,17 @@ export interface Subscription {
      */
     billingCycle?: SubscriptionBillingCycleEnum;
     /**
-     * True once cancellation is scheduled via `POST /v1/billing/subscription/cancel`.
+     * True once cancellation is scheduled via `DELETE /v1/billing/subscription`.
      */
     cancelAtPeriodEnd?: boolean;
     /**
      * 
      */
     trialEndsAt?: Date | null;
+    /**
+     * The saved payment method charged for renewals. Null when there is none, and then each invoice is paid by hand with `POST /v1/billing/checkout`.
+     */
+    paymentMethodId?: string | null;
 }
 
 
@@ -115,6 +119,7 @@ export function SubscriptionFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'billingCycle': json['billing_cycle'] == null ? undefined : json['billing_cycle'],
         'cancelAtPeriodEnd': json['cancel_at_period_end'] == null ? undefined : json['cancel_at_period_end'],
         'trialEndsAt': json['trial_ends_at'] === undefined ? undefined : json['trial_ends_at'] === null ? null : (parseDateTime(json['trial_ends_at'])),
+        'paymentMethodId': json['payment_method_id'] === undefined ? undefined : json['payment_method_id'] === null ? null : json['payment_method_id'],
     };
 }
 
@@ -137,6 +142,7 @@ export function SubscriptionToJSONTyped(value?: Subscription | null, ignoreDiscr
         'billing_cycle': value['billingCycle'],
         'cancel_at_period_end': value['cancelAtPeriodEnd'],
         'trial_ends_at': value['trialEndsAt'] == null ? value['trialEndsAt'] : serializeDateTime(value['trialEndsAt']),
+        'payment_method_id': value['paymentMethodId'],
     };
 }
 

@@ -24,32 +24,14 @@ export interface CheckoutInput {
      */
     invoiceId: string;
     /**
-     * Preselect a method on the hosted page. Omit to let the customer choose.
-     */
-    paymentMethod?: CheckoutInputPaymentMethodEnum;
-    /**
-     * Where the gateway sends the customer after paying.
+     * Where Xendit sends the customer after paying.
      */
     successUrl?: string;
     /**
-     * 
+     * Where Xendit sends the customer when they leave the payment page without paying.
      */
-    failureUrl?: string;
+    cancelUrl?: string;
 }
-
-
-/**
- * @export
- */
-export const CheckoutInputPaymentMethodEnum = {
-    VirtualAccount: 'virtual_account',
-    BankTransfer: 'bank_transfer',
-    Qris: 'qris',
-    Ewallet: 'ewallet',
-    Card: 'card',
-} as const;
-export type CheckoutInputPaymentMethodEnum = typeof CheckoutInputPaymentMethodEnum[keyof typeof CheckoutInputPaymentMethodEnum];
-
 
 /**
  * Check if a given object implements the CheckoutInput interface.
@@ -70,9 +52,8 @@ export function CheckoutInputFromJSONTyped(json: any, ignoreDiscriminator: boole
     return {
         
         'invoiceId': json['invoice_id'],
-        'paymentMethod': json['payment_method'] == null ? undefined : json['payment_method'],
         'successUrl': json['success_url'] == null ? undefined : json['success_url'],
-        'failureUrl': json['failure_url'] == null ? undefined : json['failure_url'],
+        'cancelUrl': json['cancel_url'] == null ? undefined : json['cancel_url'],
     };
 }
 
@@ -88,9 +69,8 @@ export function CheckoutInputToJSONTyped(value?: CheckoutInput | null, ignoreDis
     return {
         
         'invoice_id': value['invoiceId'],
-        'payment_method': value['paymentMethod'],
         'success_url': value['successUrl'],
-        'failure_url': value['failureUrl'],
+        'cancel_url': value['cancelUrl'],
     };
 }
 

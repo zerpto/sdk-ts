@@ -16,9 +16,9 @@ Next, try it out.
 ```ts
 import {
   Configuration,
-  APIKeysApi,
+  APIApi,
 } from '@zerpto/sdk';
-import type { CreateApiKeyRequest } from '@zerpto/sdk';
+import type { ChangeApiPlanRequest } from '@zerpto/sdk';
 
 async function example() {
   console.log("🚀 Testing @zerpto/sdk SDK...");
@@ -28,15 +28,17 @@ async function example() {
     // Configure HTTP bearer authorization: UserJWT
     accessToken: "YOUR BEARER TOKEN",
   });
-  const api = new APIKeysApi(config);
+  const api = new APIApi(config);
 
   const body = {
-    // ApiKeyInput
-    apiKeyInput: ...,
-  } satisfies CreateApiKeyRequest;
+    // ApiPlanChangeInput
+    apiPlanChangeInput: ...,
+    // string | Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours. (optional)
+    idempotencyKey: idempotencyKey_example,
+  } satisfies ChangeApiPlanRequest;
 
   try {
-    const data = await api.createApiKey(body);
+    const data = await api.changeApiPlan(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -56,6 +58,12 @@ All URIs are relative to *https://api.zerpto.com*
 
 | Class | Method | HTTP request | Description
 | ----- | ------ | ------------ | -------------
+*APIApi* | [**changeApiPlan**](docs/APIApi.md#changeapiplan) | **POST** /v1/billing/api-plan | Change API plan
+*APIApi* | [**getBillingUsage**](docs/APIApi.md#getbillingusage) | **GET** /v1/billing/usage | Usage for the current period
+*APIApi* | [**getUsageAlerts**](docs/APIApi.md#getusagealerts) | **GET** /v1/billing/usage-alerts | Get usage alert settings
+*APIApi* | [**listApiPlans**](docs/APIApi.md#listapiplans) | **GET** /v1/billing/api-plans | List API quota plans
+*APIApi* | [**listBillingUsageHistory**](docs/APIApi.md#listbillingusagehistory) | **GET** /v1/billing/usage/history | Past usage periods
+*APIApi* | [**updateUsageAlerts**](docs/APIApi.md#updateusagealerts) | **PATCH** /v1/billing/usage-alerts | Update usage alert settings
 *APIKeysApi* | [**createApiKey**](docs/APIKeysApi.md#createapikey) | **POST** /v1/api-keys | Create API key
 *APIKeysApi* | [**getUsage**](docs/APIKeysApi.md#getusage) | **GET** /v1/usage | Usage and rate-limit status
 *APIKeysApi* | [**listApiKeys**](docs/APIKeysApi.md#listapikeys) | **GET** /v1/api-keys | List API keys (masked)
@@ -117,21 +125,17 @@ All URIs are relative to *https://api.zerpto.com*
 *BankReconciliationApi* | [**unmatchBankStatementLine**](docs/BankReconciliationApi.md#unmatchbankstatementline) | **POST** /v1/bank/statement-lines/{id}/unmatch | Remove a match
 *BankReconciliationApi* | [**updateBankAccount**](docs/BankReconciliationApi.md#updatebankaccount) | **PATCH** /v1/bank/accounts/{id} | Update bank account
 *BankReconciliationApi* | [**uploadBankStatement**](docs/BankReconciliationApi.md#uploadbankstatement) | **POST** /v1/bank/accounts/{id}/statements | Upload a statement file
-*BillingApi* | [**cancelSubscription**](docs/BillingApi.md#cancelsubscription) | **POST** /v1/billing/subscription/cancel | Cancel at period end
-*BillingApi* | [**changeApiPlan**](docs/BillingApi.md#changeapiplan) | **POST** /v1/billing/api-plan | Change API plan
-*BillingApi* | [**createCheckout**](docs/BillingApi.md#createcheckout) | **POST** /v1/billing/checkout | Pay an invoice via gateway
+*BillingApi* | [**cancelSubscription**](docs/BillingApi.md#cancelsubscription) | **DELETE** /v1/billing/subscription | Cancel at period end
+*BillingApi* | [**createCheckout**](docs/BillingApi.md#createcheckout) | **POST** /v1/billing/checkout | Pay an invoice on Xendit
 *BillingApi* | [**createSubscription**](docs/BillingApi.md#createsubscription) | **POST** /v1/billing/subscription | Subscribe to a plan
+*BillingApi* | [**deletePaymentMethod**](docs/BillingApi.md#deletepaymentmethod) | **DELETE** /v1/billing/payment-methods/{id} | Remove a saved method
 *BillingApi* | [**getBillingInvoice**](docs/BillingApi.md#getbillinginvoice) | **GET** /v1/billing/invoices/{id} | Get subscription invoice
-*BillingApi* | [**getBillingUsage**](docs/BillingApi.md#getbillingusage) | **GET** /v1/billing/usage | Usage for the current period
 *BillingApi* | [**getSubscription**](docs/BillingApi.md#getsubscription) | **GET** /v1/billing/subscription | Get current plan and add-ons
-*BillingApi* | [**getUsageAlerts**](docs/BillingApi.md#getusagealerts) | **GET** /v1/billing/usage-alerts | Get usage alert settings
-*BillingApi* | [**listApiPlans**](docs/BillingApi.md#listapiplans) | **GET** /v1/billing/api-plans | List API quota plans
 *BillingApi* | [**listBillingInvoices**](docs/BillingApi.md#listbillinginvoices) | **GET** /v1/billing/invoices | List subscription invoices
 *BillingApi* | [**listBillingPayments**](docs/BillingApi.md#listbillingpayments) | **GET** /v1/billing/payments | List payment history
-*BillingApi* | [**listBillingUsageHistory**](docs/BillingApi.md#listbillingusagehistory) | **GET** /v1/billing/usage/history | Past usage periods
-*BillingApi* | [**receiveGatewayWebhook**](docs/BillingApi.md#receivegatewaywebhook) | **POST** /v1/billing/gateway-webhook | Payment gateway callback
+*BillingApi* | [**listPaymentMethods**](docs/BillingApi.md#listpaymentmethods) | **GET** /v1/billing/payment-methods | List saved payment methods
+*BillingApi* | [**receiveXenditWebhook**](docs/BillingApi.md#receivexenditwebhook) | **POST** /v1/billing/webhooks/xendit | Receive Xendit payment events
 *BillingApi* | [**updateSubscription**](docs/BillingApi.md#updatesubscription) | **PATCH** /v1/billing/subscription | Change plan, seats or add-on
-*BillingApi* | [**updateUsageAlerts**](docs/BillingApi.md#updateusagealerts) | **PATCH** /v1/billing/usage-alerts | Update usage alert settings
 *CustomersApi* | [**archiveCustomer**](docs/CustomersApi.md#archivecustomer) | **DELETE** /v1/customers/{id} | Archive Customer
 *CustomersApi* | [**createCustomer**](docs/CustomersApi.md#createcustomer) | **POST** /v1/customers | Create customer
 *CustomersApi* | [**getCustomer**](docs/CustomersApi.md#getcustomer) | **GET** /v1/customers/{id} | Get Customer
@@ -462,6 +466,8 @@ All URIs are relative to *https://api.zerpto.com*
 - [PageListMeta](docs/PageListMeta.md)
 - [PagePagination](docs/PagePagination.md)
 - [PaymentAllocation](docs/PaymentAllocation.md)
+- [PaymentMethod](docs/PaymentMethod.md)
+- [PaymentMethodListResponse](docs/PaymentMethodListResponse.md)
 - [Period](docs/Period.md)
 - [PeriodListResponse](docs/PeriodListResponse.md)
 - [PeriodResponse](docs/PeriodResponse.md)

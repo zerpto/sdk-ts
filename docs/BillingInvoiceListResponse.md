@@ -6,7 +6,7 @@
 
 Name | Type
 ------------ | -------------
-`data` | [Array&lt;BillingInvoice&gt;](BillingInvoice.md)
+`data` | [Array&lt;BillingInvoiceDetail&gt;](BillingInvoiceDetail.md)
 `meta` | [PageListMeta](PageListMeta.md)
 
 ## Example
