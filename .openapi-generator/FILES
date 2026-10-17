@@ -8,6 +8,7 @@ docs/AccountInput.md
 docs/AccountListResponse.md
 docs/AccountResponse.md
 docs/AccountUpdate.md
+docs/AccountsApi.md
 docs/AccountsPayableApi.md
 docs/AccountsReceivableApi.md
 docs/Address.md
@@ -166,7 +167,9 @@ docs/Item.md
 docs/ItemInput.md
 docs/ItemListResponse.md
 docs/ItemResponse.md
+docs/ItemUnit.md
 docs/ItemUpdate.md
+docs/JournalApi.md
 docs/JournalEntry.md
 docs/JournalEntryInput.md
 docs/JournalEntryListResponse.md
@@ -370,6 +373,7 @@ docs/WithholdingReportResponse.md
 package.json
 src/apis/APIApi.ts
 src/apis/APIKeysApi.ts
+src/apis/AccountsApi.ts
 src/apis/AccountsPayableApi.ts
 src/apis/AccountsReceivableApi.ts
 src/apis/ApprovalsApi.ts
@@ -381,6 +385,7 @@ src/apis/FixedAssetsApi.ts
 src/apis/ForgotPasswordApi.ts
 src/apis/GeneralLedgerApi.ts
 src/apis/InventoryApi.ts
+src/apis/JournalApi.ts
 src/apis/NotificationsApi.ts
 src/apis/PlansApi.ts
 src/apis/PlatformApi.ts
@@ -552,6 +557,7 @@ src/models/Item.ts
 src/models/ItemInput.ts
 src/models/ItemListResponse.ts
 src/models/ItemResponse.ts
+src/models/ItemUnit.ts
 src/models/ItemUpdate.ts
 src/models/JournalEntry.ts
 src/models/JournalEntryInput.ts

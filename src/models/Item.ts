@@ -20,6 +20,13 @@ import {
     MoneyToJSON,
     MoneyToJSONTyped,
 } from './Money';
+import type { ItemUnit } from './ItemUnit';
+import {
+    ItemUnitFromJSON,
+    ItemUnitFromJSONTyped,
+    ItemUnitToJSON,
+    ItemUnitToJSONTyped,
+} from './ItemUnit';
 
 /**
  * 
@@ -28,7 +35,7 @@ import {
  */
 export interface Item {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID (`itm`).
      */
     readonly id: string;
     /**
@@ -48,9 +55,13 @@ export interface Item {
      */
     type: ItemTypeEnum;
     /**
-     * 
+     * Base unit of the item. Quantities on documents and in stock are counted in it, and the prices above are per base unit.
      */
     unit?: string;
+    /**
+     * Other units the item is bought or sold in, each as a number of base units. The base unit is not repeated here. In an update, the list replaces the existing one.
+     */
+    units: Array<ItemUnit>;
     /**
      * Track stock for this item (Phase 2). Only goods can be stocked.
      */
@@ -121,6 +132,7 @@ export function instanceOfItem(value: object): value is Item {
     if (!('sku' in value) || value['sku'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('type' in value) || value['type'] === undefined) return false;
+    if (!('units' in value) || value['units'] === undefined) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     return true;
 }
@@ -141,6 +153,7 @@ export function ItemFromJSONTyped(json: any, ignoreDiscriminator: boolean): Item
         'description': json['description'] === undefined ? undefined : json['description'] === null ? null : json['description'],
         'type': json['type'],
         'unit': json['unit'] == null ? undefined : json['unit'],
+        'units': ((json['units'] as Array<any>).map(ItemUnitFromJSON)),
         'isStocked': json['is_stocked'] == null ? undefined : json['is_stocked'],
         'defaultWarehouseId': json['default_warehouse_id'] === undefined ? undefined : json['default_warehouse_id'] === null ? null : json['default_warehouse_id'],
         'salesPrice': json['sales_price'] == null ? undefined : MoneyFromJSON(json['sales_price']),
@@ -170,6 +183,7 @@ export function ItemToJSONTyped(value?: Omit<Item, 'id'|'createdAt'|'updatedAt'>
         'description': value['description'],
         'type': value['type'],
         'unit': value['unit'],
+        'units': ((value['units'] as Array<any>).map(ItemUnitToJSON)),
         'is_stocked': value['isStocked'],
         'default_warehouse_id': value['defaultWarehouseId'],
         'sales_price': MoneyToJSON(value['salesPrice']),

@@ -28,7 +28,7 @@ import {
  */
 export interface JournalEntry {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID (`jen`).
      */
     readonly id: string;
     /**

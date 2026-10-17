@@ -25,7 +25,7 @@ import type { JournalEntry } from '@zerpto/sdk'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": null,
+  "id": jen-0192f3a1-5d2c-7e44-8b1f-3c9a6e0d7b25,
   "number": null,
   "date": null,
   "description": null,

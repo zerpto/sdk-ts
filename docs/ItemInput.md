@@ -11,6 +11,7 @@ Name | Type
 `description` | string
 `type` | string
 `unit` | string
+`units` | [Array&lt;ItemUnit&gt;](ItemUnit.md)
 `isStocked` | boolean
 `defaultWarehouseId` | string
 `salesPrice` | [Money](Money.md)
@@ -31,6 +32,7 @@ const example = {
   "description": null,
   "type": null,
   "unit": pcs,
+  "units": null,
   "isStocked": null,
   "defaultWarehouseId": null,
   "salesPrice": null,

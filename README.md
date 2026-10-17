@@ -69,6 +69,11 @@ All URIs are relative to *https://api.zerpto.com*
 *APIKeysApi* | [**listApiKeys**](docs/APIKeysApi.md#listapikeys) | **GET** /v1/api-keys | List API keys (masked)
 *APIKeysApi* | [**revokeApiKey**](docs/APIKeysApi.md#revokeapikey) | **DELETE** /v1/api-keys/{id} | Revoke API key
 *APIKeysApi* | [**rotateApiKey**](docs/APIKeysApi.md#rotateapikey) | **POST** /v1/api-keys/{id}/rotate | Rotate API key
+*AccountsApi* | [**archiveAccount**](docs/AccountsApi.md#archiveaccount) | **DELETE** /v1/accounts/{id} | Archive an account
+*AccountsApi* | [**createAccount**](docs/AccountsApi.md#createaccount) | **POST** /v1/accounts | Create account
+*AccountsApi* | [**getAccount**](docs/AccountsApi.md#getaccount) | **GET** /v1/accounts/{id} | Get an account
+*AccountsApi* | [**listAccounts**](docs/AccountsApi.md#listaccounts) | **GET** /v1/accounts | List accounts
+*AccountsApi* | [**updateAccount**](docs/AccountsApi.md#updateaccount) | **PATCH** /v1/accounts/{id} | Update an account
 *AccountsPayableApi* | [**allocateApCreditNote**](docs/AccountsPayableApi.md#allocateapcreditnote) | **POST** /v1/ap/credit-notes/{id}/allocations | Apply a credit note to bills
 *AccountsPayableApi* | [**allocateApPayment**](docs/AccountsPayableApi.md#allocateappayment) | **POST** /v1/ap/payments/{id}/allocations | Apply payment to bills
 *AccountsPayableApi* | [**createApCreditNote**](docs/AccountsPayableApi.md#createapcreditnote) | **POST** /v1/ap/credit-notes | Create credit note
@@ -156,17 +161,8 @@ All URIs are relative to *https://api.zerpto.com*
 *FixedAssetsApi* | [**updateAssetCategory**](docs/FixedAssetsApi.md#updateassetcategory) | **PATCH** /v1/assets/categories/{id} | Update asset category
 *ForgotPasswordApi* | [**forgotPassword**](docs/ForgotPasswordApi.md#forgotpassword) | **POST** /v1/auth/reset-password | Send a password reset email
 *ForgotPasswordApi* | [**resetPassword**](docs/ForgotPasswordApi.md#resetpassword) | **PUT** /v1/auth/reset-password | Reset password using a token
-*GeneralLedgerApi* | [**archiveAccount**](docs/GeneralLedgerApi.md#archiveaccount) | **DELETE** /v1/accounts/{id} | Archive Account
 *GeneralLedgerApi* | [**closePeriod**](docs/GeneralLedgerApi.md#closeperiod) | **POST** /v1/gl/periods/{id}/close | Close an accounting period
-*GeneralLedgerApi* | [**createAccount**](docs/GeneralLedgerApi.md#createaccount) | **POST** /v1/accounts | Create account
-*GeneralLedgerApi* | [**createJournalEntry**](docs/GeneralLedgerApi.md#createjournalentry) | **POST** /v1/gl/journal-entries | Post a manual journal entry
-*GeneralLedgerApi* | [**getAccount**](docs/GeneralLedgerApi.md#getaccount) | **GET** /v1/accounts/{id} | Get Account
-*GeneralLedgerApi* | [**getJournalEntry**](docs/GeneralLedgerApi.md#getjournalentry) | **GET** /v1/gl/journal-entries/{id} | Get journal entry
-*GeneralLedgerApi* | [**listAccounts**](docs/GeneralLedgerApi.md#listaccounts) | **GET** /v1/accounts | List accounts
-*GeneralLedgerApi* | [**listJournalEntries**](docs/GeneralLedgerApi.md#listjournalentries) | **GET** /v1/gl/journal-entries | List journal entries
 *GeneralLedgerApi* | [**listPeriods**](docs/GeneralLedgerApi.md#listperiods) | **GET** /v1/gl/periods | List accounting periods
-*GeneralLedgerApi* | [**reverseJournalEntry**](docs/GeneralLedgerApi.md#reversejournalentry) | **POST** /v1/gl/journal-entries/{id}/reverse | Reverse a journal entry
-*GeneralLedgerApi* | [**updateAccount**](docs/GeneralLedgerApi.md#updateaccount) | **PATCH** /v1/accounts/{id} | Update Account
 *InventoryApi* | [**archiveWarehouse**](docs/InventoryApi.md#archivewarehouse) | **DELETE** /v1/inventory/warehouses/{id} | Archive warehouse
 *InventoryApi* | [**createStockAdjustment**](docs/InventoryApi.md#createstockadjustment) | **POST** /v1/inventory/adjustments | Create a stock adjustment
 *InventoryApi* | [**createStockTransfer**](docs/InventoryApi.md#createstocktransfer) | **POST** /v1/inventory/transfers | Create warehouse transfer
@@ -180,15 +176,19 @@ All URIs are relative to *https://api.zerpto.com*
 *InventoryApi* | [**postStockAdjustment**](docs/InventoryApi.md#poststockadjustment) | **POST** /v1/inventory/adjustments/{id}/post | Post a stock adjustment
 *InventoryApi* | [**postStockTransfer**](docs/InventoryApi.md#poststocktransfer) | **POST** /v1/inventory/transfers/{id}/post | Post transfer
 *InventoryApi* | [**updateWarehouse**](docs/InventoryApi.md#updatewarehouse) | **PATCH** /v1/inventory/warehouses/{id} | Update warehouse
+*JournalApi* | [**createJournalEntry**](docs/JournalApi.md#createjournalentry) | **POST** /v1/gl/journal-entries | Post a manual journal entry
+*JournalApi* | [**getJournalEntry**](docs/JournalApi.md#getjournalentry) | **GET** /v1/gl/journal-entries/{id} | Get a journal entry
+*JournalApi* | [**listJournalEntries**](docs/JournalApi.md#listjournalentries) | **GET** /v1/gl/journal-entries | List journal entries
+*JournalApi* | [**reverseJournalEntry**](docs/JournalApi.md#reversejournalentry) | **POST** /v1/gl/journal-entries/{id}/reverse | Reverse a journal entry
 *NotificationsApi* | [**getNotificationSettings**](docs/NotificationsApi.md#getnotificationsettings) | **GET** /v1/notification-settings | Get notification settings
 *NotificationsApi* | [**updateNotificationSettings**](docs/NotificationsApi.md#updatenotificationsettings) | **PATCH** /v1/notification-settings | Update notification settings
 *PlansApi* | [**listPlans**](docs/PlansApi.md#listplans) | **GET** /v1/plans | List plans and prices
 *PlatformApi* | [**getHealth**](docs/PlatformApi.md#gethealth) | **GET** /v1/health | Health check
-*ProductItemsApi* | [**archiveItem**](docs/ProductItemsApi.md#archiveitem) | **DELETE** /v1/items/{id} | Archive Item
+*ProductItemsApi* | [**archiveItem**](docs/ProductItemsApi.md#archiveitem) | **DELETE** /v1/items/{id} | Archive an item
 *ProductItemsApi* | [**createItem**](docs/ProductItemsApi.md#createitem) | **POST** /v1/items | Create item
-*ProductItemsApi* | [**getItem**](docs/ProductItemsApi.md#getitem) | **GET** /v1/items/{id} | Get Item
+*ProductItemsApi* | [**getItem**](docs/ProductItemsApi.md#getitem) | **GET** /v1/items/{id} | Get an item
 *ProductItemsApi* | [**listItems**](docs/ProductItemsApi.md#listitems) | **GET** /v1/items | List items
-*ProductItemsApi* | [**updateItem**](docs/ProductItemsApi.md#updateitem) | **PATCH** /v1/items/{id} | Update Item
+*ProductItemsApi* | [**updateItem**](docs/ProductItemsApi.md#updateitem) | **PATCH** /v1/items/{id} | Update an item
 *PurchasingApi* | [**cancelPurchaseOrder**](docs/PurchasingApi.md#cancelpurchaseorder) | **POST** /v1/purchasing/orders/{id}/cancel | Cancel purchase order
 *PurchasingApi* | [**cancelPurchaseReturn**](docs/PurchasingApi.md#cancelpurchasereturn) | **POST** /v1/purchasing/returns/{id}/cancel | Cancel purchase return
 *PurchasingApi* | [**closePurchaseOrder**](docs/PurchasingApi.md#closepurchaseorder) | **POST** /v1/purchasing/orders/{id}/close | Close purchase order
@@ -445,6 +445,7 @@ All URIs are relative to *https://api.zerpto.com*
 - [ItemInput](docs/ItemInput.md)
 - [ItemListResponse](docs/ItemListResponse.md)
 - [ItemResponse](docs/ItemResponse.md)
+- [ItemUnit](docs/ItemUnit.md)
 - [ItemUpdate](docs/ItemUpdate.md)
 - [JournalEntry](docs/JournalEntry.md)
 - [JournalEntryInput](docs/JournalEntryInput.md)

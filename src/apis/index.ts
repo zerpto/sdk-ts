@@ -2,6 +2,7 @@
 /* eslint-disable */
 export * from './APIApi';
 export * from './APIKeysApi';
+export * from './AccountsApi';
 export * from './AccountsPayableApi';
 export * from './AccountsReceivableApi';
 export * from './ApprovalsApi';
@@ -13,6 +14,7 @@ export * from './FixedAssetsApi';
 export * from './ForgotPasswordApi';
 export * from './GeneralLedgerApi';
 export * from './InventoryApi';
+export * from './JournalApi';
 export * from './NotificationsApi';
 export * from './PlansApi';
 export * from './PlatformApi';

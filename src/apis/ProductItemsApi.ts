@@ -85,7 +85,15 @@ export interface ListItemsRequest {
      */
     status?: ListItemsStatusEnum;
     /**
-     * Search by code or name.
+     * Only goods or only services.
+     */
+    type?: ListItemsTypeEnum;
+    /**
+     * Only items whose stock is tracked (`true`) or not (`false`).
+     */
+    isStocked?: boolean;
+    /**
+     * Search by SKU or name.
      */
     q?: string;
 }
@@ -150,7 +158,8 @@ export class ProductItemsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Archive Item
+     * Archives an item, so it no longer shows up when you pick an item for a new document. Items are archived and not deleted, because documents that used the item keep pointing to it and keep working. Use it when you stop selling or buying something.  Find the id with [`GET /v1/items`](#tag/product-items/GET/v1/items). An archived item can still be read with [`GET /v1/items/{id}`](#tag/product-items/GET/v1/items/{id}), and listed with `status=archived`. A stocked item cannot be archived while stock remains: move it out first with a stock adjustment or a transfer.  Error codes: `item_has_stock`.  **Response meta** - No response body, so no meta. 
+     * Archive an item
      */
     async archiveItemRaw(requestParameters: ArchiveItemRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const requestOptions = await this.archiveItemRequestOpts(requestParameters);
@@ -160,7 +169,8 @@ export class ProductItemsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Archive Item
+     * Archives an item, so it no longer shows up when you pick an item for a new document. Items are archived and not deleted, because documents that used the item keep pointing to it and keep working. Use it when you stop selling or buying something.  Find the id with [`GET /v1/items`](#tag/product-items/GET/v1/items). An archived item can still be read with [`GET /v1/items/{id}`](#tag/product-items/GET/v1/items/{id}), and listed with `status=archived`. A stocked item cannot be archived while stock remains: move it out first with a stock adjustment or a transfer.  Error codes: `item_has_stock`.  **Response meta** - No response body, so no meta. 
+     * Archive an item
      */
     async archiveItem(requestParameters: ArchiveItemRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.archiveItemRaw(requestParameters, initOverrides);
@@ -216,7 +226,7 @@ export class ProductItemsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Adds a product or a service to your catalogue. `sku` is your own code and must be unique in the tenant. `type` says whether the item is `goods` or a `service`, and only goods can be stocked. `unit` is the base unit: quantities on documents and in stock are counted in it. Add `units` when you also buy or sell the item in larger packs, such as a box of 12.  Take the account ids from [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts), the tax rate from [`GET /v1/tax-rates`](#tag/tax-and-currencies/GET/v1/tax-rates) and the default warehouse from [`GET /v1/inventory/warehouses`](#tag/inventory/GET/v1/inventory/warehouses). The new item can be used on documents straight away, and changed later with [`PATCH /v1/items/{id}`](#tag/product-items/PATCH/v1/items/{id}). Send an `Idempotency-Key` header so a retry does not create it twice.  Error codes: `sku_taken`, `unknown_account`, `unknown_tax_rate`, `unknown_warehouse`, `invalid_units`, `stock_requires_goods`.  **Response meta** - `meta` is empty. 
      * Create item
      */
     async createItemRaw(requestParameters: CreateItemRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ItemResponse>> {
@@ -227,7 +237,7 @@ export class ProductItemsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Adds a product or a service to your catalogue. `sku` is your own code and must be unique in the tenant. `type` says whether the item is `goods` or a `service`, and only goods can be stocked. `unit` is the base unit: quantities on documents and in stock are counted in it. Add `units` when you also buy or sell the item in larger packs, such as a box of 12.  Take the account ids from [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts), the tax rate from [`GET /v1/tax-rates`](#tag/tax-and-currencies/GET/v1/tax-rates) and the default warehouse from [`GET /v1/inventory/warehouses`](#tag/inventory/GET/v1/inventory/warehouses). The new item can be used on documents straight away, and changed later with [`PATCH /v1/items/{id}`](#tag/product-items/PATCH/v1/items/{id}). Send an `Idempotency-Key` header so a retry does not create it twice.  Error codes: `sku_taken`, `unknown_account`, `unknown_tax_rate`, `unknown_warehouse`, `invalid_units`, `stock_requires_goods`.  **Response meta** - `meta` is empty. 
      * Create item
      */
     async createItem(requestParameters: CreateItemRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ItemResponse> {
@@ -279,8 +289,8 @@ export class ProductItemsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
-     * Get Item
+     * Returns one item by id, with its prices, base unit, the alternative units and their conversion factors, and the accounts and tax rate it posts to. Use it to open an item\'s detail page, or to read the price and unit before you build a document line.  The id comes from [`GET /v1/items`](#tag/product-items/GET/v1/items) or from the `item_id` of a document line. To change the item, call [`PATCH /v1/items/{id}`](#tag/product-items/PATCH/v1/items/{id}), and to stop using it, call [`DELETE /v1/items/{id}`](#tag/product-items/DELETE/v1/items/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Get an item
      */
     async getItemRaw(requestParameters: GetItemRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ItemResponse>> {
         const requestOptions = await this.getItemRequestOpts(requestParameters);
@@ -290,8 +300,8 @@ export class ProductItemsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
-     * Get Item
+     * Returns one item by id, with its prices, base unit, the alternative units and their conversion factors, and the accounts and tax rate it posts to. Use it to open an item\'s detail page, or to read the price and unit before you build a document line.  The id comes from [`GET /v1/items`](#tag/product-items/GET/v1/items) or from the `item_id` of a document line. To change the item, call [`PATCH /v1/items/{id}`](#tag/product-items/PATCH/v1/items/{id}), and to stop using it, call [`DELETE /v1/items/{id}`](#tag/product-items/DELETE/v1/items/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Get an item
      */
     async getItem(requestParameters: GetItemRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ItemResponse> {
         const response = await this.getItemRaw(requestParameters, initOverrides);
@@ -328,6 +338,14 @@ export class ProductItemsApi extends runtime.BaseAPI {
             queryParameters['status'] = requestParameters['status'];
         }
 
+        if (requestParameters['type'] != null) {
+            queryParameters['type'] = requestParameters['type'];
+        }
+
+        if (requestParameters['isStocked'] != null) {
+            queryParameters['is_stocked'] = requestParameters['isStocked'];
+        }
+
         if (requestParameters['q'] != null) {
             queryParameters['q'] = requestParameters['q'];
         }
@@ -362,7 +380,7 @@ export class ProductItemsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the goods and services you buy and sell, with their prices, base unit, tax rate and whether stock is tracked. Use it to fill an item picker on invoices and bills, or to browse the catalogue. Filter by `status`, `type` or `is_stocked`, search by SKU or name with `q`, and narrow by creation date.  One item, with its units, is returned by [`GET /v1/items/{id}`](#tag/product-items/GET/v1/items/{id}), and new ones are added with [`POST /v1/items`](#tag/product-items/POST/v1/items). The `id` of an item is the `item_id` on the lines of [`POST /v1/ar/invoices`](#tag/accounts-receivable/POST/v1/ar/invoices) and [`POST /v1/ap/invoices`](#tag/accounts-payable/POST/v1/ap/invoices).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List items
      */
     async listItemsRaw(requestParameters: ListItemsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ItemListResponse>> {
@@ -373,7 +391,7 @@ export class ProductItemsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the goods and services you buy and sell, with their prices, base unit, tax rate and whether stock is tracked. Use it to fill an item picker on invoices and bills, or to browse the catalogue. Filter by `status`, `type` or `is_stocked`, search by SKU or name with `q`, and narrow by creation date.  One item, with its units, is returned by [`GET /v1/items/{id}`](#tag/product-items/GET/v1/items/{id}), and new ones are added with [`POST /v1/items`](#tag/product-items/POST/v1/items). The `id` of an item is the `item_id` on the lines of [`POST /v1/ar/invoices`](#tag/accounts-receivable/POST/v1/ar/invoices) and [`POST /v1/ap/invoices`](#tag/accounts-payable/POST/v1/ap/invoices).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List items
      */
     async listItems(requestParameters: ListItemsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ItemListResponse> {
@@ -435,8 +453,8 @@ export class ProductItemsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
-     * Update Item
+     * Changes an item. Send only the fields you want to change. `units`, when sent, replaces the whole list of alternative units, so send every unit you want to keep, or an empty list to remove them all. Use it to fix a name, move a price or add a pack size. A new price applies to documents created afterwards, and posted documents keep theirs.  Account, tax rate and warehouse ids come from the same lists as in [`POST /v1/items`](#tag/product-items/POST/v1/items). The base `unit` cannot change once the item has stock or has been used on a posted document, because quantities are counted in it. Read the result back with [`GET /v1/items/{id}`](#tag/product-items/GET/v1/items/{id}).  Error codes: `sku_taken`, `unknown_account`, `unknown_tax_rate`, `unknown_warehouse`, `invalid_units`, `stock_requires_goods`, `unit_locked`.  **Response meta** - `meta` is empty. 
+     * Update an item
      */
     async updateItemRaw(requestParameters: UpdateItemRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ItemResponse>> {
         const requestOptions = await this.updateItemRequestOpts(requestParameters);
@@ -446,8 +464,8 @@ export class ProductItemsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
-     * Update Item
+     * Changes an item. Send only the fields you want to change. `units`, when sent, replaces the whole list of alternative units, so send every unit you want to keep, or an empty list to remove them all. Use it to fix a name, move a price or add a pack size. A new price applies to documents created afterwards, and posted documents keep theirs.  Account, tax rate and warehouse ids come from the same lists as in [`POST /v1/items`](#tag/product-items/POST/v1/items). The base `unit` cannot change once the item has stock or has been used on a posted document, because quantities are counted in it. Read the result back with [`GET /v1/items/{id}`](#tag/product-items/GET/v1/items/{id}).  Error codes: `sku_taken`, `unknown_account`, `unknown_tax_rate`, `unknown_warehouse`, `invalid_units`, `stock_requires_goods`, `unit_locked`.  **Response meta** - `meta` is empty. 
+     * Update an item
      */
     async updateItem(requestParameters: UpdateItemRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ItemResponse> {
         const response = await this.updateItemRaw(requestParameters, initOverrides);
@@ -464,3 +482,11 @@ export const ListItemsStatusEnum = {
     Archived: 'archived',
 } as const;
 export type ListItemsStatusEnum = typeof ListItemsStatusEnum[keyof typeof ListItemsStatusEnum];
+/**
+ * @export
+ */
+export const ListItemsTypeEnum = {
+    Goods: 'goods',
+    Service: 'service',
+} as const;
+export type ListItemsTypeEnum = typeof ListItemsTypeEnum[keyof typeof ListItemsTypeEnum];

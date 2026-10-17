@@ -20,7 +20,7 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface Account {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID (`acc`).
      */
     readonly id: string;
     /**
@@ -36,7 +36,7 @@ export interface Account {
      */
     type: AccountTypeEnum;
     /**
-     * 
+     * The header account this one sits under. Null for a top-level account.
      */
     parentId?: string | null;
     /**
@@ -44,7 +44,7 @@ export interface Account {
      */
     isPostable: boolean;
     /**
-     * 
+     * Follows from `type`. Debit for assets and expenses, credit for liabilities, equity and revenue.
      */
     normalBalance: AccountNormalBalanceEnum;
     /**

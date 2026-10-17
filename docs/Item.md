@@ -12,6 +12,7 @@ Name | Type
 `description` | string
 `type` | string
 `unit` | string
+`units` | [Array&lt;ItemUnit&gt;](ItemUnit.md)
 `isStocked` | boolean
 `defaultWarehouseId` | string
 `salesPrice` | [Money](Money.md)
@@ -30,12 +31,13 @@ import type { Item } from '@zerpto/sdk'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": null,
+  "id": itm-0192f3a1-5d2c-7e44-8b1f-3c9a6e0d7b25,
   "sku": null,
   "name": null,
   "description": null,
   "type": null,
   "unit": pcs,
+  "units": null,
   "isStocked": null,
   "defaultWarehouseId": null,
   "salesPrice": null,

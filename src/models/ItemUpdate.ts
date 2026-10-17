@@ -20,6 +20,13 @@ import {
     MoneyToJSON,
     MoneyToJSONTyped,
 } from './Money';
+import type { ItemUnit } from './ItemUnit';
+import {
+    ItemUnitFromJSON,
+    ItemUnitFromJSONTyped,
+    ItemUnitToJSON,
+    ItemUnitToJSONTyped,
+} from './ItemUnit';
 
 /**
  * All fields optional; only those sent are changed.
@@ -44,9 +51,13 @@ export interface ItemUpdate {
      */
     type?: ItemUpdateTypeEnum;
     /**
-     * 
+     * Base unit of the item. Quantities on documents and in stock are counted in it, and the prices above are per base unit.
      */
     unit?: string;
+    /**
+     * Other units the item is bought or sold in, each as a number of base units. The base unit is not repeated here. In an update, the list replaces the existing one.
+     */
+    units?: Array<ItemUnit>;
     /**
      * Track stock for this item (Phase 2). Only goods can be stocked.
      */
@@ -110,6 +121,7 @@ export function ItemUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'description': json['description'] === undefined ? undefined : json['description'] === null ? null : json['description'],
         'type': json['type'] == null ? undefined : json['type'],
         'unit': json['unit'] == null ? undefined : json['unit'],
+        'units': json['units'] == null ? undefined : ((json['units'] as Array<any>).map(ItemUnitFromJSON)),
         'isStocked': json['is_stocked'] == null ? undefined : json['is_stocked'],
         'defaultWarehouseId': json['default_warehouse_id'] === undefined ? undefined : json['default_warehouse_id'] === null ? null : json['default_warehouse_id'],
         'salesPrice': json['sales_price'] == null ? undefined : MoneyFromJSON(json['sales_price']),
@@ -136,6 +148,7 @@ export function ItemUpdateToJSONTyped(value?: ItemUpdate | null, ignoreDiscrimin
         'description': value['description'],
         'type': value['type'],
         'unit': value['unit'],
+        'units': value['units'] == null ? undefined : ((value['units'] as Array<any>).map(ItemUnitToJSON)),
         'is_stocked': value['isStocked'],
         'default_warehouse_id': value['defaultWarehouseId'],
         'sales_price': MoneyToJSON(value['salesPrice']),

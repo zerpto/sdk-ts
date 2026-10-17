@@ -153,6 +153,7 @@ export * from './Item';
 export * from './ItemInput';
 export * from './ItemListResponse';
 export * from './ItemResponse';
+export * from './ItemUnit';
 export * from './ItemUpdate';
 export * from './JournalEntry';
 export * from './JournalEntryInput';
