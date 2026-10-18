@@ -353,6 +353,7 @@ docs/WarehouseInput.md
 docs/WarehouseListResponse.md
 docs/WarehouseResponse.md
 docs/WarehouseUpdate.md
+docs/WarehousesApi.md
 docs/Webhook.md
 docs/WebhookDelivery.md
 docs/WebhookDeliveryListResponse.md
@@ -401,6 +402,7 @@ src/apis/TenantApi.ts
 src/apis/TenantsApi.ts
 src/apis/UsersApi.ts
 src/apis/VendorsApi.ts
+src/apis/WarehousesApi.ts
 src/apis/WebhooksApi.ts
 src/apis/index.ts
 src/index.ts

@@ -53,33 +53,6 @@ import {
     StockTransferResponseFromJSON,
     StockTransferResponseToJSON,
 } from '../models/StockTransferResponse';
-import {
-    type WarehouseInput,
-    WarehouseInputFromJSON,
-    WarehouseInputToJSON,
-} from '../models/WarehouseInput';
-import {
-    type WarehouseListResponse,
-    WarehouseListResponseFromJSON,
-    WarehouseListResponseToJSON,
-} from '../models/WarehouseListResponse';
-import {
-    type WarehouseResponse,
-    WarehouseResponseFromJSON,
-    WarehouseResponseToJSON,
-} from '../models/WarehouseResponse';
-import {
-    type WarehouseUpdate,
-    WarehouseUpdateFromJSON,
-    WarehouseUpdateToJSON,
-} from '../models/WarehouseUpdate';
-
-export interface ArchiveWarehouseRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-}
 
 export interface CreateStockAdjustmentRequest {
     /**
@@ -101,24 +74,6 @@ export interface CreateStockTransferRequest {
      * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
      */
     idempotencyKey?: string;
-}
-
-export interface CreateWarehouseRequest {
-    /**
-     * 
-     */
-    warehouseInput: WarehouseInput;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
-export interface GetWarehouseRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
 }
 
 export interface ListStockRequest {
@@ -229,21 +184,6 @@ export interface ListStockTransfersRequest {
     status?: ListStockTransfersStatusEnum;
 }
 
-export interface ListWarehousesRequest {
-    /**
-     * Page size.
-     */
-    perPage?: number;
-    /**
-     * Page number, starting at 1.
-     */
-    page?: number;
-    /**
-     * Filter by status.
-     */
-    status?: ListWarehousesStatusEnum;
-}
-
 export interface PostStockAdjustmentRequest {
     /**
      * Resource ID.
@@ -266,83 +206,10 @@ export interface PostStockTransferRequest {
     idempotencyKey?: string;
 }
 
-export interface UpdateWarehouseRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * 
-     */
-    warehouseUpdate: WarehouseUpdate;
-}
-
 /**
  * 
  */
 export class InventoryApi extends runtime.BaseAPI {
-
-    /**
-     * Creates request options for archiveWarehouse without sending the request
-     */
-    async archiveWarehouseRequestOpts(requestParameters: ArchiveWarehouseRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling archiveWarehouse().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/warehouses/{id}`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * Archives instead of deleting. Not allowed while stock remains (`warehouse_not_empty`).
-     * Archive warehouse
-     */
-    async archiveWarehouseRaw(requestParameters: ArchiveWarehouseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        const requestOptions = await this.archiveWarehouseRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Archives instead of deleting. Not allowed while stock remains (`warehouse_not_empty`).
-     * Archive warehouse
-     */
-    async archiveWarehouse(requestParameters: ArchiveWarehouseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.archiveWarehouseRaw(requestParameters, initOverrides);
-    }
 
     /**
      * Creates request options for createStockAdjustment without sending the request
@@ -479,138 +346,6 @@ export class InventoryApi extends runtime.BaseAPI {
      */
     async createStockTransfer(requestParameters: CreateStockTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockTransferResponse> {
         const response = await this.createStockTransferRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for createWarehouse without sending the request
-     */
-    async createWarehouseRequestOpts(requestParameters: CreateWarehouseRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['warehouseInput'] == null) {
-            throw new runtime.RequiredError(
-                'warehouseInput',
-                'Required parameter "warehouseInput" was null or undefined when calling createWarehouse().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/warehouses`;
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: WarehouseInputToJSON(requestParameters['warehouseInput']),
-        };
-    }
-
-    /**
-     * Error code: `code_taken`.  **Response meta** - `meta` is empty. 
-     * Create warehouse
-     */
-    async createWarehouseRaw(requestParameters: CreateWarehouseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WarehouseResponse>> {
-        const requestOptions = await this.createWarehouseRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => WarehouseResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Error code: `code_taken`.  **Response meta** - `meta` is empty. 
-     * Create warehouse
-     */
-    async createWarehouse(requestParameters: CreateWarehouseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WarehouseResponse> {
-        const response = await this.createWarehouseRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for getWarehouse without sending the request
-     */
-    async getWarehouseRequestOpts(requestParameters: GetWarehouseRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling getWarehouse().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/warehouses/{id}`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Get warehouse
-     */
-    async getWarehouseRaw(requestParameters: GetWarehouseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WarehouseResponse>> {
-        const requestOptions = await this.getWarehouseRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => WarehouseResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Get warehouse
-     */
-    async getWarehouse(requestParameters: GetWarehouseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WarehouseResponse> {
-        const response = await this.getWarehouseRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -931,73 +666,6 @@ export class InventoryApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates request options for listWarehouses without sending the request
-     */
-    async listWarehousesRequestOpts(requestParameters: ListWarehousesRequest): Promise<runtime.RequestOpts> {
-        const queryParameters: any = {};
-
-        if (requestParameters['perPage'] != null) {
-            queryParameters['per_page'] = requestParameters['perPage'];
-        }
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
-        }
-
-        if (requestParameters['status'] != null) {
-            queryParameters['status'] = requestParameters['status'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/warehouses`;
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List warehouses
-     */
-    async listWarehousesRaw(requestParameters: ListWarehousesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WarehouseListResponse>> {
-        const requestOptions = await this.listWarehousesRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => WarehouseListResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List warehouses
-     */
-    async listWarehouses(requestParameters: ListWarehousesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WarehouseListResponse> {
-        const response = await this.listWarehousesRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
      * Creates request options for postStockAdjustment without sending the request
      */
     async postStockAdjustmentRequestOpts(requestParameters: PostStockAdjustmentRequest): Promise<runtime.RequestOpts> {
@@ -1131,79 +799,6 @@ export class InventoryApi extends runtime.BaseAPI {
         return await response.value();
     }
 
-    /**
-     * Creates request options for updateWarehouse without sending the request
-     */
-    async updateWarehouseRequestOpts(requestParameters: UpdateWarehouseRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling updateWarehouse().'
-            );
-        }
-
-        if (requestParameters['warehouseUpdate'] == null) {
-            throw new runtime.RequiredError(
-                'warehouseUpdate',
-                'Required parameter "warehouseUpdate" was null or undefined when calling updateWarehouse().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/warehouses/{id}`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: WarehouseUpdateToJSON(requestParameters['warehouseUpdate']),
-        };
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Update warehouse
-     */
-    async updateWarehouseRaw(requestParameters: UpdateWarehouseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WarehouseResponse>> {
-        const requestOptions = await this.updateWarehouseRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => WarehouseResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Update warehouse
-     */
-    async updateWarehouse(requestParameters: UpdateWarehouseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WarehouseResponse> {
-        const response = await this.updateWarehouseRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
 }
 
 /**
@@ -1233,11 +828,3 @@ export const ListStockTransfersStatusEnum = {
     Posted: 'posted',
 } as const;
 export type ListStockTransfersStatusEnum = typeof ListStockTransfersStatusEnum[keyof typeof ListStockTransfersStatusEnum];
-/**
- * @export
- */
-export const ListWarehousesStatusEnum = {
-    Active: 'active',
-    Archived: 'archived',
-} as const;
-export type ListWarehousesStatusEnum = typeof ListWarehousesStatusEnum[keyof typeof ListWarehousesStatusEnum];

@@ -30,4 +30,5 @@ export * from './TenantApi';
 export * from './TenantsApi';
 export * from './UsersApi';
 export * from './VendorsApi';
+export * from './WarehousesApi';
 export * from './WebhooksApi';

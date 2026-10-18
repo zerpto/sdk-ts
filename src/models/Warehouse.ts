@@ -28,11 +28,11 @@ import {
  */
 export interface Warehouse {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID (`whs`).
      */
     readonly id: string;
     /**
-     * 
+     * Your own code for the warehouse. Unique per tenant, and fixed once created.
      */
     code: string;
     /**

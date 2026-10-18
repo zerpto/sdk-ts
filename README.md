@@ -163,19 +163,14 @@ All URIs are relative to *https://api.zerpto.com*
 *ForgotPasswordApi* | [**resetPassword**](docs/ForgotPasswordApi.md#resetpassword) | **PUT** /v1/auth/reset-password | Reset password using a token
 *GeneralLedgerApi* | [**closePeriod**](docs/GeneralLedgerApi.md#closeperiod) | **POST** /v1/gl/periods/{id}/close | Close an accounting period
 *GeneralLedgerApi* | [**listPeriods**](docs/GeneralLedgerApi.md#listperiods) | **GET** /v1/gl/periods | List accounting periods
-*InventoryApi* | [**archiveWarehouse**](docs/InventoryApi.md#archivewarehouse) | **DELETE** /v1/inventory/warehouses/{id} | Archive warehouse
 *InventoryApi* | [**createStockAdjustment**](docs/InventoryApi.md#createstockadjustment) | **POST** /v1/inventory/adjustments | Create a stock adjustment
 *InventoryApi* | [**createStockTransfer**](docs/InventoryApi.md#createstocktransfer) | **POST** /v1/inventory/transfers | Create warehouse transfer
-*InventoryApi* | [**createWarehouse**](docs/InventoryApi.md#createwarehouse) | **POST** /v1/inventory/warehouses | Create warehouse
-*InventoryApi* | [**getWarehouse**](docs/InventoryApi.md#getwarehouse) | **GET** /v1/inventory/warehouses/{id} | Get warehouse
 *InventoryApi* | [**listStock**](docs/InventoryApi.md#liststock) | **GET** /v1/inventory/stock | Stock on hand
 *InventoryApi* | [**listStockAdjustments**](docs/InventoryApi.md#liststockadjustments) | **GET** /v1/inventory/adjustments | List stock adjustments
 *InventoryApi* | [**listStockMovements**](docs/InventoryApi.md#liststockmovements) | **GET** /v1/inventory/movements | Stock movement ledger
 *InventoryApi* | [**listStockTransfers**](docs/InventoryApi.md#liststocktransfers) | **GET** /v1/inventory/transfers | List warehouse transfers
-*InventoryApi* | [**listWarehouses**](docs/InventoryApi.md#listwarehouses) | **GET** /v1/inventory/warehouses | List warehouses
 *InventoryApi* | [**postStockAdjustment**](docs/InventoryApi.md#poststockadjustment) | **POST** /v1/inventory/adjustments/{id}/post | Post a stock adjustment
 *InventoryApi* | [**postStockTransfer**](docs/InventoryApi.md#poststocktransfer) | **POST** /v1/inventory/transfers/{id}/post | Post transfer
-*InventoryApi* | [**updateWarehouse**](docs/InventoryApi.md#updatewarehouse) | **PATCH** /v1/inventory/warehouses/{id} | Update warehouse
 *JournalApi* | [**createJournalEntry**](docs/JournalApi.md#createjournalentry) | **POST** /v1/gl/journal-entries | Post a manual journal entry
 *JournalApi* | [**getJournalEntry**](docs/JournalApi.md#getjournalentry) | **GET** /v1/gl/journal-entries/{id} | Get a journal entry
 *JournalApi* | [**listJournalEntries**](docs/JournalApi.md#listjournalentries) | **GET** /v1/gl/journal-entries | List journal entries
@@ -279,6 +274,11 @@ All URIs are relative to *https://api.zerpto.com*
 *VendorsApi* | [**getVendor**](docs/VendorsApi.md#getvendor) | **GET** /v1/vendors/{id} | Get Vendor
 *VendorsApi* | [**listVendors**](docs/VendorsApi.md#listvendors) | **GET** /v1/vendors | List vendors
 *VendorsApi* | [**updateVendor**](docs/VendorsApi.md#updatevendor) | **PATCH** /v1/vendors/{id} | Update Vendor
+*WarehousesApi* | [**archiveWarehouse**](docs/WarehousesApi.md#archivewarehouse) | **DELETE** /v1/inventory/warehouses/{id} | Archive a warehouse
+*WarehousesApi* | [**createWarehouse**](docs/WarehousesApi.md#createwarehouse) | **POST** /v1/inventory/warehouses | Create a warehouse
+*WarehousesApi* | [**getWarehouse**](docs/WarehousesApi.md#getwarehouse) | **GET** /v1/inventory/warehouses/{id} | Get a warehouse
+*WarehousesApi* | [**listWarehouses**](docs/WarehousesApi.md#listwarehouses) | **GET** /v1/inventory/warehouses | List warehouses
+*WarehousesApi* | [**updateWarehouse**](docs/WarehousesApi.md#updatewarehouse) | **PATCH** /v1/inventory/warehouses/{id} | Update a warehouse
 *WebhooksApi* | [**createWebhook**](docs/WebhooksApi.md#createwebhook) | **POST** /v1/webhooks | Register a webhook endpoint
 *WebhooksApi* | [**deleteWebhook**](docs/WebhooksApi.md#deletewebhook) | **DELETE** /v1/webhooks/{id} | Remove webhook endpoint
 *WebhooksApi* | [**getWebhook**](docs/WebhooksApi.md#getwebhook) | **GET** /v1/webhooks/{id} | Get webhook endpoint
