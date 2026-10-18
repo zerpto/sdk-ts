@@ -150,6 +150,7 @@ export class CustomersApi extends runtime.BaseAPI {
     }
 
     /**
+     * Archives a customer so it can no longer be chosen on new invoices and payments. The record is kept, with its history, and its status becomes `archived`. Use it for a customer you stopped selling to. Nothing is deleted, so old invoices and payments still show the customer, and the call returns 204 with no body.  A customer with unpaid or draft invoices cannot be archived: collect them with [`POST /v1/ar/payments`](#tag/accounts-receivable/POST/v1/ar/payments) or void them first, then call this again. Find archived customers again with `status=archived` on [`GET /v1/customers`](#tag/customers/GET/v1/customers).  Error codes: `customer_has_open_invoices`.  **Response meta** - No response body, so no meta. 
      * Archive Customer
      */
     async archiveCustomerRaw(requestParameters: ArchiveCustomerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -160,6 +161,7 @@ export class CustomersApi extends runtime.BaseAPI {
     }
 
     /**
+     * Archives a customer so it can no longer be chosen on new invoices and payments. The record is kept, with its history, and its status becomes `archived`. Use it for a customer you stopped selling to. Nothing is deleted, so old invoices and payments still show the customer, and the call returns 204 with no body.  A customer with unpaid or draft invoices cannot be archived: collect them with [`POST /v1/ar/payments`](#tag/accounts-receivable/POST/v1/ar/payments) or void them first, then call this again. Find archived customers again with `status=archived` on [`GET /v1/customers`](#tag/customers/GET/v1/customers).  Error codes: `customer_has_open_invoices`.  **Response meta** - No response body, so no meta. 
      * Archive Customer
      */
     async archiveCustomer(requestParameters: ArchiveCustomerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -216,7 +218,7 @@ export class CustomersApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Creates a customer, someone you invoice and receive payments from. Send a unique `code` and a `name`; email, phone, NPWP, address and payment terms are optional, and `payment_terms_days` defaults to 30. The address is either a `region_id` picked from the region tree plus `line1`, or typed fields for a country without region data. The customer starts `active`, and a repeated request with the same `Idempotency-Key` returns the first result.  Get a `region_id` for the address from [`GET /v1/regions`](#tag/regions/GET/v1/regions). The returned `id` is the `customer_id` for [`POST /v1/ar/invoices`](#tag/accounts-receivable/POST/v1/ar/invoices) and [`POST /v1/ar/payments`](#tag/accounts-receivable/POST/v1/ar/payments). Change the record later with [`PATCH /v1/customers/{id}`](#tag/customers/PATCH/v1/customers/{id}), and read it with [`GET /v1/customers/{id}`](#tag/customers/GET/v1/customers/{id}).  Error codes: `code_taken`, `unknown_region`, `invalid_tax_id`.  **Response meta** - `meta` is empty. 
      * Create customer
      */
     async createCustomerRaw(requestParameters: CreateCustomerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CustomerResponse>> {
@@ -227,7 +229,7 @@ export class CustomersApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Creates a customer, someone you invoice and receive payments from. Send a unique `code` and a `name`; email, phone, NPWP, address and payment terms are optional, and `payment_terms_days` defaults to 30. The address is either a `region_id` picked from the region tree plus `line1`, or typed fields for a country without region data. The customer starts `active`, and a repeated request with the same `Idempotency-Key` returns the first result.  Get a `region_id` for the address from [`GET /v1/regions`](#tag/regions/GET/v1/regions). The returned `id` is the `customer_id` for [`POST /v1/ar/invoices`](#tag/accounts-receivable/POST/v1/ar/invoices) and [`POST /v1/ar/payments`](#tag/accounts-receivable/POST/v1/ar/payments). Change the record later with [`PATCH /v1/customers/{id}`](#tag/customers/PATCH/v1/customers/{id}), and read it with [`GET /v1/customers/{id}`](#tag/customers/GET/v1/customers/{id}).  Error codes: `code_taken`, `unknown_region`, `invalid_tax_id`.  **Response meta** - `meta` is empty. 
      * Create customer
      */
     async createCustomer(requestParameters: CreateCustomerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CustomerResponse> {
@@ -279,7 +281,7 @@ export class CustomersApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns one customer by its `id`, with code, name, email, phone, NPWP, address, payment terms, status and timestamps. Use it to show a customer\'s details, to prefill an edit form, or to check the payment terms before you raise an invoice. Archived customers can still be read, so old invoices keep a customer they can point to.  Take the `id` from [`GET /v1/customers`](#tag/customers/GET/v1/customers) or from the response of [`POST /v1/customers`](#tag/customers/POST/v1/customers). It is the same id that appears as `customer_id` on the invoices of [`GET /v1/ar/invoices`](#tag/accounts-receivable/GET/v1/ar/invoices). Change it with [`PATCH /v1/customers/{id}`](#tag/customers/PATCH/v1/customers/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get Customer
      */
     async getCustomerRaw(requestParameters: GetCustomerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CustomerResponse>> {
@@ -290,7 +292,7 @@ export class CustomersApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns one customer by its `id`, with code, name, email, phone, NPWP, address, payment terms, status and timestamps. Use it to show a customer\'s details, to prefill an edit form, or to check the payment terms before you raise an invoice. Archived customers can still be read, so old invoices keep a customer they can point to.  Take the `id` from [`GET /v1/customers`](#tag/customers/GET/v1/customers) or from the response of [`POST /v1/customers`](#tag/customers/POST/v1/customers). It is the same id that appears as `customer_id` on the invoices of [`GET /v1/ar/invoices`](#tag/accounts-receivable/GET/v1/ar/invoices). Change it with [`PATCH /v1/customers/{id}`](#tag/customers/PATCH/v1/customers/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get Customer
      */
     async getCustomer(requestParameters: GetCustomerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CustomerResponse> {
@@ -362,7 +364,7 @@ export class CustomersApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the customers you sell to, with their contact details, NPWP, address and payment terms. Use it to fill a customer picker on invoices and payments, or to browse and reconcile your customer list. Filter by `status`, search by code or name with `q`, and narrow by creation date. Use `status=archived` to see the customers you stopped selling to.  A customer found here is chosen by its `id` as the `customer_id` of [`POST /v1/ar/invoices`](#tag/accounts-receivable/POST/v1/ar/invoices) and of [`POST /v1/ar/payments`](#tag/accounts-receivable/POST/v1/ar/payments), and the same `customer_id` filters their lists, such as [`GET /v1/ar/invoices`](#tag/accounts-receivable/GET/v1/ar/invoices). New customers are added with [`POST /v1/customers`](#tag/customers/POST/v1/customers), and one record is read with [`GET /v1/customers/{id}`](#tag/customers/GET/v1/customers/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List customers
      */
     async listCustomersRaw(requestParameters: ListCustomersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CustomerListResponse>> {
@@ -373,7 +375,7 @@ export class CustomersApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the customers you sell to, with their contact details, NPWP, address and payment terms. Use it to fill a customer picker on invoices and payments, or to browse and reconcile your customer list. Filter by `status`, search by code or name with `q`, and narrow by creation date. Use `status=archived` to see the customers you stopped selling to.  A customer found here is chosen by its `id` as the `customer_id` of [`POST /v1/ar/invoices`](#tag/accounts-receivable/POST/v1/ar/invoices) and of [`POST /v1/ar/payments`](#tag/accounts-receivable/POST/v1/ar/payments), and the same `customer_id` filters their lists, such as [`GET /v1/ar/invoices`](#tag/accounts-receivable/GET/v1/ar/invoices). New customers are added with [`POST /v1/customers`](#tag/customers/POST/v1/customers), and one record is read with [`GET /v1/customers/{id}`](#tag/customers/GET/v1/customers/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List customers
      */
     async listCustomers(requestParameters: ListCustomersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CustomerListResponse> {
@@ -435,7 +437,7 @@ export class CustomersApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Changes fields of a customer. Send only the fields you want to change; the others stay as they are. Set `email`, `phone` or `tax_id` to `null` to clear them. To change the address, send the whole `address` object, because it replaces the old one. You cannot change `status` here: archive with the delete call.  Read the current record first with [`GET /v1/customers/{id}`](#tag/customers/GET/v1/customers/{id}). Invoices that are already posted keep the customer `id`, so a new name or terms shows on them from now on but does not alter their posted amounts. A `region_id` for a new address comes from [`GET /v1/regions`](#tag/regions/GET/v1/regions).  Error codes: `code_taken`, `unknown_region`, `invalid_tax_id`.  **Response meta** - `meta` is empty. 
      * Update Customer
      */
     async updateCustomerRaw(requestParameters: UpdateCustomerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CustomerResponse>> {
@@ -446,7 +448,7 @@ export class CustomersApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Changes fields of a customer. Send only the fields you want to change; the others stay as they are. Set `email`, `phone` or `tax_id` to `null` to clear them. To change the address, send the whole `address` object, because it replaces the old one. You cannot change `status` here: archive with the delete call.  Read the current record first with [`GET /v1/customers/{id}`](#tag/customers/GET/v1/customers/{id}). Invoices that are already posted keep the customer `id`, so a new name or terms shows on them from now on but does not alter their posted amounts. A `region_id` for a new address comes from [`GET /v1/regions`](#tag/regions/GET/v1/regions).  Error codes: `code_taken`, `unknown_region`, `invalid_tax_id`.  **Response meta** - `meta` is empty. 
      * Update Customer
      */
     async updateCustomer(requestParameters: UpdateCustomerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CustomerResponse> {

@@ -18,6 +18,8 @@ All URIs are relative to *https://api.zerpto.com*
 
 Archive Customer
 
+Archives a customer so it can no longer be chosen on new invoices and payments. The record is kept, with its history, and its status becomes &#x60;archived&#x60;. Use it for a customer you stopped selling to. Nothing is deleted, so old invoices and payments still show the customer, and the call returns 204 with no body.  A customer with unpaid or draft invoices cannot be archived: collect them with [&#x60;POST /v1/ar/payments&#x60;](#tag/accounts-receivable/POST/v1/ar/payments) or void them first, then call this again. Find archived customers again with &#x60;status&#x3D;archived&#x60; on [&#x60;GET /v1/customers&#x60;](#tag/customers/GET/v1/customers).  Error codes: &#x60;customer_has_open_invoices&#x60;.  **Response meta** - No response body, so no meta. 
+
 ### Example
 
 ```ts
@@ -94,7 +96,7 @@ example().catch(console.error);
 
 Create customer
 
-**Response meta** - &#x60;meta&#x60; is empty. 
+Creates a customer, someone you invoice and receive payments from. Send a unique &#x60;code&#x60; and a &#x60;name&#x60;; email, phone, NPWP, address and payment terms are optional, and &#x60;payment_terms_days&#x60; defaults to 30. The address is either a &#x60;region_id&#x60; picked from the region tree plus &#x60;line1&#x60;, or typed fields for a country without region data. The customer starts &#x60;active&#x60;, and a repeated request with the same &#x60;Idempotency-Key&#x60; returns the first result.  Get a &#x60;region_id&#x60; for the address from [&#x60;GET /v1/regions&#x60;](#tag/regions/GET/v1/regions). The returned &#x60;id&#x60; is the &#x60;customer_id&#x60; for [&#x60;POST /v1/ar/invoices&#x60;](#tag/accounts-receivable/POST/v1/ar/invoices) and [&#x60;POST /v1/ar/payments&#x60;](#tag/accounts-receivable/POST/v1/ar/payments). Change the record later with [&#x60;PATCH /v1/customers/{id}&#x60;](#tag/customers/PATCH/v1/customers/{id}), and read it with [&#x60;GET /v1/customers/{id}&#x60;](#tag/customers/GET/v1/customers/{id}).  Error codes: &#x60;code_taken&#x60;, &#x60;unknown_region&#x60;, &#x60;invalid_tax_id&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -176,7 +178,7 @@ example().catch(console.error);
 
 Get Customer
 
-**Response meta** - &#x60;meta&#x60; is empty. 
+Returns one customer by its &#x60;id&#x60;, with code, name, email, phone, NPWP, address, payment terms, status and timestamps. Use it to show a customer\&#39;s details, to prefill an edit form, or to check the payment terms before you raise an invoice. Archived customers can still be read, so old invoices keep a customer they can point to.  Take the &#x60;id&#x60; from [&#x60;GET /v1/customers&#x60;](#tag/customers/GET/v1/customers) or from the response of [&#x60;POST /v1/customers&#x60;](#tag/customers/POST/v1/customers). It is the same id that appears as &#x60;customer_id&#x60; on the invoices of [&#x60;GET /v1/ar/invoices&#x60;](#tag/accounts-receivable/GET/v1/ar/invoices). Change it with [&#x60;PATCH /v1/customers/{id}&#x60;](#tag/customers/PATCH/v1/customers/{id}).  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -252,7 +254,7 @@ example().catch(console.error);
 
 List customers
 
-**Response meta** - &#x60;pagination&#x60;: &#x60;page&#x60;, &#x60;per_page&#x60;, &#x60;total_items&#x60;, &#x60;total_pages&#x60;, and the paging URLs &#x60;self&#x60;, &#x60;first&#x60;, &#x60;prev&#x60;, &#x60;next&#x60;, &#x60;last&#x60; (&#x60;prev&#x60; and &#x60;next&#x60; are null at the ends). Use &#x60;?page&#x3D;&#x60; and &#x60;?per_page&#x3D;&#x60;. 
+Lists the customers you sell to, with their contact details, NPWP, address and payment terms. Use it to fill a customer picker on invoices and payments, or to browse and reconcile your customer list. Filter by &#x60;status&#x60;, search by code or name with &#x60;q&#x60;, and narrow by creation date. Use &#x60;status&#x3D;archived&#x60; to see the customers you stopped selling to.  A customer found here is chosen by its &#x60;id&#x60; as the &#x60;customer_id&#x60; of [&#x60;POST /v1/ar/invoices&#x60;](#tag/accounts-receivable/POST/v1/ar/invoices) and of [&#x60;POST /v1/ar/payments&#x60;](#tag/accounts-receivable/POST/v1/ar/payments), and the same &#x60;customer_id&#x60; filters their lists, such as [&#x60;GET /v1/ar/invoices&#x60;](#tag/accounts-receivable/GET/v1/ar/invoices). New customers are added with [&#x60;POST /v1/customers&#x60;](#tag/customers/POST/v1/customers), and one record is read with [&#x60;GET /v1/customers/{id}&#x60;](#tag/customers/GET/v1/customers/{id}).  Error codes: none specific.  **Response meta** - &#x60;pagination&#x60;: &#x60;page&#x60;, &#x60;per_page&#x60;, &#x60;total_items&#x60;, &#x60;total_pages&#x60;, and the paging URLs &#x60;self&#x60;, &#x60;first&#x60;, &#x60;prev&#x60;, &#x60;next&#x60;, &#x60;last&#x60; (&#x60;prev&#x60; and &#x60;next&#x60; are null at the ends). Use &#x60;?page&#x3D;&#x60; and &#x60;?per_page&#x3D;&#x60;. 
 
 ### Example
 
@@ -346,7 +348,7 @@ example().catch(console.error);
 
 Update Customer
 
-**Response meta** - &#x60;meta&#x60; is empty. 
+Changes fields of a customer. Send only the fields you want to change; the others stay as they are. Set &#x60;email&#x60;, &#x60;phone&#x60; or &#x60;tax_id&#x60; to &#x60;null&#x60; to clear them. To change the address, send the whole &#x60;address&#x60; object, because it replaces the old one. You cannot change &#x60;status&#x60; here: archive with the delete call.  Read the current record first with [&#x60;GET /v1/customers/{id}&#x60;](#tag/customers/GET/v1/customers/{id}). Invoices that are already posted keep the customer &#x60;id&#x60;, so a new name or terms shows on them from now on but does not alter their posted amounts. A &#x60;region_id&#x60; for a new address comes from [&#x60;GET /v1/regions&#x60;](#tag/regions/GET/v1/regions).  Error codes: &#x60;code_taken&#x60;, &#x60;unknown_region&#x60;, &#x60;invalid_tax_id&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
