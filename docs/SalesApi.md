@@ -16,7 +16,7 @@ All URIs are relative to *https://api.zerpto.com*
 | [**listDeliveries**](SalesApi.md#listdeliveries) | **GET** /v1/sales/deliveries | List delivery notes |
 | [**listQuotations**](SalesApi.md#listquotations) | **GET** /v1/sales/quotations | List quotations |
 | [**listSalesOrders**](SalesApi.md#listsalesorders) | **GET** /v1/sales/orders | List sales orders |
-| [**postDelivery**](SalesApi.md#postdelivery) | **POST** /v1/sales/deliveries/{id}/post | Post delivery |
+| [**postDelivery**](SalesApi.md#postdelivery) | **POST** /v1/sales/deliveries/{id}/confirm | Post delivery |
 | [**updateQuotation**](SalesApi.md#updatequotation) | **PATCH** /v1/sales/quotations/{id} | Update quotation |
 | [**updateSalesOrder**](SalesApi.md#updatesalesorder) | **PATCH** /v1/sales/orders/{id} | Update sales order |
 
@@ -356,7 +356,7 @@ example().catch(console.error);
 
 Create invoice from an order
 
-Creates a draft AR invoice for delivered, uninvoiced quantities (all posted deliveries, or the listed ones). Post it with &#x60;POST /v1/ar/invoices/{id}/post&#x60;. Error code: &#x60;nothing_to_invoice&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+Creates a draft AR invoice for delivered, uninvoiced quantities (all posted deliveries, or the listed ones). Post it with &#x60;POST /v1/ar/invoices/{id}/confirm&#x60;. Error code: &#x60;nothing_to_invoice&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 

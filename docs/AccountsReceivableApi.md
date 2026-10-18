@@ -10,7 +10,7 @@ All URIs are relative to *https://api.zerpto.com*
 | [**getArPayment**](AccountsReceivableApi.md#getarpayment) | **GET** /v1/ar/payments/{id} | Get payment |
 | [**listArInvoices**](AccountsReceivableApi.md#listarinvoices) | **GET** /v1/ar/invoices | List invoices |
 | [**listArPayments**](AccountsReceivableApi.md#listarpayments) | **GET** /v1/ar/payments | List payments |
-| [**postArInvoice**](AccountsReceivableApi.md#postarinvoice) | **POST** /v1/ar/invoices/{id}/post | Post invoice to the GL |
+| [**postArInvoice**](AccountsReceivableApi.md#postarinvoice) | **POST** /v1/ar/invoices/{id}/confirm | Post invoice to the GL |
 | [**updateArInvoice**](AccountsReceivableApi.md#updatearinvoice) | **PATCH** /v1/ar/invoices/{id} | Update ArInvoice |
 | [**voidArInvoice**](AccountsReceivableApi.md#voidarinvoice) | **POST** /v1/ar/invoices/{id}/void | Void invoice |
 

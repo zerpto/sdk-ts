@@ -48,10 +48,6 @@ export interface ThreeWayMatchLinesInner {
      */
     receivedQuantity?: string;
     /**
-     * Billed on other posted bills.
-     */
-    previouslyBilledQuantity?: string;
-    /**
      * On this bill.
      */
     billedQuantity?: string;
@@ -112,7 +108,6 @@ export function ThreeWayMatchLinesInnerFromJSONTyped(json: any, ignoreDiscrimina
         'status': json['status'],
         'poQuantity': json['po_quantity'] == null ? undefined : json['po_quantity'],
         'receivedQuantity': json['received_quantity'] == null ? undefined : json['received_quantity'],
-        'previouslyBilledQuantity': json['previously_billed_quantity'] == null ? undefined : json['previously_billed_quantity'],
         'billedQuantity': json['billed_quantity'] == null ? undefined : json['billed_quantity'],
         'poUnitPrice': json['po_unit_price'] == null ? undefined : json['po_unit_price'],
         'billedUnitPrice': json['billed_unit_price'] == null ? undefined : json['billed_unit_price'],
@@ -139,7 +134,6 @@ export function ThreeWayMatchLinesInnerToJSONTyped(value?: ThreeWayMatchLinesInn
         'status': value['status'],
         'po_quantity': value['poQuantity'],
         'received_quantity': value['receivedQuantity'],
-        'previously_billed_quantity': value['previouslyBilledQuantity'],
         'billed_quantity': value['billedQuantity'],
         'po_unit_price': value['poUnitPrice'],
         'billed_unit_price': value['billedUnitPrice'],

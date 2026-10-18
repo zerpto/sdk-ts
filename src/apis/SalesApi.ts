@@ -633,7 +633,7 @@ export class SalesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates a draft AR invoice for delivered, uninvoiced quantities (all posted deliveries, or the listed ones). Post it with `POST /v1/ar/invoices/{id}/post`. Error code: `nothing_to_invoice`.  **Response meta** - `meta` is empty. 
+     * Creates a draft AR invoice for delivered, uninvoiced quantities (all posted deliveries, or the listed ones). Post it with `POST /v1/ar/invoices/{id}/confirm`. Error code: `nothing_to_invoice`.  **Response meta** - `meta` is empty. 
      * Create invoice from an order
      */
     async createInvoiceFromSalesOrderRaw(requestParameters: CreateInvoiceFromSalesOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ArInvoiceResponse>> {
@@ -644,7 +644,7 @@ export class SalesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates a draft AR invoice for delivered, uninvoiced quantities (all posted deliveries, or the listed ones). Post it with `POST /v1/ar/invoices/{id}/post`. Error code: `nothing_to_invoice`.  **Response meta** - `meta` is empty. 
+     * Creates a draft AR invoice for delivered, uninvoiced quantities (all posted deliveries, or the listed ones). Post it with `POST /v1/ar/invoices/{id}/confirm`. Error code: `nothing_to_invoice`.  **Response meta** - `meta` is empty. 
      * Create invoice from an order
      */
     async createInvoiceFromSalesOrder(requestParameters: CreateInvoiceFromSalesOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ArInvoiceResponse> {
@@ -1201,7 +1201,7 @@ export class SalesApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/v1/sales/deliveries/{id}/post`;
+        let urlPath = `/v1/sales/deliveries/{id}/confirm`;
         urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
         return {

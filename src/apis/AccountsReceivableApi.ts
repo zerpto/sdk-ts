@@ -651,7 +651,7 @@ export class AccountsReceivableApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/v1/ar/invoices/{id}/post`;
+        let urlPath = `/v1/ar/invoices/{id}/confirm`;
         urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
         return {

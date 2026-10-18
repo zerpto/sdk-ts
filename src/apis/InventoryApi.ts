@@ -701,7 +701,7 @@ export class InventoryApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/v1/inventory/adjustments/{id}/post`;
+        let urlPath = `/v1/inventory/adjustments/{id}/confirm`;
         urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
         return {
@@ -768,7 +768,7 @@ export class InventoryApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/v1/inventory/transfers/{id}/post`;
+        let urlPath = `/v1/inventory/transfers/{id}/confirm`;
         urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
         return {

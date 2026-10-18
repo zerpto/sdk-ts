@@ -24,7 +24,7 @@ export interface InvoiceLineInput {
      */
     itemId?: string | null;
     /**
-     * Goods receipt line this bill line is for (Phase 2). Lines with it are matched against the PO and receipt; lines without it, e.g. freight, are not.
+     * Goods receipt line this bill line is for (Phase 2). Lines with it are matched against the PO and receipt; lines without it, e.g. freight, are not. A receipt can be on one bill only.
      */
     receiptLineId?: string | null;
     /**

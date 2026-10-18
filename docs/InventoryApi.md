@@ -10,8 +10,8 @@ All URIs are relative to *https://api.zerpto.com*
 | [**listStockAdjustments**](InventoryApi.md#liststockadjustments) | **GET** /v1/inventory/adjustments | List stock adjustments |
 | [**listStockMovements**](InventoryApi.md#liststockmovements) | **GET** /v1/inventory/movements | Stock movement ledger |
 | [**listStockTransfers**](InventoryApi.md#liststocktransfers) | **GET** /v1/inventory/transfers | List warehouse transfers |
-| [**postStockAdjustment**](InventoryApi.md#poststockadjustment) | **POST** /v1/inventory/adjustments/{id}/post | Post a stock adjustment |
-| [**postStockTransfer**](InventoryApi.md#poststocktransfer) | **POST** /v1/inventory/transfers/{id}/post | Post transfer |
+| [**postStockAdjustment**](InventoryApi.md#poststockadjustment) | **POST** /v1/inventory/adjustments/{id}/confirm | Post a stock adjustment |
+| [**postStockTransfer**](InventoryApi.md#poststocktransfer) | **POST** /v1/inventory/transfers/{id}/confirm | Post transfer |
 
 
 

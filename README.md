@@ -74,33 +74,13 @@ All URIs are relative to *https://api.zerpto.com*
 *AccountsApi* | [**getAccount**](docs/AccountsApi.md#getaccount) | **GET** /v1/accounts/{id} | Get an account
 *AccountsApi* | [**listAccounts**](docs/AccountsApi.md#listaccounts) | **GET** /v1/accounts | List accounts
 *AccountsApi* | [**updateAccount**](docs/AccountsApi.md#updateaccount) | **PATCH** /v1/accounts/{id} | Update an account
-*AccountsPayableApi* | [**allocateApCreditNote**](docs/AccountsPayableApi.md#allocateapcreditnote) | **POST** /v1/ap/credit-notes/{id}/allocations | Apply a credit note to bills
-*AccountsPayableApi* | [**allocateApPayment**](docs/AccountsPayableApi.md#allocateappayment) | **POST** /v1/ap/payments/{id}/allocations | Apply payment to bills
-*AccountsPayableApi* | [**createApCreditNote**](docs/AccountsPayableApi.md#createapcreditnote) | **POST** /v1/ap/credit-notes | Create credit note
-*AccountsPayableApi* | [**createApInvoice**](docs/AccountsPayableApi.md#createapinvoice) | **POST** /v1/ap/invoices | Create invoice
-*AccountsPayableApi* | [**createApPayment**](docs/AccountsPayableApi.md#createappayment) | **POST** /v1/ap/payments | Record a payment
-*AccountsPayableApi* | [**getApCreditNote**](docs/AccountsPayableApi.md#getapcreditnote) | **GET** /v1/ap/credit-notes/{id} | Get credit note
-*AccountsPayableApi* | [**getApInvoice**](docs/AccountsPayableApi.md#getapinvoice) | **GET** /v1/ap/invoices/{id} | Get ApInvoice
-*AccountsPayableApi* | [**getApPayment**](docs/AccountsPayableApi.md#getappayment) | **GET** /v1/ap/payments/{id} | Get payment
-*AccountsPayableApi* | [**listApCreditNotes**](docs/AccountsPayableApi.md#listapcreditnotes) | **GET** /v1/ap/credit-notes | List credit notes
-*AccountsPayableApi* | [**listApInvoices**](docs/AccountsPayableApi.md#listapinvoices) | **GET** /v1/ap/invoices | List invoices
-*AccountsPayableApi* | [**listApPayments**](docs/AccountsPayableApi.md#listappayments) | **GET** /v1/ap/payments | List payments
-*AccountsPayableApi* | [**postApCreditNote**](docs/AccountsPayableApi.md#postapcreditnote) | **POST** /v1/ap/credit-notes/{id}/post | Post credit note to the GL
-*AccountsPayableApi* | [**postApInvoice**](docs/AccountsPayableApi.md#postapinvoice) | **POST** /v1/ap/invoices/{id}/post | Post invoice to the GL
-*AccountsPayableApi* | [**refundApCreditNote**](docs/AccountsPayableApi.md#refundapcreditnote) | **POST** /v1/ap/credit-notes/{id}/refunds | Record a vendor refund
-*AccountsPayableApi* | [**removeApCreditNoteAllocation**](docs/AccountsPayableApi.md#removeapcreditnoteallocation) | **DELETE** /v1/ap/credit-notes/{id}/allocations/{invoice_id} | Remove a credit allocation
-*AccountsPayableApi* | [**removeApPaymentAllocation**](docs/AccountsPayableApi.md#removeappaymentallocation) | **DELETE** /v1/ap/payments/{id}/allocations/{invoice_id} | Remove a payment allocation
-*AccountsPayableApi* | [**updateApCreditNote**](docs/AccountsPayableApi.md#updateapcreditnote) | **PATCH** /v1/ap/credit-notes/{id} | Update credit note
-*AccountsPayableApi* | [**updateApInvoice**](docs/AccountsPayableApi.md#updateapinvoice) | **PATCH** /v1/ap/invoices/{id} | Update ApInvoice
-*AccountsPayableApi* | [**voidApCreditNote**](docs/AccountsPayableApi.md#voidapcreditnote) | **POST** /v1/ap/credit-notes/{id}/void | Void credit note
-*AccountsPayableApi* | [**voidApInvoice**](docs/AccountsPayableApi.md#voidapinvoice) | **POST** /v1/ap/invoices/{id}/void | Void invoice
 *AccountsReceivableApi* | [**createArInvoice**](docs/AccountsReceivableApi.md#createarinvoice) | **POST** /v1/ar/invoices | Create invoice
 *AccountsReceivableApi* | [**createArPayment**](docs/AccountsReceivableApi.md#createarpayment) | **POST** /v1/ar/payments | Record a payment
 *AccountsReceivableApi* | [**getArInvoice**](docs/AccountsReceivableApi.md#getarinvoice) | **GET** /v1/ar/invoices/{id} | Get ArInvoice
 *AccountsReceivableApi* | [**getArPayment**](docs/AccountsReceivableApi.md#getarpayment) | **GET** /v1/ar/payments/{id} | Get payment
 *AccountsReceivableApi* | [**listArInvoices**](docs/AccountsReceivableApi.md#listarinvoices) | **GET** /v1/ar/invoices | List invoices
 *AccountsReceivableApi* | [**listArPayments**](docs/AccountsReceivableApi.md#listarpayments) | **GET** /v1/ar/payments | List payments
-*AccountsReceivableApi* | [**postArInvoice**](docs/AccountsReceivableApi.md#postarinvoice) | **POST** /v1/ar/invoices/{id}/post | Post invoice to the GL
+*AccountsReceivableApi* | [**postArInvoice**](docs/AccountsReceivableApi.md#postarinvoice) | **POST** /v1/ar/invoices/{id}/confirm | Post invoice to the GL
 *AccountsReceivableApi* | [**updateArInvoice**](docs/AccountsReceivableApi.md#updatearinvoice) | **PATCH** /v1/ar/invoices/{id} | Update ArInvoice
 *AccountsReceivableApi* | [**voidArInvoice**](docs/AccountsReceivableApi.md#voidarinvoice) | **POST** /v1/ar/invoices/{id}/void | Void invoice
 *ApprovalsApi* | [**approveApproval**](docs/ApprovalsApi.md#approveapproval) | **POST** /v1/approvals/{id}/approve | Approve
@@ -141,6 +121,15 @@ All URIs are relative to *https://api.zerpto.com*
 *BillingApi* | [**listPaymentMethods**](docs/BillingApi.md#listpaymentmethods) | **GET** /v1/billing/payment-methods | List saved payment methods
 *BillingApi* | [**receiveXenditWebhook**](docs/BillingApi.md#receivexenditwebhook) | **POST** /v1/billing/webhooks/xendit | Receive Xendit payment events
 *BillingApi* | [**updateSubscription**](docs/BillingApi.md#updatesubscription) | **PATCH** /v1/billing/subscription | Change plan, seats or add-on
+*CreditNotesApi* | [**allocateApCreditNote**](docs/CreditNotesApi.md#allocateapcreditnote) | **POST** /v1/ap/credit-notes/{id}/allocations | Apply a credit note to bills
+*CreditNotesApi* | [**createApCreditNote**](docs/CreditNotesApi.md#createapcreditnote) | **POST** /v1/ap/credit-notes | Create credit note
+*CreditNotesApi* | [**getApCreditNote**](docs/CreditNotesApi.md#getapcreditnote) | **GET** /v1/ap/credit-notes/{id} | Get credit note
+*CreditNotesApi* | [**listApCreditNotes**](docs/CreditNotesApi.md#listapcreditnotes) | **GET** /v1/ap/credit-notes | List credit notes
+*CreditNotesApi* | [**postApCreditNote**](docs/CreditNotesApi.md#postapcreditnote) | **POST** /v1/ap/credit-notes/{id}/confirm | Post credit note to the GL
+*CreditNotesApi* | [**refundApCreditNote**](docs/CreditNotesApi.md#refundapcreditnote) | **POST** /v1/ap/credit-notes/{id}/refunds | Record a vendor refund
+*CreditNotesApi* | [**removeApCreditNoteAllocation**](docs/CreditNotesApi.md#removeapcreditnoteallocation) | **DELETE** /v1/ap/credit-notes/{id}/allocations/{invoice_id} | Remove a credit allocation
+*CreditNotesApi* | [**updateApCreditNote**](docs/CreditNotesApi.md#updateapcreditnote) | **PATCH** /v1/ap/credit-notes/{id} | Update credit note
+*CreditNotesApi* | [**voidApCreditNote**](docs/CreditNotesApi.md#voidapcreditnote) | **POST** /v1/ap/credit-notes/{id}/void | Void credit note
 *CustomersApi* | [**archiveCustomer**](docs/CustomersApi.md#archivecustomer) | **DELETE** /v1/customers/{id} | Archive Customer
 *CustomersApi* | [**createCustomer**](docs/CustomersApi.md#createcustomer) | **POST** /v1/customers | Create customer
 *CustomersApi* | [**getCustomer**](docs/CustomersApi.md#getcustomer) | **GET** /v1/customers/{id} | Get Customer
@@ -163,14 +152,24 @@ All URIs are relative to *https://api.zerpto.com*
 *ForgotPasswordApi* | [**resetPassword**](docs/ForgotPasswordApi.md#resetpassword) | **PUT** /v1/auth/reset-password | Reset password using a token
 *GeneralLedgerApi* | [**closePeriod**](docs/GeneralLedgerApi.md#closeperiod) | **POST** /v1/gl/periods/{id}/close | Close an accounting period
 *GeneralLedgerApi* | [**listPeriods**](docs/GeneralLedgerApi.md#listperiods) | **GET** /v1/gl/periods | List accounting periods
+*GoodsReceiptApi* | [**createGoodsReceipt**](docs/GoodsReceiptApi.md#creategoodsreceipt) | **POST** /v1/purchasing/receipts | Create goods receipt
+*GoodsReceiptApi* | [**getGoodsReceipt**](docs/GoodsReceiptApi.md#getgoodsreceipt) | **GET** /v1/purchasing/receipts/{id} | Get goods receipt
+*GoodsReceiptApi* | [**listGoodsReceipts**](docs/GoodsReceiptApi.md#listgoodsreceipts) | **GET** /v1/purchasing/receipts | List goods receipts
+*GoodsReceiptApi* | [**postGoodsReceipt**](docs/GoodsReceiptApi.md#postgoodsreceipt) | **POST** /v1/purchasing/receipts/{id}/confirm | Post goods receipt
 *InventoryApi* | [**createStockAdjustment**](docs/InventoryApi.md#createstockadjustment) | **POST** /v1/inventory/adjustments | Create a stock adjustment
 *InventoryApi* | [**createStockTransfer**](docs/InventoryApi.md#createstocktransfer) | **POST** /v1/inventory/transfers | Create warehouse transfer
 *InventoryApi* | [**listStock**](docs/InventoryApi.md#liststock) | **GET** /v1/inventory/stock | Stock on hand
 *InventoryApi* | [**listStockAdjustments**](docs/InventoryApi.md#liststockadjustments) | **GET** /v1/inventory/adjustments | List stock adjustments
 *InventoryApi* | [**listStockMovements**](docs/InventoryApi.md#liststockmovements) | **GET** /v1/inventory/movements | Stock movement ledger
 *InventoryApi* | [**listStockTransfers**](docs/InventoryApi.md#liststocktransfers) | **GET** /v1/inventory/transfers | List warehouse transfers
-*InventoryApi* | [**postStockAdjustment**](docs/InventoryApi.md#poststockadjustment) | **POST** /v1/inventory/adjustments/{id}/post | Post a stock adjustment
-*InventoryApi* | [**postStockTransfer**](docs/InventoryApi.md#poststocktransfer) | **POST** /v1/inventory/transfers/{id}/post | Post transfer
+*InventoryApi* | [**postStockAdjustment**](docs/InventoryApi.md#poststockadjustment) | **POST** /v1/inventory/adjustments/{id}/confirm | Post a stock adjustment
+*InventoryApi* | [**postStockTransfer**](docs/InventoryApi.md#poststocktransfer) | **POST** /v1/inventory/transfers/{id}/confirm | Post transfer
+*InvoiceApi* | [**createApInvoice**](docs/InvoiceApi.md#createapinvoice) | **POST** /v1/ap/invoices | Create invoice
+*InvoiceApi* | [**getApInvoice**](docs/InvoiceApi.md#getapinvoice) | **GET** /v1/ap/invoices/{id} | Get ApInvoice
+*InvoiceApi* | [**listApInvoices**](docs/InvoiceApi.md#listapinvoices) | **GET** /v1/ap/invoices | List invoices
+*InvoiceApi* | [**postApInvoice**](docs/InvoiceApi.md#postapinvoice) | **POST** /v1/ap/invoices/{id}/confirm | Post invoice to the GL
+*InvoiceApi* | [**updateApInvoice**](docs/InvoiceApi.md#updateapinvoice) | **PATCH** /v1/ap/invoices/{id} | Update ApInvoice
+*InvoiceApi* | [**voidApInvoice**](docs/InvoiceApi.md#voidapinvoice) | **POST** /v1/ap/invoices/{id}/void | Void invoice
 *JournalApi* | [**createJournalEntry**](docs/JournalApi.md#createjournalentry) | **POST** /v1/gl/journal-entries | Post a manual journal entry
 *JournalApi* | [**getJournalEntry**](docs/JournalApi.md#getjournalentry) | **GET** /v1/gl/journal-entries/{id} | Get a journal entry
 *JournalApi* | [**listJournalEntries**](docs/JournalApi.md#listjournalentries) | **GET** /v1/gl/journal-entries | List journal entries
@@ -184,6 +183,11 @@ All URIs are relative to *https://api.zerpto.com*
 *OrdersApi* | [**listPurchaseOrders**](docs/OrdersApi.md#listpurchaseorders) | **GET** /v1/purchasing/orders | List purchase orders
 *OrdersApi* | [**submitPurchaseOrder**](docs/OrdersApi.md#submitpurchaseorder) | **POST** /v1/purchasing/orders/{id}/submit | Submit for approval
 *OrdersApi* | [**updatePurchaseOrder**](docs/OrdersApi.md#updatepurchaseorder) | **PATCH** /v1/purchasing/orders/{id} | Update purchase order
+*PaymentApi* | [**allocateApPayment**](docs/PaymentApi.md#allocateappayment) | **POST** /v1/ap/payments/{id}/allocations | Apply payment to bills
+*PaymentApi* | [**createApPayment**](docs/PaymentApi.md#createappayment) | **POST** /v1/ap/payments | Record a payment
+*PaymentApi* | [**getApPayment**](docs/PaymentApi.md#getappayment) | **GET** /v1/ap/payments/{id} | Get payment
+*PaymentApi* | [**listApPayments**](docs/PaymentApi.md#listappayments) | **GET** /v1/ap/payments | List payments
+*PaymentApi* | [**removeApPaymentAllocation**](docs/PaymentApi.md#removeappaymentallocation) | **DELETE** /v1/ap/payments/{id}/allocations/{invoice_id} | Remove a payment allocation
 *PlansApi* | [**listPlans**](docs/PlansApi.md#listplans) | **GET** /v1/plans | List plans and prices
 *PlatformApi* | [**getHealth**](docs/PlatformApi.md#gethealth) | **GET** /v1/health | Health check
 *ProductItemsApi* | [**archiveItem**](docs/ProductItemsApi.md#archiveitem) | **DELETE** /v1/items/{id} | Archive an item
@@ -191,23 +195,13 @@ All URIs are relative to *https://api.zerpto.com*
 *ProductItemsApi* | [**getItem**](docs/ProductItemsApi.md#getitem) | **GET** /v1/items/{id} | Get an item
 *ProductItemsApi* | [**listItems**](docs/ProductItemsApi.md#listitems) | **GET** /v1/items | List items
 *ProductItemsApi* | [**updateItem**](docs/ProductItemsApi.md#updateitem) | **PATCH** /v1/items/{id} | Update an item
-*PurchasingApi* | [**cancelPurchaseReturn**](docs/PurchasingApi.md#cancelpurchasereturn) | **POST** /v1/purchasing/returns/{id}/cancel | Cancel purchase return
-*PurchasingApi* | [**createBillFromPurchaseOrder**](docs/PurchasingApi.md#createbillfrompurchaseorder) | **POST** /v1/purchasing/orders/{id}/bill | Create a bill from a PO
-*PurchasingApi* | [**createBillFromReceipts**](docs/PurchasingApi.md#createbillfromreceipts) | **POST** /v1/purchasing/bills | Create a bill from receipts
-*PurchasingApi* | [**createGoodsReceipt**](docs/PurchasingApi.md#creategoodsreceipt) | **POST** /v1/purchasing/receipts | Create goods receipt
-*PurchasingApi* | [**createPurchaseReturn**](docs/PurchasingApi.md#createpurchasereturn) | **POST** /v1/purchasing/returns | Create purchase return
+*PurchaseBillApi* | [**createBillFromPurchaseOrder**](docs/PurchaseBillApi.md#createbillfrompurchaseorder) | **POST** /v1/purchasing/orders/{id}/bill | Create a bill from a PO
+*PurchaseBillApi* | [**createBillFromReceipts**](docs/PurchaseBillApi.md#createbillfromreceipts) | **POST** /v1/purchasing/bills | Create a bill from receipts
+*PurchaseBillApi* | [**getInvoiceDocument**](docs/PurchaseBillApi.md#getinvoicedocument) | **GET** /v1/purchasing/invoice-documents/{id} | Get an uploaded invoice file
+*PurchaseBillApi* | [**uploadInvoiceDocument**](docs/PurchaseBillApi.md#uploadinvoicedocument) | **POST** /v1/purchasing/invoice-documents | Upload a vendor invoice file
 *PurchasingApi* | [**getApInvoiceMatch**](docs/PurchasingApi.md#getapinvoicematch) | **GET** /v1/ap/invoices/{id}/match | Three-way match for a bill
-*PurchasingApi* | [**getGoodsReceipt**](docs/PurchasingApi.md#getgoodsreceipt) | **GET** /v1/purchasing/receipts/{id} | Get goods receipt
-*PurchasingApi* | [**getInvoiceDocument**](docs/PurchasingApi.md#getinvoicedocument) | **GET** /v1/purchasing/invoice-documents/{id} | Get an uploaded invoice file
-*PurchasingApi* | [**getPurchaseReturn**](docs/PurchasingApi.md#getpurchasereturn) | **GET** /v1/purchasing/returns/{id} | Get purchase return
 *PurchasingApi* | [**getPurchasingSettings**](docs/PurchasingApi.md#getpurchasingsettings) | **GET** /v1/purchasing/settings | Get purchasing settings
-*PurchasingApi* | [**listGoodsReceipts**](docs/PurchasingApi.md#listgoodsreceipts) | **GET** /v1/purchasing/receipts | List goods receipts
-*PurchasingApi* | [**listPurchaseReturns**](docs/PurchasingApi.md#listpurchasereturns) | **GET** /v1/purchasing/returns | List purchase returns
-*PurchasingApi* | [**postGoodsReceipt**](docs/PurchasingApi.md#postgoodsreceipt) | **POST** /v1/purchasing/receipts/{id}/post | Post goods receipt
-*PurchasingApi* | [**postPurchaseReturn**](docs/PurchasingApi.md#postpurchasereturn) | **POST** /v1/purchasing/returns/{id}/post | Post purchase return
-*PurchasingApi* | [**updatePurchaseReturn**](docs/PurchasingApi.md#updatepurchasereturn) | **PATCH** /v1/purchasing/returns/{id} | Update purchase return
 *PurchasingApi* | [**updatePurchasingSettings**](docs/PurchasingApi.md#updatepurchasingsettings) | **PATCH** /v1/purchasing/settings | Update purchasing settings
-*PurchasingApi* | [**uploadInvoiceDocument**](docs/PurchasingApi.md#uploadinvoicedocument) | **POST** /v1/purchasing/invoice-documents | Upload a vendor invoice file
 *RegionsApi* | [**getRegion**](docs/RegionsApi.md#getregion) | **GET** /v1/regions/{id} | Get a region
 *RegionsApi* | [**listRegions**](docs/RegionsApi.md#listregions) | **GET** /v1/regions | List regions
 *ReportsApi* | [**getApAging**](docs/ReportsApi.md#getapaging) | **GET** /v1/reports/ap-aging | AP aging
@@ -221,6 +215,12 @@ All URIs are relative to *https://api.zerpto.com*
 *ReportsApi* | [**getProfitAndLoss**](docs/ReportsApi.md#getprofitandloss) | **GET** /v1/reports/profit-and-loss | Profit and loss
 *ReportsApi* | [**getStockCard**](docs/ReportsApi.md#getstockcard) | **GET** /v1/reports/stock-card | Stock card per item
 *ReportsApi* | [**getTrialBalance**](docs/ReportsApi.md#gettrialbalance) | **GET** /v1/reports/trial-balance | Trial balance
+*ReturnApi* | [**cancelPurchaseReturn**](docs/ReturnApi.md#cancelpurchasereturn) | **POST** /v1/purchasing/returns/{id}/cancel | Cancel purchase return
+*ReturnApi* | [**createPurchaseReturn**](docs/ReturnApi.md#createpurchasereturn) | **POST** /v1/purchasing/returns | Create purchase return
+*ReturnApi* | [**getPurchaseReturn**](docs/ReturnApi.md#getpurchasereturn) | **GET** /v1/purchasing/returns/{id} | Get purchase return
+*ReturnApi* | [**listPurchaseReturns**](docs/ReturnApi.md#listpurchasereturns) | **GET** /v1/purchasing/returns | List purchase returns
+*ReturnApi* | [**postPurchaseReturn**](docs/ReturnApi.md#postpurchasereturn) | **POST** /v1/purchasing/returns/{id}/confirm | Post purchase return
+*ReturnApi* | [**updatePurchaseReturn**](docs/ReturnApi.md#updatepurchasereturn) | **PATCH** /v1/purchasing/returns/{id} | Update purchase return
 *RolesAndPermissionsApi* | [**createRole**](docs/RolesAndPermissionsApi.md#createrole) | **POST** /v1/roles | Create a custom role
 *RolesAndPermissionsApi* | [**deleteRole**](docs/RolesAndPermissionsApi.md#deleterole) | **DELETE** /v1/roles/{id} | Delete a custom role
 *RolesAndPermissionsApi* | [**getRole**](docs/RolesAndPermissionsApi.md#getrole) | **GET** /v1/roles/{id} | Get role
@@ -241,7 +241,7 @@ All URIs are relative to *https://api.zerpto.com*
 *SalesApi* | [**listDeliveries**](docs/SalesApi.md#listdeliveries) | **GET** /v1/sales/deliveries | List delivery notes
 *SalesApi* | [**listQuotations**](docs/SalesApi.md#listquotations) | **GET** /v1/sales/quotations | List quotations
 *SalesApi* | [**listSalesOrders**](docs/SalesApi.md#listsalesorders) | **GET** /v1/sales/orders | List sales orders
-*SalesApi* | [**postDelivery**](docs/SalesApi.md#postdelivery) | **POST** /v1/sales/deliveries/{id}/post | Post delivery
+*SalesApi* | [**postDelivery**](docs/SalesApi.md#postdelivery) | **POST** /v1/sales/deliveries/{id}/confirm | Post delivery
 *SalesApi* | [**updateQuotation**](docs/SalesApi.md#updatequotation) | **PATCH** /v1/sales/quotations/{id} | Update quotation
 *SalesApi* | [**updateSalesOrder**](docs/SalesApi.md#updatesalesorder) | **PATCH** /v1/sales/orders/{id} | Update sales order
 *TaxApi* | [**createTaxExport**](docs/TaxApi.md#createtaxexport) | **POST** /v1/tax/exports | Generate a tax export file

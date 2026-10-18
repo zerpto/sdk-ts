@@ -13,7 +13,6 @@ Name | Type
 `status` | string
 `poQuantity` | string
 `receivedQuantity` | string
-`previouslyBilledQuantity` | string
 `billedQuantity` | string
 `poUnitPrice` | string
 `billedUnitPrice` | string
@@ -34,7 +33,6 @@ const example = {
   "status": null,
   "poQuantity": 1500000.00,
   "receivedQuantity": 1500000.00,
-  "previouslyBilledQuantity": 1500000.00,
   "billedQuantity": 1500000.00,
   "poUnitPrice": 1500000.00,
   "billedUnitPrice": 1500000.00,
