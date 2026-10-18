@@ -16,6 +16,7 @@ export * from './GeneralLedgerApi';
 export * from './InventoryApi';
 export * from './JournalApi';
 export * from './NotificationsApi';
+export * from './OrdersApi';
 export * from './PlansApi';
 export * from './PlatformApi';
 export * from './ProductItemsApi';

@@ -188,6 +188,7 @@ docs/NotificationSettings.md
 docs/NotificationSettingsResponse.md
 docs/NotificationSettingsUpdate.md
 docs/NotificationsApi.md
+docs/OrdersApi.md
 docs/PageListMeta.md
 docs/PagePagination.md
 docs/PaymentAllocation.md
@@ -388,6 +389,7 @@ src/apis/GeneralLedgerApi.ts
 src/apis/InventoryApi.ts
 src/apis/JournalApi.ts
 src/apis/NotificationsApi.ts
+src/apis/OrdersApi.ts
 src/apis/PlansApi.ts
 src/apis/PlatformApi.ts
 src/apis/ProductItemsApi.ts

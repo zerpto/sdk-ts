@@ -177,6 +177,13 @@ All URIs are relative to *https://api.zerpto.com*
 *JournalApi* | [**reverseJournalEntry**](docs/JournalApi.md#reversejournalentry) | **POST** /v1/gl/journal-entries/{id}/reverse | Reverse a journal entry
 *NotificationsApi* | [**getNotificationSettings**](docs/NotificationsApi.md#getnotificationsettings) | **GET** /v1/notification-settings | Get notification settings
 *NotificationsApi* | [**updateNotificationSettings**](docs/NotificationsApi.md#updatenotificationsettings) | **PATCH** /v1/notification-settings | Update notification settings
+*OrdersApi* | [**cancelPurchaseOrder**](docs/OrdersApi.md#cancelpurchaseorder) | **POST** /v1/purchasing/orders/{id}/cancel | Cancel purchase order
+*OrdersApi* | [**closePurchaseOrder**](docs/OrdersApi.md#closepurchaseorder) | **POST** /v1/purchasing/orders/{id}/close | Close purchase order
+*OrdersApi* | [**createPurchaseOrder**](docs/OrdersApi.md#createpurchaseorder) | **POST** /v1/purchasing/orders | Create purchase order
+*OrdersApi* | [**getPurchaseOrder**](docs/OrdersApi.md#getpurchaseorder) | **GET** /v1/purchasing/orders/{id} | Get purchase order
+*OrdersApi* | [**listPurchaseOrders**](docs/OrdersApi.md#listpurchaseorders) | **GET** /v1/purchasing/orders | List purchase orders
+*OrdersApi* | [**submitPurchaseOrder**](docs/OrdersApi.md#submitpurchaseorder) | **POST** /v1/purchasing/orders/{id}/submit | Submit for approval
+*OrdersApi* | [**updatePurchaseOrder**](docs/OrdersApi.md#updatepurchaseorder) | **PATCH** /v1/purchasing/orders/{id} | Update purchase order
 *PlansApi* | [**listPlans**](docs/PlansApi.md#listplans) | **GET** /v1/plans | List plans and prices
 *PlatformApi* | [**getHealth**](docs/PlatformApi.md#gethealth) | **GET** /v1/health | Health check
 *ProductItemsApi* | [**archiveItem**](docs/ProductItemsApi.md#archiveitem) | **DELETE** /v1/items/{id} | Archive an item
@@ -184,27 +191,20 @@ All URIs are relative to *https://api.zerpto.com*
 *ProductItemsApi* | [**getItem**](docs/ProductItemsApi.md#getitem) | **GET** /v1/items/{id} | Get an item
 *ProductItemsApi* | [**listItems**](docs/ProductItemsApi.md#listitems) | **GET** /v1/items | List items
 *ProductItemsApi* | [**updateItem**](docs/ProductItemsApi.md#updateitem) | **PATCH** /v1/items/{id} | Update an item
-*PurchasingApi* | [**cancelPurchaseOrder**](docs/PurchasingApi.md#cancelpurchaseorder) | **POST** /v1/purchasing/orders/{id}/cancel | Cancel purchase order
 *PurchasingApi* | [**cancelPurchaseReturn**](docs/PurchasingApi.md#cancelpurchasereturn) | **POST** /v1/purchasing/returns/{id}/cancel | Cancel purchase return
-*PurchasingApi* | [**closePurchaseOrder**](docs/PurchasingApi.md#closepurchaseorder) | **POST** /v1/purchasing/orders/{id}/close | Close purchase order
 *PurchasingApi* | [**createBillFromPurchaseOrder**](docs/PurchasingApi.md#createbillfrompurchaseorder) | **POST** /v1/purchasing/orders/{id}/bill | Create a bill from a PO
 *PurchasingApi* | [**createBillFromReceipts**](docs/PurchasingApi.md#createbillfromreceipts) | **POST** /v1/purchasing/bills | Create a bill from receipts
 *PurchasingApi* | [**createGoodsReceipt**](docs/PurchasingApi.md#creategoodsreceipt) | **POST** /v1/purchasing/receipts | Create goods receipt
-*PurchasingApi* | [**createPurchaseOrder**](docs/PurchasingApi.md#createpurchaseorder) | **POST** /v1/purchasing/orders | Create purchase order
 *PurchasingApi* | [**createPurchaseReturn**](docs/PurchasingApi.md#createpurchasereturn) | **POST** /v1/purchasing/returns | Create purchase return
 *PurchasingApi* | [**getApInvoiceMatch**](docs/PurchasingApi.md#getapinvoicematch) | **GET** /v1/ap/invoices/{id}/match | Three-way match for a bill
 *PurchasingApi* | [**getGoodsReceipt**](docs/PurchasingApi.md#getgoodsreceipt) | **GET** /v1/purchasing/receipts/{id} | Get goods receipt
 *PurchasingApi* | [**getInvoiceDocument**](docs/PurchasingApi.md#getinvoicedocument) | **GET** /v1/purchasing/invoice-documents/{id} | Get an uploaded invoice file
-*PurchasingApi* | [**getPurchaseOrder**](docs/PurchasingApi.md#getpurchaseorder) | **GET** /v1/purchasing/orders/{id} | Get purchase order
 *PurchasingApi* | [**getPurchaseReturn**](docs/PurchasingApi.md#getpurchasereturn) | **GET** /v1/purchasing/returns/{id} | Get purchase return
 *PurchasingApi* | [**getPurchasingSettings**](docs/PurchasingApi.md#getpurchasingsettings) | **GET** /v1/purchasing/settings | Get purchasing settings
 *PurchasingApi* | [**listGoodsReceipts**](docs/PurchasingApi.md#listgoodsreceipts) | **GET** /v1/purchasing/receipts | List goods receipts
-*PurchasingApi* | [**listPurchaseOrders**](docs/PurchasingApi.md#listpurchaseorders) | **GET** /v1/purchasing/orders | List purchase orders
 *PurchasingApi* | [**listPurchaseReturns**](docs/PurchasingApi.md#listpurchasereturns) | **GET** /v1/purchasing/returns | List purchase returns
 *PurchasingApi* | [**postGoodsReceipt**](docs/PurchasingApi.md#postgoodsreceipt) | **POST** /v1/purchasing/receipts/{id}/post | Post goods receipt
 *PurchasingApi* | [**postPurchaseReturn**](docs/PurchasingApi.md#postpurchasereturn) | **POST** /v1/purchasing/returns/{id}/post | Post purchase return
-*PurchasingApi* | [**submitPurchaseOrder**](docs/PurchasingApi.md#submitpurchaseorder) | **POST** /v1/purchasing/orders/{id}/submit | Submit for approval
-*PurchasingApi* | [**updatePurchaseOrder**](docs/PurchasingApi.md#updatepurchaseorder) | **PATCH** /v1/purchasing/orders/{id} | Update purchase order
 *PurchasingApi* | [**updatePurchaseReturn**](docs/PurchasingApi.md#updatepurchasereturn) | **PATCH** /v1/purchasing/returns/{id} | Update purchase return
 *PurchasingApi* | [**updatePurchasingSettings**](docs/PurchasingApi.md#updatepurchasingsettings) | **PATCH** /v1/purchasing/settings | Update purchasing settings
 *PurchasingApi* | [**uploadInvoiceDocument**](docs/PurchasingApi.md#uploadinvoicedocument) | **POST** /v1/purchasing/invoice-documents | Upload a vendor invoice file

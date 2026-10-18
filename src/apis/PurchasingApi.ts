@@ -49,26 +49,6 @@ import {
     InvoiceDocumentResponseToJSON,
 } from '../models/InvoiceDocumentResponse';
 import {
-    type PurchaseOrderInput,
-    PurchaseOrderInputFromJSON,
-    PurchaseOrderInputToJSON,
-} from '../models/PurchaseOrderInput';
-import {
-    type PurchaseOrderListResponse,
-    PurchaseOrderListResponseFromJSON,
-    PurchaseOrderListResponseToJSON,
-} from '../models/PurchaseOrderListResponse';
-import {
-    type PurchaseOrderResponse,
-    PurchaseOrderResponseFromJSON,
-    PurchaseOrderResponseToJSON,
-} from '../models/PurchaseOrderResponse';
-import {
-    type PurchaseOrderUpdate,
-    PurchaseOrderUpdateFromJSON,
-    PurchaseOrderUpdateToJSON,
-} from '../models/PurchaseOrderUpdate';
-import {
     type PurchaseReturnInput,
     PurchaseReturnInputFromJSON,
     PurchaseReturnInputToJSON,
@@ -104,29 +84,7 @@ import {
     ThreeWayMatchResponseToJSON,
 } from '../models/ThreeWayMatchResponse';
 
-export interface CancelPurchaseOrderRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
 export interface CancelPurchaseReturnRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
-export interface ClosePurchaseOrderRequest {
     /**
      * Resource ID.
      */
@@ -174,17 +132,6 @@ export interface CreateGoodsReceiptRequest {
     idempotencyKey?: string;
 }
 
-export interface CreatePurchaseOrderRequest {
-    /**
-     * 
-     */
-    purchaseOrderInput: PurchaseOrderInput;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
 export interface CreatePurchaseReturnRequest {
     /**
      * 
@@ -211,13 +158,6 @@ export interface GetGoodsReceiptRequest {
 }
 
 export interface GetInvoiceDocumentRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-}
-
-export interface GetPurchaseOrderRequest {
     /**
      * Resource ID.
      */
@@ -264,37 +204,6 @@ export interface ListGoodsReceiptsRequest {
      * Filter by whether a bill covers the receipt.
      */
     billingStatus?: ListGoodsReceiptsBillingStatusEnum;
-    /**
-     * Filter by vendor.
-     */
-    vendorId?: string;
-}
-
-export interface ListPurchaseOrdersRequest {
-    /**
-     * Page size.
-     */
-    perPage?: number;
-    /**
-     * Page number, starting at 1.
-     */
-    page?: number;
-    /**
-     * Field to sort by. Prefix with `-` for descending.
-     */
-    sort?: string;
-    /**
-     * Only records created after this time.
-     */
-    createdAfter?: Date;
-    /**
-     * Only records created before this time.
-     */
-    createdBefore?: Date;
-    /**
-     * Filter by status.
-     */
-    status?: ListPurchaseOrdersStatusEnum;
     /**
      * Filter by vendor.
      */
@@ -362,28 +271,6 @@ export interface PostPurchaseReturnRequest {
     idempotencyKey?: string;
 }
 
-export interface SubmitPurchaseOrderRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
-export interface UpdatePurchaseOrderRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * 
-     */
-    purchaseOrderUpdate: PurchaseOrderUpdate;
-}
-
 export interface UpdatePurchaseReturnRequest {
     /**
      * Resource ID.
@@ -417,73 +304,6 @@ export interface UploadInvoiceDocumentRequest {
  * 
  */
 export class PurchasingApi extends runtime.BaseAPI {
-
-    /**
-     * Creates request options for cancelPurchaseOrder without sending the request
-     */
-    async cancelPurchaseOrderRequestOpts(requestParameters: CancelPurchaseOrderRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling cancelPurchaseOrder().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/purchasing/orders/{id}/cancel`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * Not allowed once any goods receipt is posted (`has_receipts`); close the order instead.  **Response meta** - `meta` is empty. 
-     * Cancel purchase order
-     */
-    async cancelPurchaseOrderRaw(requestParameters: CancelPurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PurchaseOrderResponse>> {
-        const requestOptions = await this.cancelPurchaseOrderRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => PurchaseOrderResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Not allowed once any goods receipt is posted (`has_receipts`); close the order instead.  **Response meta** - `meta` is empty. 
-     * Cancel purchase order
-     */
-    async cancelPurchaseOrder(requestParameters: CancelPurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PurchaseOrderResponse> {
-        const response = await this.cancelPurchaseOrderRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
 
     /**
      * Creates request options for cancelPurchaseReturn without sending the request
@@ -549,73 +369,6 @@ export class PurchasingApi extends runtime.BaseAPI {
      */
     async cancelPurchaseReturn(requestParameters: CancelPurchaseReturnRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PurchaseReturnResponse> {
         const response = await this.cancelPurchaseReturnRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for closePurchaseOrder without sending the request
-     */
-    async closePurchaseOrderRequestOpts(requestParameters: ClosePurchaseOrderRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling closePurchaseOrder().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/purchasing/orders/{id}/close`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * No further receipts can be made. Quantity not yet received is released.  **Response meta** - `meta` is empty. 
-     * Close purchase order
-     */
-    async closePurchaseOrderRaw(requestParameters: ClosePurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PurchaseOrderResponse>> {
-        const requestOptions = await this.closePurchaseOrderRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => PurchaseOrderResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * No further receipts can be made. Quantity not yet received is released.  **Response meta** - `meta` is empty. 
-     * Close purchase order
-     */
-    async closePurchaseOrder(requestParameters: ClosePurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PurchaseOrderResponse> {
-        const response = await this.closePurchaseOrderRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -831,75 +584,6 @@ export class PurchasingApi extends runtime.BaseAPI {
      */
     async createGoodsReceipt(requestParameters: CreateGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
         const response = await this.createGoodsReceiptRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for createPurchaseOrder without sending the request
-     */
-    async createPurchaseOrderRequestOpts(requestParameters: CreatePurchaseOrderRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['purchaseOrderInput'] == null) {
-            throw new runtime.RequiredError(
-                'purchaseOrderInput',
-                'Required parameter "purchaseOrderInput" was null or undefined when calling createPurchaseOrder().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/purchasing/orders`;
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: PurchaseOrderInputToJSON(requestParameters['purchaseOrderInput']),
-        };
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Create purchase order
-     */
-    async createPurchaseOrderRaw(requestParameters: CreatePurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PurchaseOrderResponse>> {
-        const requestOptions = await this.createPurchaseOrderRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => PurchaseOrderResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Create purchase order
-     */
-    async createPurchaseOrder(requestParameters: CreatePurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PurchaseOrderResponse> {
-        const response = await this.createPurchaseOrderRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -1162,69 +846,6 @@ export class PurchasingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates request options for getPurchaseOrder without sending the request
-     */
-    async getPurchaseOrderRequestOpts(requestParameters: GetPurchaseOrderRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling getPurchaseOrder().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/purchasing/orders/{id}`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Get purchase order
-     */
-    async getPurchaseOrderRaw(requestParameters: GetPurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PurchaseOrderResponse>> {
-        const requestOptions = await this.getPurchaseOrderRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => PurchaseOrderResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Get purchase order
-     */
-    async getPurchaseOrder(requestParameters: GetPurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PurchaseOrderResponse> {
-        const response = await this.getPurchaseOrderRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
      * Creates request options for getPurchaseReturn without sending the request
      */
     async getPurchaseReturnRequestOpts(requestParameters: GetPurchaseReturnRequest): Promise<runtime.RequestOpts> {
@@ -1430,89 +1051,6 @@ export class PurchasingApi extends runtime.BaseAPI {
      */
     async listGoodsReceipts(requestParameters: ListGoodsReceiptsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptListResponse> {
         const response = await this.listGoodsReceiptsRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for listPurchaseOrders without sending the request
-     */
-    async listPurchaseOrdersRequestOpts(requestParameters: ListPurchaseOrdersRequest): Promise<runtime.RequestOpts> {
-        const queryParameters: any = {};
-
-        if (requestParameters['perPage'] != null) {
-            queryParameters['per_page'] = requestParameters['perPage'];
-        }
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
-        }
-
-        if (requestParameters['sort'] != null) {
-            queryParameters['sort'] = requestParameters['sort'];
-        }
-
-        if (requestParameters['createdAfter'] != null) {
-            queryParameters['created_after'] = runtime.serializeDateTime(requestParameters['createdAfter'] as any);
-        }
-
-        if (requestParameters['createdBefore'] != null) {
-            queryParameters['created_before'] = runtime.serializeDateTime(requestParameters['createdBefore'] as any);
-        }
-
-        if (requestParameters['status'] != null) {
-            queryParameters['status'] = requestParameters['status'];
-        }
-
-        if (requestParameters['vendorId'] != null) {
-            queryParameters['vendor_id'] = requestParameters['vendorId'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/purchasing/orders`;
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List purchase orders
-     */
-    async listPurchaseOrdersRaw(requestParameters: ListPurchaseOrdersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PurchaseOrderListResponse>> {
-        const requestOptions = await this.listPurchaseOrdersRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => PurchaseOrderListResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List purchase orders
-     */
-    async listPurchaseOrders(requestParameters: ListPurchaseOrdersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PurchaseOrderListResponse> {
-        const response = await this.listPurchaseOrdersRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -1738,146 +1276,6 @@ export class PurchasingApi extends runtime.BaseAPI {
      */
     async postPurchaseReturn(requestParameters: PostPurchaseReturnRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PurchaseReturnResponse> {
         const response = await this.postPurchaseReturnRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for submitPurchaseOrder without sending the request
-     */
-    async submitPurchaseOrderRequestOpts(requestParameters: SubmitPurchaseOrderRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling submitPurchaseOrder().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/purchasing/orders/{id}/submit`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * If an active approval rule covers the total, the order moves to `pending_approval` and an approval request is created; otherwise it goes straight to `approved`. Emits `purchase_order.approved` once approved.  **Response meta** - `meta` is empty. 
-     * Submit for approval
-     */
-    async submitPurchaseOrderRaw(requestParameters: SubmitPurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PurchaseOrderResponse>> {
-        const requestOptions = await this.submitPurchaseOrderRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => PurchaseOrderResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * If an active approval rule covers the total, the order moves to `pending_approval` and an approval request is created; otherwise it goes straight to `approved`. Emits `purchase_order.approved` once approved.  **Response meta** - `meta` is empty. 
-     * Submit for approval
-     */
-    async submitPurchaseOrder(requestParameters: SubmitPurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PurchaseOrderResponse> {
-        const response = await this.submitPurchaseOrderRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for updatePurchaseOrder without sending the request
-     */
-    async updatePurchaseOrderRequestOpts(requestParameters: UpdatePurchaseOrderRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling updatePurchaseOrder().'
-            );
-        }
-
-        if (requestParameters['purchaseOrderUpdate'] == null) {
-            throw new runtime.RequiredError(
-                'purchaseOrderUpdate',
-                'Required parameter "purchaseOrderUpdate" was null or undefined when calling updatePurchaseOrder().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/purchasing/orders/{id}`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: PurchaseOrderUpdateToJSON(requestParameters['purchaseOrderUpdate']),
-        };
-    }
-
-    /**
-     * Only draft orders can be edited. Others return 409.  **Response meta** - `meta` is empty. 
-     * Update purchase order
-     */
-    async updatePurchaseOrderRaw(requestParameters: UpdatePurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PurchaseOrderResponse>> {
-        const requestOptions = await this.updatePurchaseOrderRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => PurchaseOrderResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Only draft orders can be edited. Others return 409.  **Response meta** - `meta` is empty. 
-     * Update purchase order
-     */
-    async updatePurchaseOrder(requestParameters: UpdatePurchaseOrderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PurchaseOrderResponse> {
-        const response = await this.updatePurchaseOrderRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -2124,19 +1522,6 @@ export const ListGoodsReceiptsBillingStatusEnum = {
     Billed: 'billed',
 } as const;
 export type ListGoodsReceiptsBillingStatusEnum = typeof ListGoodsReceiptsBillingStatusEnum[keyof typeof ListGoodsReceiptsBillingStatusEnum];
-/**
- * @export
- */
-export const ListPurchaseOrdersStatusEnum = {
-    Draft: 'draft',
-    PendingApproval: 'pending_approval',
-    Approved: 'approved',
-    PartiallyReceived: 'partially_received',
-    Received: 'received',
-    Closed: 'closed',
-    Cancelled: 'cancelled',
-} as const;
-export type ListPurchaseOrdersStatusEnum = typeof ListPurchaseOrdersStatusEnum[keyof typeof ListPurchaseOrdersStatusEnum];
 /**
  * @export
  */
