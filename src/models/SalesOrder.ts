@@ -28,7 +28,7 @@ import {
  */
 export interface SalesOrder {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `so-` followed by a UUID.
      */
     readonly id: string;
     /**

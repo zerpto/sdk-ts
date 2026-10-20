@@ -28,7 +28,7 @@ import {
  */
 export interface Delivery {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `dn-` followed by a UUID.
      */
     readonly id: string;
     /**

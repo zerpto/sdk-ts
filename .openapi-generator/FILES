@@ -129,6 +129,7 @@ docs/CustomerListResponse.md
 docs/CustomerResponse.md
 docs/CustomerUpdate.md
 docs/CustomersApi.md
+docs/DeliveriesApi.md
 docs/Delivery.md
 docs/DeliveryInput.md
 docs/DeliveryInputLinesInner.md
@@ -236,6 +237,7 @@ docs/QuotationInput.md
 docs/QuotationListResponse.md
 docs/QuotationResponse.md
 docs/QuotationUpdate.md
+docs/QuotationsApi.md
 docs/RefreshInput.md
 docs/Region.md
 docs/RegionListResponse.md
@@ -263,6 +265,7 @@ docs/SalesOrderLine.md
 docs/SalesOrderListResponse.md
 docs/SalesOrderResponse.md
 docs/SalesOrderUpdate.md
+docs/SalesOrdersApi.md
 docs/StockAdjustment.md
 docs/StockAdjustmentInput.md
 docs/StockAdjustmentInputLinesInner.md
@@ -388,6 +391,7 @@ src/apis/BankReconciliationApi.ts
 src/apis/BillingApi.ts
 src/apis/CreditNotesApi.ts
 src/apis/CustomersApi.ts
+src/apis/DeliveriesApi.ts
 src/apis/FixedAssetsApi.ts
 src/apis/ForgotPasswordApi.ts
 src/apis/GeneralLedgerApi.ts
@@ -403,11 +407,13 @@ src/apis/PlatformApi.ts
 src/apis/ProductItemsApi.ts
 src/apis/PurchaseBillApi.ts
 src/apis/PurchasingApi.ts
+src/apis/QuotationsApi.ts
 src/apis/RegionsApi.ts
 src/apis/ReportsApi.ts
 src/apis/ReturnApi.ts
 src/apis/RolesAndPermissionsApi.ts
 src/apis/SalesApi.ts
+src/apis/SalesOrdersApi.ts
 src/apis/TaxAndCurrenciesApi.ts
 src/apis/TaxApi.ts
 src/apis/TenantApi.ts

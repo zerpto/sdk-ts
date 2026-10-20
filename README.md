@@ -135,6 +135,9 @@ All URIs are relative to *https://api.zerpto.com*
 *CustomersApi* | [**getCustomer**](docs/CustomersApi.md#getcustomer) | **GET** /v1/customers/{id} | Get Customer
 *CustomersApi* | [**listCustomers**](docs/CustomersApi.md#listcustomers) | **GET** /v1/customers | List customers
 *CustomersApi* | [**updateCustomer**](docs/CustomersApi.md#updatecustomer) | **PATCH** /v1/customers/{id} | Update Customer
+*DeliveriesApi* | [**createDelivery**](docs/DeliveriesApi.md#createdelivery) | **POST** /v1/sales/deliveries | Create delivery note
+*DeliveriesApi* | [**listDeliveries**](docs/DeliveriesApi.md#listdeliveries) | **GET** /v1/sales/deliveries | List delivery notes
+*DeliveriesApi* | [**postDelivery**](docs/DeliveriesApi.md#postdelivery) | **POST** /v1/sales/deliveries/{id}/confirm | Post delivery
 *FixedAssetsApi* | [**createAsset**](docs/FixedAssetsApi.md#createasset) | **POST** /v1/assets | Register an asset
 *FixedAssetsApi* | [**createAssetCategory**](docs/FixedAssetsApi.md#createassetcategory) | **POST** /v1/assets/categories | Create asset category
 *FixedAssetsApi* | [**createAssetFromBill**](docs/FixedAssetsApi.md#createassetfrombill) | **POST** /v1/assets/from-bill | Register asset from a bill
@@ -202,6 +205,10 @@ All URIs are relative to *https://api.zerpto.com*
 *PurchasingApi* | [**getApInvoiceMatch**](docs/PurchasingApi.md#getapinvoicematch) | **GET** /v1/ap/invoices/{id}/match | Three-way match for a bill
 *PurchasingApi* | [**getPurchasingSettings**](docs/PurchasingApi.md#getpurchasingsettings) | **GET** /v1/purchasing/settings | Get purchasing settings
 *PurchasingApi* | [**updatePurchasingSettings**](docs/PurchasingApi.md#updatepurchasingsettings) | **PATCH** /v1/purchasing/settings | Update purchasing settings
+*QuotationsApi* | [**createQuotation**](docs/QuotationsApi.md#createquotation) | **POST** /v1/sales/quotations | Create quotation
+*QuotationsApi* | [**getQuotation**](docs/QuotationsApi.md#getquotation) | **GET** /v1/sales/quotations/{id} | Get quotation
+*QuotationsApi* | [**listQuotations**](docs/QuotationsApi.md#listquotations) | **GET** /v1/sales/quotations | List quotations
+*QuotationsApi* | [**updateQuotation**](docs/QuotationsApi.md#updatequotation) | **PATCH** /v1/sales/quotations/{id} | Update quotation
 *RegionsApi* | [**getRegion**](docs/RegionsApi.md#getregion) | **GET** /v1/regions/{id} | Get a region
 *RegionsApi* | [**listRegions**](docs/RegionsApi.md#listregions) | **GET** /v1/regions | List regions
 *ReportsApi* | [**getApAging**](docs/ReportsApi.md#getapaging) | **GET** /v1/reports/ap-aging | AP aging
@@ -229,21 +236,14 @@ All URIs are relative to *https://api.zerpto.com*
 *RolesAndPermissionsApi* | [**listRoles**](docs/RolesAndPermissionsApi.md#listroles) | **GET** /v1/roles | List roles and permissions
 *RolesAndPermissionsApi* | [**setUserPermissions**](docs/RolesAndPermissionsApi.md#setuserpermissions) | **PUT** /v1/users/{id}/permissions | Set direct user permissions
 *RolesAndPermissionsApi* | [**updateRole**](docs/RolesAndPermissionsApi.md#updaterole) | **PATCH** /v1/roles/{id} | Update a custom role
-*SalesApi* | [**cancelSalesOrder**](docs/SalesApi.md#cancelsalesorder) | **POST** /v1/sales/orders/{id}/cancel | Cancel sales order
-*SalesApi* | [**confirmSalesOrder**](docs/SalesApi.md#confirmsalesorder) | **POST** /v1/sales/orders/{id}/confirm | Confirm sales order
-*SalesApi* | [**convertQuotation**](docs/SalesApi.md#convertquotation) | **POST** /v1/sales/quotations/{id}/convert | Convert quotation to order
-*SalesApi* | [**createDelivery**](docs/SalesApi.md#createdelivery) | **POST** /v1/sales/deliveries | Create delivery note
 *SalesApi* | [**createInvoiceFromSalesOrder**](docs/SalesApi.md#createinvoicefromsalesorder) | **POST** /v1/sales/orders/{id}/invoice | Create invoice from an order
-*SalesApi* | [**createQuotation**](docs/SalesApi.md#createquotation) | **POST** /v1/sales/quotations | Create quotation
-*SalesApi* | [**createSalesOrder**](docs/SalesApi.md#createsalesorder) | **POST** /v1/sales/orders | Create sales order
-*SalesApi* | [**getQuotation**](docs/SalesApi.md#getquotation) | **GET** /v1/sales/quotations/{id} | Get quotation
-*SalesApi* | [**getSalesOrder**](docs/SalesApi.md#getsalesorder) | **GET** /v1/sales/orders/{id} | Get sales order
-*SalesApi* | [**listDeliveries**](docs/SalesApi.md#listdeliveries) | **GET** /v1/sales/deliveries | List delivery notes
-*SalesApi* | [**listQuotations**](docs/SalesApi.md#listquotations) | **GET** /v1/sales/quotations | List quotations
-*SalesApi* | [**listSalesOrders**](docs/SalesApi.md#listsalesorders) | **GET** /v1/sales/orders | List sales orders
-*SalesApi* | [**postDelivery**](docs/SalesApi.md#postdelivery) | **POST** /v1/sales/deliveries/{id}/confirm | Post delivery
-*SalesApi* | [**updateQuotation**](docs/SalesApi.md#updatequotation) | **PATCH** /v1/sales/quotations/{id} | Update quotation
-*SalesApi* | [**updateSalesOrder**](docs/SalesApi.md#updatesalesorder) | **PATCH** /v1/sales/orders/{id} | Update sales order
+*SalesOrdersApi* | [**cancelSalesOrder**](docs/SalesOrdersApi.md#cancelsalesorder) | **POST** /v1/sales/orders/{id}/cancel | Cancel sales order
+*SalesOrdersApi* | [**confirmSalesOrder**](docs/SalesOrdersApi.md#confirmsalesorder) | **POST** /v1/sales/orders/{id}/confirm | Confirm sales order
+*SalesOrdersApi* | [**convertQuotation**](docs/SalesOrdersApi.md#convertquotation) | **POST** /v1/sales/quotations/{id}/convert | Convert quotation to order
+*SalesOrdersApi* | [**createSalesOrder**](docs/SalesOrdersApi.md#createsalesorder) | **POST** /v1/sales/orders | Create sales order
+*SalesOrdersApi* | [**getSalesOrder**](docs/SalesOrdersApi.md#getsalesorder) | **GET** /v1/sales/orders/{id} | Get sales order
+*SalesOrdersApi* | [**listSalesOrders**](docs/SalesOrdersApi.md#listsalesorders) | **GET** /v1/sales/orders | List sales orders
+*SalesOrdersApi* | [**updateSalesOrder**](docs/SalesOrdersApi.md#updatesalesorder) | **PATCH** /v1/sales/orders/{id} | Update sales order
 *TaxApi* | [**createTaxExport**](docs/TaxApi.md#createtaxexport) | **POST** /v1/tax/exports | Generate a tax export file
 *TaxApi* | [**createTaxWithholding**](docs/TaxApi.md#createtaxwithholding) | **POST** /v1/tax/withholdings | Record PPh 23 withholding
 *TaxApi* | [**getTaxExport**](docs/TaxApi.md#gettaxexport) | **GET** /v1/tax/exports/{id} | Get tax export status

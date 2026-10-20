@@ -28,7 +28,7 @@ import {
  */
 export interface Quotation {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `quo-` followed by a UUID.
      */
     readonly id: string;
     /**
