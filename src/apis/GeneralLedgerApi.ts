@@ -91,7 +91,7 @@ export class GeneralLedgerApi extends runtime.BaseAPI {
     }
 
     /**
-     * Internal until the GL schema has survived real client usage.  **Response meta** - `meta` is empty. 
+     * Closes an accounting period, so nothing more can be posted into it. Use it after month end, once the books for the period are final. Posting an invoice, a payment, a delivery or a journal entry dated in a closed period fails with 422, and a closed period cannot be opened again. The response is the period with its status `closed` and the time it was closed.  Find the period `id` with [`GET /v1/gl/periods`](#tag/general-ledger/GET/v1/gl/periods). Close periods in order: an earlier period that is still open must be closed first. If an entry is wrong after closing, post a correcting entry in an open period, using [`POST /v1/gl/journal-entries`](#tag/journal/POST/v1/gl/journal-entries).  Error codes: `period_already_closed`, `previous_period_open`.  **Response meta** - `meta` is empty. 
      * Close an accounting period
      */
     async closePeriodRaw(requestParameters: ClosePeriodRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PeriodResponse>> {
@@ -102,7 +102,7 @@ export class GeneralLedgerApi extends runtime.BaseAPI {
     }
 
     /**
-     * Internal until the GL schema has survived real client usage.  **Response meta** - `meta` is empty. 
+     * Closes an accounting period, so nothing more can be posted into it. Use it after month end, once the books for the period are final. Posting an invoice, a payment, a delivery or a journal entry dated in a closed period fails with 422, and a closed period cannot be opened again. The response is the period with its status `closed` and the time it was closed.  Find the period `id` with [`GET /v1/gl/periods`](#tag/general-ledger/GET/v1/gl/periods). Close periods in order: an earlier period that is still open must be closed first. If an entry is wrong after closing, post a correcting entry in an open period, using [`POST /v1/gl/journal-entries`](#tag/journal/POST/v1/gl/journal-entries).  Error codes: `period_already_closed`, `previous_period_open`.  **Response meta** - `meta` is empty. 
      * Close an accounting period
      */
     async closePeriod(requestParameters: ClosePeriodRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PeriodResponse> {
@@ -154,7 +154,7 @@ export class GeneralLedgerApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists your accounting periods, with their start and end dates and whether each is open or closed. Use it to see which periods still accept postings, to fill a period picker on reports, or to check whether a date can still be posted to. A period\'s `closed_at` is set once it is closed.  Take a period `id` from this list to close it with [`POST /v1/gl/periods/{id}/close`](#tag/general-ledger/POST/v1/gl/periods/{id}/close). Invoices, payments, deliveries and manual entries made with [`POST /v1/gl/journal-entries`](#tag/journal/POST/v1/gl/journal-entries) are posted into the period that contains their date, and the entries already there are listed with [`GET /v1/gl/journal-entries`](#tag/journal/GET/v1/gl/journal-entries).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List accounting periods
      */
     async listPeriodsRaw(requestParameters: ListPeriodsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PeriodListResponse>> {
@@ -165,7 +165,7 @@ export class GeneralLedgerApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists your accounting periods, with their start and end dates and whether each is open or closed. Use it to see which periods still accept postings, to fill a period picker on reports, or to check whether a date can still be posted to. A period\'s `closed_at` is set once it is closed.  Take a period `id` from this list to close it with [`POST /v1/gl/periods/{id}/close`](#tag/general-ledger/POST/v1/gl/periods/{id}/close). Invoices, payments, deliveries and manual entries made with [`POST /v1/gl/journal-entries`](#tag/journal/POST/v1/gl/journal-entries) are posted into the period that contains their date, and the entries already there are listed with [`GET /v1/gl/journal-entries`](#tag/journal/GET/v1/gl/journal-entries).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List accounting periods
      */
     async listPeriods(requestParameters: ListPeriodsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PeriodListResponse> {

@@ -20,7 +20,7 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface Period {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `per-` followed by a UUID.
      */
     readonly id: string;
     /**

@@ -28,7 +28,7 @@ import {
  */
 export interface Asset {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `ast-` followed by a UUID.
      */
     readonly id: string;
     /**

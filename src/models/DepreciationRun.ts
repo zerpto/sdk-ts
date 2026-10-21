@@ -28,7 +28,7 @@ import {
  */
 export interface DepreciationRun {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `dpr-` followed by a UUID.
      */
     readonly id: string;
     /**

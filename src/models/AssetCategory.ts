@@ -20,7 +20,7 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface AssetCategory {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `acat-` followed by a UUID.
      */
     readonly id: string;
     /**

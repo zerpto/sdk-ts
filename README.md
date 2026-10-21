@@ -85,6 +85,12 @@ All URIs are relative to *https://api.zerpto.com*
 *ApprovalsApi* | [**listApprovals**](docs/ApprovalsApi.md#listapprovals) | **GET** /v1/approvals | List approval requests
 *ApprovalsApi* | [**rejectApproval**](docs/ApprovalsApi.md#rejectapproval) | **POST** /v1/approvals/{id}/reject | Reject
 *ApprovalsApi* | [**updateApprovalRule**](docs/ApprovalsApi.md#updateapprovalrule) | **PATCH** /v1/approval-rules/{id} | Update approval rule
+*AssetsApi* | [**createAsset**](docs/AssetsApi.md#createasset) | **POST** /v1/assets | Register an asset
+*AssetsApi* | [**createAssetFromBill**](docs/AssetsApi.md#createassetfrombill) | **POST** /v1/assets/from-bill | Register asset from a bill
+*AssetsApi* | [**disposeAsset**](docs/AssetsApi.md#disposeasset) | **POST** /v1/assets/{id}/dispose | Dispose or sell an asset
+*AssetsApi* | [**getAsset**](docs/AssetsApi.md#getasset) | **GET** /v1/assets/{id} | Get asset
+*AssetsApi* | [**listAssets**](docs/AssetsApi.md#listassets) | **GET** /v1/assets | List assets
+*AssetsApi* | [**updateAsset**](docs/AssetsApi.md#updateasset) | **PATCH** /v1/assets/{id} | Update asset
 *AuthenticationApi* | [**acceptInvite**](docs/AuthenticationApi.md#acceptinvite) | **POST** /v1/auth/accept-invite | Accept invite, create account
 *AuthenticationApi* | [**changePassword**](docs/AuthenticationApi.md#changepassword) | **PUT** /v1/auth/password | Change your password
 *AuthenticationApi* | [**getMe**](docs/AuthenticationApi.md#getme) | **GET** /v1/auth/me | Current user and permissions
@@ -111,6 +117,10 @@ All URIs are relative to *https://api.zerpto.com*
 *BillingApi* | [**listPaymentMethods**](docs/BillingApi.md#listpaymentmethods) | **GET** /v1/billing/payment-methods | List saved payment methods
 *BillingApi* | [**receiveXenditWebhook**](docs/BillingApi.md#receivexenditwebhook) | **POST** /v1/billing/webhooks/xendit | Receive Xendit payment events
 *BillingApi* | [**updateSubscription**](docs/BillingApi.md#updatesubscription) | **PATCH** /v1/billing/subscription | Change plan, seats or add-on
+*CategoriesApi* | [**createAssetCategory**](docs/CategoriesApi.md#createassetcategory) | **POST** /v1/assets/categories | Create asset category
+*CategoriesApi* | [**getAssetCategory**](docs/CategoriesApi.md#getassetcategory) | **GET** /v1/assets/categories/{id} | Get asset category
+*CategoriesApi* | [**listAssetCategories**](docs/CategoriesApi.md#listassetcategories) | **GET** /v1/assets/categories | List asset categories
+*CategoriesApi* | [**updateAssetCategory**](docs/CategoriesApi.md#updateassetcategory) | **PATCH** /v1/assets/categories/{id} | Update asset category
 *CreditNotesApi* | [**allocateApCreditNote**](docs/CreditNotesApi.md#allocateapcreditnote) | **POST** /v1/ap/credit-notes/{id}/allocations | Apply a credit note to bills
 *CreditNotesApi* | [**createApCreditNote**](docs/CreditNotesApi.md#createapcreditnote) | **POST** /v1/ap/credit-notes | Create credit note
 *CreditNotesApi* | [**getApCreditNote**](docs/CreditNotesApi.md#getapcreditnote) | **GET** /v1/ap/credit-notes/{id} | Get credit note
@@ -137,19 +147,9 @@ All URIs are relative to *https://api.zerpto.com*
 *DeliveriesApi* | [**createDelivery**](docs/DeliveriesApi.md#createdelivery) | **POST** /v1/sales/deliveries | Create delivery note
 *DeliveriesApi* | [**listDeliveries**](docs/DeliveriesApi.md#listdeliveries) | **GET** /v1/sales/deliveries | List delivery notes
 *DeliveriesApi* | [**postDelivery**](docs/DeliveriesApi.md#postdelivery) | **POST** /v1/sales/deliveries/{id}/confirm | Post delivery
-*FixedAssetsApi* | [**createAsset**](docs/FixedAssetsApi.md#createasset) | **POST** /v1/assets | Register an asset
-*FixedAssetsApi* | [**createAssetCategory**](docs/FixedAssetsApi.md#createassetcategory) | **POST** /v1/assets/categories | Create asset category
-*FixedAssetsApi* | [**createAssetFromBill**](docs/FixedAssetsApi.md#createassetfrombill) | **POST** /v1/assets/from-bill | Register asset from a bill
-*FixedAssetsApi* | [**createDepreciationRun**](docs/FixedAssetsApi.md#createdepreciationrun) | **POST** /v1/assets/depreciation-runs | Run monthly depreciation
-*FixedAssetsApi* | [**disposeAsset**](docs/FixedAssetsApi.md#disposeasset) | **POST** /v1/assets/{id}/dispose | Dispose or sell an asset
-*FixedAssetsApi* | [**getAsset**](docs/FixedAssetsApi.md#getasset) | **GET** /v1/assets/{id} | Get asset
-*FixedAssetsApi* | [**getAssetCategory**](docs/FixedAssetsApi.md#getassetcategory) | **GET** /v1/assets/categories/{id} | Get asset category
-*FixedAssetsApi* | [**getAssetSchedule**](docs/FixedAssetsApi.md#getassetschedule) | **GET** /v1/assets/{id}/schedule | Depreciation schedule
-*FixedAssetsApi* | [**getDepreciationRun**](docs/FixedAssetsApi.md#getdepreciationrun) | **GET** /v1/assets/depreciation-runs/{id} | Get a depreciation run
-*FixedAssetsApi* | [**listAssetCategories**](docs/FixedAssetsApi.md#listassetcategories) | **GET** /v1/assets/categories | List asset categories
-*FixedAssetsApi* | [**listAssets**](docs/FixedAssetsApi.md#listassets) | **GET** /v1/assets | List assets
-*FixedAssetsApi* | [**updateAsset**](docs/FixedAssetsApi.md#updateasset) | **PATCH** /v1/assets/{id} | Update asset
-*FixedAssetsApi* | [**updateAssetCategory**](docs/FixedAssetsApi.md#updateassetcategory) | **PATCH** /v1/assets/categories/{id} | Update asset category
+*DepreciationApi* | [**createDepreciationRun**](docs/DepreciationApi.md#createdepreciationrun) | **POST** /v1/assets/depreciation-runs | Run monthly depreciation
+*DepreciationApi* | [**getAssetSchedule**](docs/DepreciationApi.md#getassetschedule) | **GET** /v1/assets/{id}/schedule | Depreciation schedule
+*DepreciationApi* | [**getDepreciationRun**](docs/DepreciationApi.md#getdepreciationrun) | **GET** /v1/assets/depreciation-runs/{id} | Get a depreciation run
 *ForgotPasswordApi* | [**forgotPassword**](docs/ForgotPasswordApi.md#forgotpassword) | **POST** /v1/auth/reset-password | Send a password reset email
 *ForgotPasswordApi* | [**resetPassword**](docs/ForgotPasswordApi.md#resetpassword) | **PUT** /v1/auth/reset-password | Reset password using a token
 *GeneralLedgerApi* | [**closePeriod**](docs/GeneralLedgerApi.md#closeperiod) | **POST** /v1/gl/periods/{id}/close | Close an accounting period

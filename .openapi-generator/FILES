@@ -78,6 +78,7 @@ docs/AssetRegisterLinesInner.md
 docs/AssetRegisterResponse.md
 docs/AssetResponse.md
 docs/AssetUpdate.md
+docs/AssetsApi.md
 docs/AuthAccount.md
 docs/AuthUser.md
 docs/AuthenticationApi.md
@@ -116,6 +117,7 @@ docs/BillingInvoiceListResponse.md
 docs/BillingPayment.md
 docs/BillingPaymentListResponse.md
 docs/BusinessPartner.md
+docs/CategoriesApi.md
 docs/ChangePasswordInput.md
 docs/Checkout.md
 docs/CheckoutInput.md
@@ -139,6 +141,7 @@ docs/DeliveryInputLinesInner.md
 docs/DeliveryLinesInner.md
 docs/DeliveryListResponse.md
 docs/DeliveryResponse.md
+docs/DepreciationApi.md
 docs/DepreciationRun.md
 docs/DepreciationRunInput.md
 docs/DepreciationRunLinesInner.md
@@ -147,7 +150,6 @@ docs/DepreciationSchedule.md
 docs/DepreciationScheduleLinesInner.md
 docs/DepreciationScheduleResponse.md
 docs/ErrorError.md
-docs/FixedAssetsApi.md
 docs/ForgotPasswordApi.md
 docs/ForgotPasswordInput.md
 docs/GeneralLedgerApi.md
@@ -392,16 +394,18 @@ src/apis/APIKeysApi.ts
 src/apis/AccountsApi.ts
 src/apis/AdjustmentsApi.ts
 src/apis/ApprovalsApi.ts
+src/apis/AssetsApi.ts
 src/apis/AuthenticationApi.ts
 src/apis/BankAccountApi.ts
 src/apis/BankReconciliationApi.ts
 src/apis/BillingApi.ts
+src/apis/CategoriesApi.ts
 src/apis/CreditNotesApi.ts
 src/apis/CustomerInvoiceApi.ts
 src/apis/CustomerPaymentApi.ts
 src/apis/CustomersApi.ts
 src/apis/DeliveriesApi.ts
-src/apis/FixedAssetsApi.ts
+src/apis/DepreciationApi.ts
 src/apis/ForgotPasswordApi.ts
 src/apis/GeneralLedgerApi.ts
 src/apis/GoodsReceiptApi.ts
