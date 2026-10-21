@@ -14,31 +14,6 @@
 
 import * as runtime from '../runtime';
 import {
-    type BankAccountInput,
-    BankAccountInputFromJSON,
-    BankAccountInputToJSON,
-} from '../models/BankAccountInput';
-import {
-    type BankAccountListResponse,
-    BankAccountListResponseFromJSON,
-    BankAccountListResponseToJSON,
-} from '../models/BankAccountListResponse';
-import {
-    type BankAccountResponse,
-    BankAccountResponseFromJSON,
-    BankAccountResponseToJSON,
-} from '../models/BankAccountResponse';
-import {
-    type BankAccountUpdate,
-    BankAccountUpdateFromJSON,
-    BankAccountUpdateToJSON,
-} from '../models/BankAccountUpdate';
-import {
-    type BankMatchInput,
-    BankMatchInputFromJSON,
-    BankMatchInputToJSON,
-} from '../models/BankMatchInput';
-import {
     type BankReconciliationInput,
     BankReconciliationInputFromJSON,
     BankReconciliationInputToJSON,
@@ -53,38 +28,12 @@ import {
     BankReconciliationResponseFromJSON,
     BankReconciliationResponseToJSON,
 } from '../models/BankReconciliationResponse';
-import {
-    type BankStatementLineListResponse,
-    BankStatementLineListResponseFromJSON,
-    BankStatementLineListResponseToJSON,
-} from '../models/BankStatementLineListResponse';
-import {
-    type BankStatementLineResponse,
-    BankStatementLineResponseFromJSON,
-    BankStatementLineResponseToJSON,
-} from '../models/BankStatementLineResponse';
-import {
-    type BankStatementResponse,
-    BankStatementResponseFromJSON,
-    BankStatementResponseToJSON,
-} from '../models/BankStatementResponse';
 
 export interface CompleteBankReconciliationRequest {
     /**
      * Resource ID.
      */
     id: string;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
-export interface CreateBankAccountRequest {
-    /**
-     * 
-     */
-    bankAccountInput: BankAccountInput;
     /**
      * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
      */
@@ -100,28 +49,6 @@ export interface CreateBankReconciliationRequest {
      * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
      */
     idempotencyKey?: string;
-}
-
-export interface GetBankAccountRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-}
-
-export interface ListBankAccountsRequest {
-    /**
-     * Page size.
-     */
-    perPage?: number;
-    /**
-     * Page number, starting at 1.
-     */
-    page?: number;
-    /**
-     * Filter by status.
-     */
-    status?: ListBankAccountsStatusEnum;
 }
 
 export interface ListBankReconciliationsRequest {
@@ -141,89 +68,6 @@ export interface ListBankReconciliationsRequest {
      * Filter by status.
      */
     status?: ListBankReconciliationsStatusEnum;
-}
-
-export interface ListBankStatementLinesRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * Page size.
-     */
-    limit?: number;
-    /**
-     * `next_cursor` from the previous page.
-     */
-    cursor?: string;
-    /**
-     * Filter by match status.
-     */
-    matchStatus?: ListBankStatementLinesMatchStatusEnum;
-    /**
-     * On or after this date.
-     */
-    dateFrom?: Date;
-    /**
-     * On or before this date.
-     */
-    dateTo?: Date;
-}
-
-export interface MatchBankStatementLineRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * 
-     */
-    bankMatchInput: BankMatchInput;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
-export interface UnmatchBankStatementLineRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
-export interface UpdateBankAccountRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * 
-     */
-    bankAccountUpdate: BankAccountUpdate;
-}
-
-export interface UploadBankStatementRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * 
-     */
-    file: Blob;
-    /**
-     * 
-     */
-    format: UploadBankStatementFormatEnum;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
 }
 
 /**
@@ -279,7 +123,7 @@ export class BankReconciliationApi extends runtime.BaseAPI {
     }
 
     /**
-     * Requires every statement line in the period to be matched and the difference to be zero. Error codes: `unmatched_lines`, `difference_not_zero`.  **Response meta** - `meta` is empty. 
+     * Completes a reconciliation, which locks the result: its matches can no longer be changed and its status becomes `completed` with the time it was completed. It needs every statement line in the period to be matched and the difference to be zero. A repeated request with the same `Idempotency-Key` returns the first result.  Start the reconciliation with [`POST /v1/bank/reconciliations`](#tag/bank-reconciliation/POST/v1/bank/reconciliations) and settle the remaining lines with [`POST /v1/bank/statement-lines/{id}/match`](#tag/statements/POST/v1/bank/statement-lines/{id}/match). If the call is refused, [`GET /v1/reports/bank-reconciliation`](#tag/bank-reconciliation/GET/v1/reports/bank-reconciliation) shows what is still unmatched. A completed reconciliation is listed with [`GET /v1/bank/reconciliations`](#tag/bank-reconciliation/GET/v1/bank/reconciliations), and the next period can then be started.  Error codes: `unmatched_lines`, `difference_not_zero`.  **Response meta** - `meta` is empty. 
      * Complete a reconciliation
      */
     async completeBankReconciliationRaw(requestParameters: CompleteBankReconciliationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankReconciliationResponse>> {
@@ -290,80 +134,11 @@ export class BankReconciliationApi extends runtime.BaseAPI {
     }
 
     /**
-     * Requires every statement line in the period to be matched and the difference to be zero. Error codes: `unmatched_lines`, `difference_not_zero`.  **Response meta** - `meta` is empty. 
+     * Completes a reconciliation, which locks the result: its matches can no longer be changed and its status becomes `completed` with the time it was completed. It needs every statement line in the period to be matched and the difference to be zero. A repeated request with the same `Idempotency-Key` returns the first result.  Start the reconciliation with [`POST /v1/bank/reconciliations`](#tag/bank-reconciliation/POST/v1/bank/reconciliations) and settle the remaining lines with [`POST /v1/bank/statement-lines/{id}/match`](#tag/statements/POST/v1/bank/statement-lines/{id}/match). If the call is refused, [`GET /v1/reports/bank-reconciliation`](#tag/bank-reconciliation/GET/v1/reports/bank-reconciliation) shows what is still unmatched. A completed reconciliation is listed with [`GET /v1/bank/reconciliations`](#tag/bank-reconciliation/GET/v1/bank/reconciliations), and the next period can then be started.  Error codes: `unmatched_lines`, `difference_not_zero`.  **Response meta** - `meta` is empty. 
      * Complete a reconciliation
      */
     async completeBankReconciliation(requestParameters: CompleteBankReconciliationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankReconciliationResponse> {
         const response = await this.completeBankReconciliationRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for createBankAccount without sending the request
-     */
-    async createBankAccountRequestOpts(requestParameters: CreateBankAccountRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['bankAccountInput'] == null) {
-            throw new runtime.RequiredError(
-                'bankAccountInput',
-                'Required parameter "bankAccountInput" was null or undefined when calling createBankAccount().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/bank/accounts`;
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: BankAccountInputToJSON(requestParameters['bankAccountInput']),
-        };
-    }
-
-    /**
-     * Links a bank account to a GL cash/bank account. A GL account can be linked to one bank account only (`gl_account_already_linked`).  **Response meta** - `meta` is empty. 
-     * Create bank account
-     */
-    async createBankAccountRaw(requestParameters: CreateBankAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankAccountResponse>> {
-        const requestOptions = await this.createBankAccountRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => BankAccountResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Links a bank account to a GL cash/bank account. A GL account can be linked to one bank account only (`gl_account_already_linked`).  **Response meta** - `meta` is empty. 
-     * Create bank account
-     */
-    async createBankAccount(requestParameters: CreateBankAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankAccountResponse> {
-        const response = await this.createBankAccountRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -417,7 +192,7 @@ export class BankReconciliationApi extends runtime.BaseAPI {
     }
 
     /**
-     * One in-progress reconciliation per bank account (`reconciliation_in_progress`).  **Response meta** - `meta` is empty. 
+     * Starts the reconciliation of one bank account for a period. Send the `bank_account_id`, the `period_start` and the `period_end`; the `statement_id` is optional and defaults to the statement that covers the period. The response shows the statement balance, the balance in your books and the difference, which should reach zero once every line is matched. A bank account can have only one reconciliation in progress. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `bank_account_id` from [`GET /v1/bank/accounts`](#tag/bank-account/GET/v1/bank/accounts) and upload the statement first with [`POST /v1/bank/accounts/{id}/statements`](#tag/statements/POST/v1/bank/accounts/{id}/statements). Work through its lines with [`GET /v1/bank/statements/{id}/lines`](#tag/statements/GET/v1/bank/statements/{id}/lines) and [`POST /v1/bank/statement-lines/{id}/match`](#tag/statements/POST/v1/bank/statement-lines/{id}/match), and watch the difference go down. When it is zero, finish with [`POST /v1/bank/reconciliations/{id}/complete`](#tag/bank-reconciliation/POST/v1/bank/reconciliations/{id}/complete).  Error codes: `reconciliation_in_progress`, `unknown_bank_account`, `no_statement_for_period`, `period_overlap`.  **Response meta** - `meta` is empty. 
      * Start a reconciliation
      */
     async createBankReconciliationRaw(requestParameters: CreateBankReconciliationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankReconciliationResponse>> {
@@ -428,141 +203,11 @@ export class BankReconciliationApi extends runtime.BaseAPI {
     }
 
     /**
-     * One in-progress reconciliation per bank account (`reconciliation_in_progress`).  **Response meta** - `meta` is empty. 
+     * Starts the reconciliation of one bank account for a period. Send the `bank_account_id`, the `period_start` and the `period_end`; the `statement_id` is optional and defaults to the statement that covers the period. The response shows the statement balance, the balance in your books and the difference, which should reach zero once every line is matched. A bank account can have only one reconciliation in progress. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `bank_account_id` from [`GET /v1/bank/accounts`](#tag/bank-account/GET/v1/bank/accounts) and upload the statement first with [`POST /v1/bank/accounts/{id}/statements`](#tag/statements/POST/v1/bank/accounts/{id}/statements). Work through its lines with [`GET /v1/bank/statements/{id}/lines`](#tag/statements/GET/v1/bank/statements/{id}/lines) and [`POST /v1/bank/statement-lines/{id}/match`](#tag/statements/POST/v1/bank/statement-lines/{id}/match), and watch the difference go down. When it is zero, finish with [`POST /v1/bank/reconciliations/{id}/complete`](#tag/bank-reconciliation/POST/v1/bank/reconciliations/{id}/complete).  Error codes: `reconciliation_in_progress`, `unknown_bank_account`, `no_statement_for_period`, `period_overlap`.  **Response meta** - `meta` is empty. 
      * Start a reconciliation
      */
     async createBankReconciliation(requestParameters: CreateBankReconciliationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankReconciliationResponse> {
         const response = await this.createBankReconciliationRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for getBankAccount without sending the request
-     */
-    async getBankAccountRequestOpts(requestParameters: GetBankAccountRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling getBankAccount().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/bank/accounts/{id}`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Get bank account
-     */
-    async getBankAccountRaw(requestParameters: GetBankAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankAccountResponse>> {
-        const requestOptions = await this.getBankAccountRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => BankAccountResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Get bank account
-     */
-    async getBankAccount(requestParameters: GetBankAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankAccountResponse> {
-        const response = await this.getBankAccountRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for listBankAccounts without sending the request
-     */
-    async listBankAccountsRequestOpts(requestParameters: ListBankAccountsRequest): Promise<runtime.RequestOpts> {
-        const queryParameters: any = {};
-
-        if (requestParameters['perPage'] != null) {
-            queryParameters['per_page'] = requestParameters['perPage'];
-        }
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
-        }
-
-        if (requestParameters['status'] != null) {
-            queryParameters['status'] = requestParameters['status'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/bank/accounts`;
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List bank accounts
-     */
-    async listBankAccountsRaw(requestParameters: ListBankAccountsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankAccountListResponse>> {
-        const requestOptions = await this.listBankAccountsRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => BankAccountListResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List bank accounts
-     */
-    async listBankAccounts(requestParameters: ListBankAccountsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankAccountListResponse> {
-        const response = await this.listBankAccountsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -618,7 +263,7 @@ export class BankReconciliationApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the reconciliations you have started, with the bank account, the period, the statement and book balances, the difference and the status. Use it to find the one in progress, to review which periods are already closed out, or to show the reconciliation history of a bank account. Filter by `bank_account_id` or `status`.  Get a `bank_account_id` for the filter from [`GET /v1/bank/accounts`](#tag/bank-account/GET/v1/bank/accounts). A new reconciliation is started with [`POST /v1/bank/reconciliations`](#tag/bank-reconciliation/POST/v1/bank/reconciliations) and finished with [`POST /v1/bank/reconciliations/{id}/complete`](#tag/bank-reconciliation/POST/v1/bank/reconciliations/{id}/complete). The lines still waiting for a match in a period are shown in [`GET /v1/reports/bank-reconciliation`](#tag/bank-reconciliation/GET/v1/reports/bank-reconciliation).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List reconciliations
      */
     async listBankReconciliationsRaw(requestParameters: ListBankReconciliationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankReconciliationListResponse>> {
@@ -629,417 +274,11 @@ export class BankReconciliationApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the reconciliations you have started, with the bank account, the period, the statement and book balances, the difference and the status. Use it to find the one in progress, to review which periods are already closed out, or to show the reconciliation history of a bank account. Filter by `bank_account_id` or `status`.  Get a `bank_account_id` for the filter from [`GET /v1/bank/accounts`](#tag/bank-account/GET/v1/bank/accounts). A new reconciliation is started with [`POST /v1/bank/reconciliations`](#tag/bank-reconciliation/POST/v1/bank/reconciliations) and finished with [`POST /v1/bank/reconciliations/{id}/complete`](#tag/bank-reconciliation/POST/v1/bank/reconciliations/{id}/complete). The lines still waiting for a match in a period are shown in [`GET /v1/reports/bank-reconciliation`](#tag/bank-reconciliation/GET/v1/reports/bank-reconciliation).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List reconciliations
      */
     async listBankReconciliations(requestParameters: ListBankReconciliationsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankReconciliationListResponse> {
         const response = await this.listBankReconciliationsRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for listBankStatementLines without sending the request
-     */
-    async listBankStatementLinesRequestOpts(requestParameters: ListBankStatementLinesRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling listBankStatementLines().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['limit'] != null) {
-            queryParameters['limit'] = requestParameters['limit'];
-        }
-
-        if (requestParameters['cursor'] != null) {
-            queryParameters['cursor'] = requestParameters['cursor'];
-        }
-
-        if (requestParameters['matchStatus'] != null) {
-            queryParameters['match_status'] = requestParameters['matchStatus'];
-        }
-
-        if (requestParameters['dateFrom'] != null) {
-            queryParameters['date_from'] = runtime.serializeDate(requestParameters['dateFrom'] as any);
-        }
-
-        if (requestParameters['dateTo'] != null) {
-            queryParameters['date_to'] = runtime.serializeDate(requestParameters['dateTo'] as any);
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/bank/statements/{id}/lines`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * `suggested` means auto-match found a candidate that still needs confirmation.  **Response meta** - `pagination`: `next_cursor`, `has_more`, `limit`, and the paging URLs `self`, `next` (`next` is null on the last page). Use `?cursor=` and `?limit=`. 
-     * List statement lines
-     */
-    async listBankStatementLinesRaw(requestParameters: ListBankStatementLinesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankStatementLineListResponse>> {
-        const requestOptions = await this.listBankStatementLinesRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => BankStatementLineListResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * `suggested` means auto-match found a candidate that still needs confirmation.  **Response meta** - `pagination`: `next_cursor`, `has_more`, `limit`, and the paging URLs `self`, `next` (`next` is null on the last page). Use `?cursor=` and `?limit=`. 
-     * List statement lines
-     */
-    async listBankStatementLines(requestParameters: ListBankStatementLinesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankStatementLineListResponse> {
-        const response = await this.listBankStatementLinesRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for matchBankStatementLine without sending the request
-     */
-    async matchBankStatementLineRequestOpts(requestParameters: MatchBankStatementLineRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling matchBankStatementLine().'
-            );
-        }
-
-        if (requestParameters['bankMatchInput'] == null) {
-            throw new runtime.RequiredError(
-                'bankMatchInput',
-                'Required parameter "bankMatchInput" was null or undefined when calling matchBankStatementLine().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/bank/statement-lines/{id}/match`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: BankMatchInputToJSON(requestParameters['bankMatchInput']),
-        };
-    }
-
-    /**
-     * Matches the line to one or more payments or journal entries, or posts an adjustment (bank fee, interest) to the GL. Matched amounts must sum to the line amount (`match_amount_mismatch`). Fails with 422 if the period is closed or the reconciliation is completed.  **Response meta** - `meta` is empty. 
-     * Match a line
-     */
-    async matchBankStatementLineRaw(requestParameters: MatchBankStatementLineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankStatementLineResponse>> {
-        const requestOptions = await this.matchBankStatementLineRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => BankStatementLineResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Matches the line to one or more payments or journal entries, or posts an adjustment (bank fee, interest) to the GL. Matched amounts must sum to the line amount (`match_amount_mismatch`). Fails with 422 if the period is closed or the reconciliation is completed.  **Response meta** - `meta` is empty. 
-     * Match a line
-     */
-    async matchBankStatementLine(requestParameters: MatchBankStatementLineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankStatementLineResponse> {
-        const response = await this.matchBankStatementLineRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for unmatchBankStatementLine without sending the request
-     */
-    async unmatchBankStatementLineRequestOpts(requestParameters: UnmatchBankStatementLineRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling unmatchBankStatementLine().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/bank/statement-lines/{id}/unmatch`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * Reverses any adjustment journal entry the match created. Not allowed once the reconciliation is completed (`reconciliation_locked`).  **Response meta** - `meta` is empty. 
-     * Remove a match
-     */
-    async unmatchBankStatementLineRaw(requestParameters: UnmatchBankStatementLineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankStatementLineResponse>> {
-        const requestOptions = await this.unmatchBankStatementLineRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => BankStatementLineResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Reverses any adjustment journal entry the match created. Not allowed once the reconciliation is completed (`reconciliation_locked`).  **Response meta** - `meta` is empty. 
-     * Remove a match
-     */
-    async unmatchBankStatementLine(requestParameters: UnmatchBankStatementLineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankStatementLineResponse> {
-        const response = await this.unmatchBankStatementLineRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for updateBankAccount without sending the request
-     */
-    async updateBankAccountRequestOpts(requestParameters: UpdateBankAccountRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling updateBankAccount().'
-            );
-        }
-
-        if (requestParameters['bankAccountUpdate'] == null) {
-            throw new runtime.RequiredError(
-                'bankAccountUpdate',
-                'Required parameter "bankAccountUpdate" was null or undefined when calling updateBankAccount().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/bank/accounts/{id}`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: BankAccountUpdateToJSON(requestParameters['bankAccountUpdate']),
-        };
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Update bank account
-     */
-    async updateBankAccountRaw(requestParameters: UpdateBankAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankAccountResponse>> {
-        const requestOptions = await this.updateBankAccountRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => BankAccountResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Update bank account
-     */
-    async updateBankAccount(requestParameters: UpdateBankAccountRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankAccountResponse> {
-        const response = await this.updateBankAccountRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for uploadBankStatement without sending the request
-     */
-    async uploadBankStatementRequestOpts(requestParameters: UploadBankStatementRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling uploadBankStatement().'
-            );
-        }
-
-        if (requestParameters['file'] == null) {
-            throw new runtime.RequiredError(
-                'file',
-                'Required parameter "file" was null or undefined when calling uploadBankStatement().'
-            );
-        }
-
-        if (requestParameters['format'] == null) {
-            throw new runtime.RequiredError(
-                'format',
-                'Required parameter "format" was null or undefined when calling uploadBankStatement().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const consumes: runtime.Consume[] = [
-            { contentType: 'multipart/form-data' },
-        ];
-        // @ts-ignore: canConsumeForm may be unused
-        const canConsumeForm = runtime.canConsumeForm(consumes);
-
-        let formParams: { append(param: string, value: any): any };
-        let useForm = false;
-        // use FormData to transmit files using content-type "multipart/form-data"
-        useForm = canConsumeForm;
-        if (useForm) {
-            formParams = new FormData();
-        } else {
-            formParams = new URLSearchParams();
-        }
-
-        if (requestParameters['file'] != null) {
-            formParams.append('file', requestParameters['file'] as any);
-        }
-
-        if (requestParameters['format'] != null) {
-            formParams.append('format', requestParameters['format'] as any);
-        }
-
-
-        let urlPath = `/v1/bank/accounts/{id}/statements`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: formParams,
-        };
-    }
-
-    /**
-     * Parses the file and creates statement lines, then runs auto-match on amount, date and reference. Error codes: `unsupported_format`, `parse_error` (the message names the row), `duplicate_statement` (same bank account and period already imported), `statement_gap` (opening balance does not equal the previous closing balance).  **Response meta** - `meta` is empty. 
-     * Upload a statement file
-     */
-    async uploadBankStatementRaw(requestParameters: UploadBankStatementRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BankStatementResponse>> {
-        const requestOptions = await this.uploadBankStatementRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => BankStatementResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Parses the file and creates statement lines, then runs auto-match on amount, date and reference. Error codes: `unsupported_format`, `parse_error` (the message names the row), `duplicate_statement` (same bank account and period already imported), `statement_gap` (opening balance does not equal the previous closing balance).  **Response meta** - `meta` is empty. 
-     * Upload a statement file
-     */
-    async uploadBankStatement(requestParameters: UploadBankStatementRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankStatementResponse> {
-        const response = await this.uploadBankStatementRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -1048,33 +287,8 @@ export class BankReconciliationApi extends runtime.BaseAPI {
 /**
  * @export
  */
-export const ListBankAccountsStatusEnum = {
-    Active: 'active',
-    Archived: 'archived',
-} as const;
-export type ListBankAccountsStatusEnum = typeof ListBankAccountsStatusEnum[keyof typeof ListBankAccountsStatusEnum];
-/**
- * @export
- */
 export const ListBankReconciliationsStatusEnum = {
     InProgress: 'in_progress',
     Completed: 'completed',
 } as const;
 export type ListBankReconciliationsStatusEnum = typeof ListBankReconciliationsStatusEnum[keyof typeof ListBankReconciliationsStatusEnum];
-/**
- * @export
- */
-export const ListBankStatementLinesMatchStatusEnum = {
-    Unmatched: 'unmatched',
-    Suggested: 'suggested',
-    Matched: 'matched',
-} as const;
-export type ListBankStatementLinesMatchStatusEnum = typeof ListBankStatementLinesMatchStatusEnum[keyof typeof ListBankStatementLinesMatchStatusEnum];
-/**
- * @export
- */
-export const UploadBankStatementFormatEnum = {
-    Csv: 'csv',
-    Mt940: 'mt940',
-} as const;
-export type UploadBankStatementFormatEnum = typeof UploadBankStatementFormatEnum[keyof typeof UploadBankStatementFormatEnum];

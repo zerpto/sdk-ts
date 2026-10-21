@@ -20,7 +20,7 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface BankReconciliation {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `brc-` followed by a UUID.
      */
     readonly id: string;
     /**
@@ -30,11 +30,11 @@ export interface BankReconciliation {
     /**
      * 
      */
-    periodStart: string;
+    periodStart: Date;
     /**
      * 
      */
-    periodEnd: string;
+    periodEnd: Date;
     /**
      * Decimal number as a string. Never a float.
      */
@@ -99,8 +99,8 @@ export function BankReconciliationFromJSONTyped(json: any, ignoreDiscriminator: 
         
         'id': json['id'],
         'bankAccountId': json['bank_account_id'],
-        'periodStart': json['period_start'],
-        'periodEnd': json['period_end'],
+        'periodStart': (json['period_start'] == null ? json['period_start'] : parseDate(json['period_start'])),
+        'periodEnd': (json['period_end'] == null ? json['period_end'] : parseDate(json['period_end'])),
         'statementBalance': json['statement_balance'],
         'bookBalance': json['book_balance'],
         'difference': json['difference'],
@@ -122,8 +122,8 @@ export function BankReconciliationToJSONTyped(value?: Omit<BankReconciliation, '
     return {
         
         'bank_account_id': value['bankAccountId'],
-        'period_start': value['periodStart'],
-        'period_end': value['periodEnd'],
+        'period_start': value['periodStart'] == null ? value['periodStart'] : serializeDate(value['periodStart']),
+        'period_end': value['periodEnd'] == null ? value['periodEnd'] : serializeDate(value['periodEnd']),
         'statement_balance': value['statementBalance'],
         'book_balance': value['bookBalance'],
         'difference': value['difference'],

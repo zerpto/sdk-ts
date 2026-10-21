@@ -8,8 +8,8 @@ Name | Type
 ------------ | -------------
 `id` | string
 `bankAccountId` | string
-`periodStart` | string
-`periodEnd` | string
+`periodStart` | Date
+`periodEnd` | Date
 `statementBalance` | string
 `bookBalance` | string
 `difference` | string

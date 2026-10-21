@@ -20,7 +20,7 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface BankStatement {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `bst-` followed by a UUID.
      */
     readonly id: string;
     /**
@@ -38,11 +38,11 @@ export interface BankStatement {
     /**
      * 
      */
-    periodStart: string;
+    periodStart: Date;
     /**
      * 
      */
-    periodEnd: string;
+    periodEnd: Date;
     /**
      * Decimal number as a string. Never a float.
      */
@@ -107,8 +107,8 @@ export function BankStatementFromJSONTyped(json: any, ignoreDiscriminator: boole
         'bankAccountId': json['bank_account_id'],
         'filename': json['filename'],
         'format': json['format'],
-        'periodStart': json['period_start'],
-        'periodEnd': json['period_end'],
+        'periodStart': (json['period_start'] == null ? json['period_start'] : parseDate(json['period_start'])),
+        'periodEnd': (json['period_end'] == null ? json['period_end'] : parseDate(json['period_end'])),
         'openingBalance': json['opening_balance'],
         'closingBalance': json['closing_balance'],
         'lineCount': json['line_count'],
@@ -131,8 +131,8 @@ export function BankStatementToJSONTyped(value?: Omit<BankStatement, 'id'|'creat
         'bank_account_id': value['bankAccountId'],
         'filename': value['filename'],
         'format': value['format'],
-        'period_start': value['periodStart'],
-        'period_end': value['periodEnd'],
+        'period_start': value['periodStart'] == null ? value['periodStart'] : serializeDate(value['periodStart']),
+        'period_end': value['periodEnd'] == null ? value['periodEnd'] : serializeDate(value['periodEnd']),
         'opening_balance': value['openingBalance'],
         'closing_balance': value['closingBalance'],
         'line_count': value['lineCount'],

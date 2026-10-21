@@ -10,8 +10,8 @@ Name | Type
 `bankAccountId` | string
 `filename` | string
 `format` | string
-`periodStart` | string
-`periodEnd` | string
+`periodStart` | Date
+`periodEnd` | Date
 `openingBalance` | string
 `closingBalance` | string
 `lineCount` | number

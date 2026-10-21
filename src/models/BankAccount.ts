@@ -20,7 +20,7 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface BankAccount {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `bnk-` followed by a UUID.
      */
     readonly id: string;
     /**

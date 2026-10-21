@@ -7,8 +7,8 @@
 Name | Type
 ------------ | -------------
 `bankAccountId` | string
-`periodStart` | string
-`periodEnd` | string
+`periodStart` | Date
+`periodEnd` | Date
 `statementId` | string
 
 ## Example

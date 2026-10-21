@@ -28,7 +28,7 @@ import {
  */
 export interface BankStatementLine {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `bsl-` followed by a UUID.
      */
     readonly id: string;
     /**

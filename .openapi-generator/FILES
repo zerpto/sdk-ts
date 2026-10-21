@@ -84,6 +84,7 @@ docs/AuthenticationApi.md
 docs/BalanceSheet.md
 docs/BalanceSheetResponse.md
 docs/BankAccount.md
+docs/BankAccountApi.md
 docs/BankAccountInput.md
 docs/BankAccountListResponse.md
 docs/BankAccountResponse.md
@@ -269,6 +270,7 @@ docs/SalesOrderListResponse.md
 docs/SalesOrderResponse.md
 docs/SalesOrderUpdate.md
 docs/SalesOrdersApi.md
+docs/StatementsApi.md
 docs/StockAdjustment.md
 docs/StockAdjustmentInput.md
 docs/StockAdjustmentInputLinesInner.md
@@ -391,6 +393,7 @@ src/apis/AccountsApi.ts
 src/apis/AdjustmentsApi.ts
 src/apis/ApprovalsApi.ts
 src/apis/AuthenticationApi.ts
+src/apis/BankAccountApi.ts
 src/apis/BankReconciliationApi.ts
 src/apis/BillingApi.ts
 src/apis/CreditNotesApi.ts
@@ -420,6 +423,7 @@ src/apis/ReturnApi.ts
 src/apis/RolesAndPermissionsApi.ts
 src/apis/SalesApi.ts
 src/apis/SalesOrdersApi.ts
+src/apis/StatementsApi.ts
 src/apis/TaxAndCurrenciesApi.ts
 src/apis/TaxApi.ts
 src/apis/TenantApi.ts

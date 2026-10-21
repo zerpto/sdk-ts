@@ -93,17 +93,13 @@ All URIs are relative to *https://api.zerpto.com*
 *AuthenticationApi* | [**refreshToken**](docs/AuthenticationApi.md#refreshtoken) | **POST** /v1/auth/refresh | Refresh the access token
 *AuthenticationApi* | [**register**](docs/AuthenticationApi.md#register) | **POST** /v1/auth/sign-up | Register a new account
 *AuthenticationApi* | [**verifyEmail**](docs/AuthenticationApi.md#verifyemail) | **POST** /v1/auth/verify-email | Confirm an email address
+*BankAccountApi* | [**createBankAccount**](docs/BankAccountApi.md#createbankaccount) | **POST** /v1/bank/accounts | Create bank account
+*BankAccountApi* | [**getBankAccount**](docs/BankAccountApi.md#getbankaccount) | **GET** /v1/bank/accounts/{id} | Get bank account
+*BankAccountApi* | [**listBankAccounts**](docs/BankAccountApi.md#listbankaccounts) | **GET** /v1/bank/accounts | List bank accounts
+*BankAccountApi* | [**updateBankAccount**](docs/BankAccountApi.md#updatebankaccount) | **PATCH** /v1/bank/accounts/{id} | Update bank account
 *BankReconciliationApi* | [**completeBankReconciliation**](docs/BankReconciliationApi.md#completebankreconciliation) | **POST** /v1/bank/reconciliations/{id}/complete | Complete a reconciliation
-*BankReconciliationApi* | [**createBankAccount**](docs/BankReconciliationApi.md#createbankaccount) | **POST** /v1/bank/accounts | Create bank account
 *BankReconciliationApi* | [**createBankReconciliation**](docs/BankReconciliationApi.md#createbankreconciliation) | **POST** /v1/bank/reconciliations | Start a reconciliation
-*BankReconciliationApi* | [**getBankAccount**](docs/BankReconciliationApi.md#getbankaccount) | **GET** /v1/bank/accounts/{id} | Get bank account
-*BankReconciliationApi* | [**listBankAccounts**](docs/BankReconciliationApi.md#listbankaccounts) | **GET** /v1/bank/accounts | List bank accounts
 *BankReconciliationApi* | [**listBankReconciliations**](docs/BankReconciliationApi.md#listbankreconciliations) | **GET** /v1/bank/reconciliations | List reconciliations
-*BankReconciliationApi* | [**listBankStatementLines**](docs/BankReconciliationApi.md#listbankstatementlines) | **GET** /v1/bank/statements/{id}/lines | List statement lines
-*BankReconciliationApi* | [**matchBankStatementLine**](docs/BankReconciliationApi.md#matchbankstatementline) | **POST** /v1/bank/statement-lines/{id}/match | Match a line
-*BankReconciliationApi* | [**unmatchBankStatementLine**](docs/BankReconciliationApi.md#unmatchbankstatementline) | **POST** /v1/bank/statement-lines/{id}/unmatch | Remove a match
-*BankReconciliationApi* | [**updateBankAccount**](docs/BankReconciliationApi.md#updatebankaccount) | **PATCH** /v1/bank/accounts/{id} | Update bank account
-*BankReconciliationApi* | [**uploadBankStatement**](docs/BankReconciliationApi.md#uploadbankstatement) | **POST** /v1/bank/accounts/{id}/statements | Upload a statement file
 *BillingApi* | [**cancelSubscription**](docs/BillingApi.md#cancelsubscription) | **DELETE** /v1/billing/subscription | Cancel at period end
 *BillingApi* | [**createCheckout**](docs/BillingApi.md#createcheckout) | **POST** /v1/billing/checkout | Pay an invoice on Xendit
 *BillingApi* | [**createSubscription**](docs/BillingApi.md#createsubscription) | **POST** /v1/billing/subscription | Subscribe to a plan
@@ -241,6 +237,10 @@ All URIs are relative to *https://api.zerpto.com*
 *SalesOrdersApi* | [**getSalesOrder**](docs/SalesOrdersApi.md#getsalesorder) | **GET** /v1/sales/orders/{id} | Get sales order
 *SalesOrdersApi* | [**listSalesOrders**](docs/SalesOrdersApi.md#listsalesorders) | **GET** /v1/sales/orders | List sales orders
 *SalesOrdersApi* | [**updateSalesOrder**](docs/SalesOrdersApi.md#updatesalesorder) | **PATCH** /v1/sales/orders/{id} | Update sales order
+*StatementsApi* | [**listBankStatementLines**](docs/StatementsApi.md#listbankstatementlines) | **GET** /v1/bank/statements/{id}/lines | List statement lines
+*StatementsApi* | [**matchBankStatementLine**](docs/StatementsApi.md#matchbankstatementline) | **POST** /v1/bank/statement-lines/{id}/match | Match a line
+*StatementsApi* | [**unmatchBankStatementLine**](docs/StatementsApi.md#unmatchbankstatementline) | **POST** /v1/bank/statement-lines/{id}/unmatch | Remove a match
+*StatementsApi* | [**uploadBankStatement**](docs/StatementsApi.md#uploadbankstatement) | **POST** /v1/bank/accounts/{id}/statements | Upload a statement file
 *TaxApi* | [**createTaxExport**](docs/TaxApi.md#createtaxexport) | **POST** /v1/tax/exports | Generate a tax export file
 *TaxApi* | [**createTaxWithholding**](docs/TaxApi.md#createtaxwithholding) | **POST** /v1/tax/withholdings | Record PPh 23 withholding
 *TaxApi* | [**getTaxExport**](docs/TaxApi.md#gettaxexport) | **GET** /v1/tax/exports/{id} | Get tax export status

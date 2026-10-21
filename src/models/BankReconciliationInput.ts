@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
 /**
  * 
  * @export
@@ -26,11 +26,11 @@ export interface BankReconciliationInput {
     /**
      * 
      */
-    periodStart: string;
+    periodStart: Date;
     /**
      * 
      */
-    periodEnd: string;
+    periodEnd: Date;
     /**
      * Defaults to the statement covering the period.
      */
@@ -58,8 +58,8 @@ export function BankReconciliationInputFromJSONTyped(json: any, ignoreDiscrimina
     return {
         
         'bankAccountId': json['bank_account_id'],
-        'periodStart': json['period_start'],
-        'periodEnd': json['period_end'],
+        'periodStart': (json['period_start'] == null ? json['period_start'] : parseDate(json['period_start'])),
+        'periodEnd': (json['period_end'] == null ? json['period_end'] : parseDate(json['period_end'])),
         'statementId': json['statement_id'] == null ? undefined : json['statement_id'],
     };
 }
@@ -76,8 +76,8 @@ export function BankReconciliationInputToJSONTyped(value?: BankReconciliationInp
     return {
         
         'bank_account_id': value['bankAccountId'],
-        'period_start': value['periodStart'],
-        'period_end': value['periodEnd'],
+        'period_start': value['periodStart'] == null ? value['periodStart'] : serializeDate(value['periodStart']),
+        'period_end': value['periodEnd'] == null ? value['periodEnd'] : serializeDate(value['periodEnd']),
         'statement_id': value['statementId'],
     };
 }
