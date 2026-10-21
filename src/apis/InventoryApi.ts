@@ -14,21 +14,6 @@
 
 import * as runtime from '../runtime';
 import {
-    type StockAdjustmentInput,
-    StockAdjustmentInputFromJSON,
-    StockAdjustmentInputToJSON,
-} from '../models/StockAdjustmentInput';
-import {
-    type StockAdjustmentListResponse,
-    StockAdjustmentListResponseFromJSON,
-    StockAdjustmentListResponseToJSON,
-} from '../models/StockAdjustmentListResponse';
-import {
-    type StockAdjustmentResponse,
-    StockAdjustmentResponseFromJSON,
-    StockAdjustmentResponseToJSON,
-} from '../models/StockAdjustmentResponse';
-import {
     type StockLevelListResponse,
     StockLevelListResponseFromJSON,
     StockLevelListResponseToJSON,
@@ -38,43 +23,6 @@ import {
     StockMovementListResponseFromJSON,
     StockMovementListResponseToJSON,
 } from '../models/StockMovementListResponse';
-import {
-    type StockTransferInput,
-    StockTransferInputFromJSON,
-    StockTransferInputToJSON,
-} from '../models/StockTransferInput';
-import {
-    type StockTransferListResponse,
-    StockTransferListResponseFromJSON,
-    StockTransferListResponseToJSON,
-} from '../models/StockTransferListResponse';
-import {
-    type StockTransferResponse,
-    StockTransferResponseFromJSON,
-    StockTransferResponseToJSON,
-} from '../models/StockTransferResponse';
-
-export interface CreateStockAdjustmentRequest {
-    /**
-     * 
-     */
-    stockAdjustmentInput: StockAdjustmentInput;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
-export interface CreateStockTransferRequest {
-    /**
-     * 
-     */
-    stockTransferInput: StockTransferInput;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
 
 export interface ListStockRequest {
     /**
@@ -89,37 +37,6 @@ export interface ListStockRequest {
      * Filter by item.
      */
     itemId?: string;
-    /**
-     * Filter by warehouse.
-     */
-    warehouseId?: string;
-}
-
-export interface ListStockAdjustmentsRequest {
-    /**
-     * Page size.
-     */
-    perPage?: number;
-    /**
-     * Page number, starting at 1.
-     */
-    page?: number;
-    /**
-     * Field to sort by. Prefix with `-` for descending.
-     */
-    sort?: string;
-    /**
-     * Only records created after this time.
-     */
-    createdAfter?: Date;
-    /**
-     * Only records created before this time.
-     */
-    createdBefore?: Date;
-    /**
-     * Filter by status.
-     */
-    status?: ListStockAdjustmentsStatusEnum;
     /**
      * Filter by warehouse.
      */
@@ -157,197 +74,10 @@ export interface ListStockMovementsRequest {
     dateTo?: Date;
 }
 
-export interface ListStockTransfersRequest {
-    /**
-     * Page size.
-     */
-    perPage?: number;
-    /**
-     * Page number, starting at 1.
-     */
-    page?: number;
-    /**
-     * Field to sort by. Prefix with `-` for descending.
-     */
-    sort?: string;
-    /**
-     * Only records created after this time.
-     */
-    createdAfter?: Date;
-    /**
-     * Only records created before this time.
-     */
-    createdBefore?: Date;
-    /**
-     * Filter by status.
-     */
-    status?: ListStockTransfersStatusEnum;
-}
-
-export interface PostStockAdjustmentRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
-export interface PostStockTransferRequest {
-    /**
-     * Resource ID.
-     */
-    id: string;
-    /**
-     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
-     */
-    idempotencyKey?: string;
-}
-
 /**
  * 
  */
 export class InventoryApi extends runtime.BaseAPI {
-
-    /**
-     * Creates request options for createStockAdjustment without sending the request
-     */
-    async createStockAdjustmentRequestOpts(requestParameters: CreateStockAdjustmentRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['stockAdjustmentInput'] == null) {
-            throw new runtime.RequiredError(
-                'stockAdjustmentInput',
-                'Required parameter "stockAdjustmentInput" was null or undefined when calling createStockAdjustment().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/adjustments`;
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: StockAdjustmentInputToJSON(requestParameters['stockAdjustmentInput']),
-        };
-    }
-
-    /**
-     * Enter counted quantities; differences are computed against the system quantity at posting time.  **Response meta** - `meta` is empty. 
-     * Create a stock adjustment
-     */
-    async createStockAdjustmentRaw(requestParameters: CreateStockAdjustmentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockAdjustmentResponse>> {
-        const requestOptions = await this.createStockAdjustmentRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockAdjustmentResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Enter counted quantities; differences are computed against the system quantity at posting time.  **Response meta** - `meta` is empty. 
-     * Create a stock adjustment
-     */
-    async createStockAdjustment(requestParameters: CreateStockAdjustmentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockAdjustmentResponse> {
-        const response = await this.createStockAdjustmentRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for createStockTransfer without sending the request
-     */
-    async createStockTransferRequestOpts(requestParameters: CreateStockTransferRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['stockTransferInput'] == null) {
-            throw new runtime.RequiredError(
-                'stockTransferInput',
-                'Required parameter "stockTransferInput" was null or undefined when calling createStockTransfer().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/transfers`;
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: StockTransferInputToJSON(requestParameters['stockTransferInput']),
-        };
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Create warehouse transfer
-     */
-    async createStockTransferRaw(requestParameters: CreateStockTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockTransferResponse>> {
-        const requestOptions = await this.createStockTransferRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockTransferResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `meta` is empty. 
-     * Create warehouse transfer
-     */
-    async createStockTransfer(requestParameters: CreateStockTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockTransferResponse> {
-        const response = await this.createStockTransferRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
 
     /**
      * Creates request options for listStock without sending the request
@@ -401,7 +131,7 @@ export class InventoryApi extends runtime.BaseAPI {
     }
 
     /**
-     * Quantity per item and warehouse.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Returns the quantity you hold of each item in each warehouse, with the average cost and the value when valuation is enabled. Use it to show stock on hand, to check availability before you deliver or transfer, or to compare with a physical count. Filter by `item_id` or `warehouse_id`. Items with no stock in a warehouse are not listed.  Take an `item_id` from [`GET /v1/items`](#tag/product-items/GET/v1/items) and a `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Stock goes up through [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts) and down through [`POST /v1/sales/deliveries/{id}/confirm`](#tag/deliveries/POST/v1/sales/deliveries/{id}/confirm), and it is moved or corrected with [`POST /v1/inventory/transfers`](#tag/transfers/POST/v1/inventory/transfers) and [`POST /v1/inventory/adjustments`](#tag/adjustments/POST/v1/inventory/adjustments). The movements behind a quantity are listed in [`GET /v1/inventory/movements`](#tag/inventory/GET/v1/inventory/movements).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * Stock on hand
      */
     async listStockRaw(requestParameters: ListStockRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockLevelListResponse>> {
@@ -412,94 +142,11 @@ export class InventoryApi extends runtime.BaseAPI {
     }
 
     /**
-     * Quantity per item and warehouse.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Returns the quantity you hold of each item in each warehouse, with the average cost and the value when valuation is enabled. Use it to show stock on hand, to check availability before you deliver or transfer, or to compare with a physical count. Filter by `item_id` or `warehouse_id`. Items with no stock in a warehouse are not listed.  Take an `item_id` from [`GET /v1/items`](#tag/product-items/GET/v1/items) and a `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Stock goes up through [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts) and down through [`POST /v1/sales/deliveries/{id}/confirm`](#tag/deliveries/POST/v1/sales/deliveries/{id}/confirm), and it is moved or corrected with [`POST /v1/inventory/transfers`](#tag/transfers/POST/v1/inventory/transfers) and [`POST /v1/inventory/adjustments`](#tag/adjustments/POST/v1/inventory/adjustments). The movements behind a quantity are listed in [`GET /v1/inventory/movements`](#tag/inventory/GET/v1/inventory/movements).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * Stock on hand
      */
     async listStock(requestParameters: ListStockRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockLevelListResponse> {
         const response = await this.listStockRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for listStockAdjustments without sending the request
-     */
-    async listStockAdjustmentsRequestOpts(requestParameters: ListStockAdjustmentsRequest): Promise<runtime.RequestOpts> {
-        const queryParameters: any = {};
-
-        if (requestParameters['perPage'] != null) {
-            queryParameters['per_page'] = requestParameters['perPage'];
-        }
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
-        }
-
-        if (requestParameters['sort'] != null) {
-            queryParameters['sort'] = requestParameters['sort'];
-        }
-
-        if (requestParameters['createdAfter'] != null) {
-            queryParameters['created_after'] = runtime.serializeDateTime(requestParameters['createdAfter'] as any);
-        }
-
-        if (requestParameters['createdBefore'] != null) {
-            queryParameters['created_before'] = runtime.serializeDateTime(requestParameters['createdBefore'] as any);
-        }
-
-        if (requestParameters['status'] != null) {
-            queryParameters['status'] = requestParameters['status'];
-        }
-
-        if (requestParameters['warehouseId'] != null) {
-            queryParameters['warehouse_id'] = requestParameters['warehouseId'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/adjustments`;
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List stock adjustments
-     */
-    async listStockAdjustmentsRaw(requestParameters: ListStockAdjustmentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockAdjustmentListResponse>> {
-        const requestOptions = await this.listStockAdjustmentsRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockAdjustmentListResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List stock adjustments
-     */
-    async listStockAdjustments(requestParameters: ListStockAdjustmentsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockAdjustmentListResponse> {
-        const response = await this.listStockAdjustmentsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -567,7 +214,7 @@ export class InventoryApi extends runtime.BaseAPI {
     }
 
     /**
-     * Read-only, append-only. Every movement comes from a posted document.  **Response meta** - `pagination`: `next_cursor`, `has_more`, `limit`, and the paging URLs `self`, `next` (`next` is null on the last page). Use `?cursor=` and `?limit=`. 
+     * Returns the ledger of every change to your stock, one row per item and warehouse, with the signed quantity, the cost, the value and the running quantity after the movement. It is read-only and only grows: every movement comes from a posted document, such as a goods receipt, a delivery, an adjustment or a transfer. Use it to explain a quantity, to audit one item, or to export movements. Filter by `item_id`, `warehouse_id`, `type` or a date range.  Take an `item_id` from [`GET /v1/items`](#tag/product-items/GET/v1/items) and a `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). The current totals are in [`GET /v1/inventory/stock`](#tag/inventory/GET/v1/inventory/stock). A row names its document in `source_type` and `source_id`, for example the one posted by [`POST /v1/sales/deliveries/{id}/confirm`](#tag/deliveries/POST/v1/sales/deliveries/{id}/confirm), [`POST /v1/inventory/adjustments/{id}/confirm`](#tag/adjustments/POST/v1/inventory/adjustments/{id}/confirm) or [`POST /v1/inventory/transfers/{id}/confirm`](#tag/transfers/POST/v1/inventory/transfers/{id}/confirm). This list pages with a cursor: pass the `next_cursor` of one response as `cursor` in the next call.  Error codes: none specific.  **Response meta** - `pagination`: `next_cursor`, `has_more`, `limit`, and the paging URLs `self`, `next` (`next` is null on the last page). Use `?cursor=` and `?limit=`. 
      * Stock movement ledger
      */
     async listStockMovementsRaw(requestParameters: ListStockMovementsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockMovementListResponse>> {
@@ -578,7 +225,7 @@ export class InventoryApi extends runtime.BaseAPI {
     }
 
     /**
-     * Read-only, append-only. Every movement comes from a posted document.  **Response meta** - `pagination`: `next_cursor`, `has_more`, `limit`, and the paging URLs `self`, `next` (`next` is null on the last page). Use `?cursor=` and `?limit=`. 
+     * Returns the ledger of every change to your stock, one row per item and warehouse, with the signed quantity, the cost, the value and the running quantity after the movement. It is read-only and only grows: every movement comes from a posted document, such as a goods receipt, a delivery, an adjustment or a transfer. Use it to explain a quantity, to audit one item, or to export movements. Filter by `item_id`, `warehouse_id`, `type` or a date range.  Take an `item_id` from [`GET /v1/items`](#tag/product-items/GET/v1/items) and a `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). The current totals are in [`GET /v1/inventory/stock`](#tag/inventory/GET/v1/inventory/stock). A row names its document in `source_type` and `source_id`, for example the one posted by [`POST /v1/sales/deliveries/{id}/confirm`](#tag/deliveries/POST/v1/sales/deliveries/{id}/confirm), [`POST /v1/inventory/adjustments/{id}/confirm`](#tag/adjustments/POST/v1/inventory/adjustments/{id}/confirm) or [`POST /v1/inventory/transfers/{id}/confirm`](#tag/transfers/POST/v1/inventory/transfers/{id}/confirm). This list pages with a cursor: pass the `next_cursor` of one response as `cursor` in the next call.  Error codes: none specific.  **Response meta** - `pagination`: `next_cursor`, `has_more`, `limit`, and the paging URLs `self`, `next` (`next` is null on the last page). Use `?cursor=` and `?limit=`. 
      * Stock movement ledger
      */
     async listStockMovements(requestParameters: ListStockMovementsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockMovementListResponse> {
@@ -586,229 +233,8 @@ export class InventoryApi extends runtime.BaseAPI {
         return await response.value();
     }
 
-    /**
-     * Creates request options for listStockTransfers without sending the request
-     */
-    async listStockTransfersRequestOpts(requestParameters: ListStockTransfersRequest): Promise<runtime.RequestOpts> {
-        const queryParameters: any = {};
-
-        if (requestParameters['perPage'] != null) {
-            queryParameters['per_page'] = requestParameters['perPage'];
-        }
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
-        }
-
-        if (requestParameters['sort'] != null) {
-            queryParameters['sort'] = requestParameters['sort'];
-        }
-
-        if (requestParameters['createdAfter'] != null) {
-            queryParameters['created_after'] = runtime.serializeDateTime(requestParameters['createdAfter'] as any);
-        }
-
-        if (requestParameters['createdBefore'] != null) {
-            queryParameters['created_before'] = runtime.serializeDateTime(requestParameters['createdBefore'] as any);
-        }
-
-        if (requestParameters['status'] != null) {
-            queryParameters['status'] = requestParameters['status'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/transfers`;
-
-        return {
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List warehouse transfers
-     */
-    async listStockTransfersRaw(requestParameters: ListStockTransfersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockTransferListResponse>> {
-        const requestOptions = await this.listStockTransfersRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockTransferListResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
-     * List warehouse transfers
-     */
-    async listStockTransfers(requestParameters: ListStockTransfersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockTransferListResponse> {
-        const response = await this.listStockTransfersRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for postStockAdjustment without sending the request
-     */
-    async postStockAdjustmentRequestOpts(requestParameters: PostStockAdjustmentRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling postStockAdjustment().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/adjustments/{id}/confirm`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * Updates stock and posts the difference between inventory and the adjustment account. Fails with 422 if the period is closed.  **Response meta** - `meta` is empty. 
-     * Post a stock adjustment
-     */
-    async postStockAdjustmentRaw(requestParameters: PostStockAdjustmentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockAdjustmentResponse>> {
-        const requestOptions = await this.postStockAdjustmentRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockAdjustmentResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Updates stock and posts the difference between inventory and the adjustment account. Fails with 422 if the period is closed.  **Response meta** - `meta` is empty. 
-     * Post a stock adjustment
-     */
-    async postStockAdjustment(requestParameters: PostStockAdjustmentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockAdjustmentResponse> {
-        const response = await this.postStockAdjustmentRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates request options for postStockTransfer without sending the request
-     */
-    async postStockTransferRequestOpts(requestParameters: PostStockTransferRequest): Promise<runtime.RequestOpts> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling postStockTransfer().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (requestParameters['idempotencyKey'] != null) {
-            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
-        }
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("ApiKeyAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("UserJWT", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/v1/inventory/transfers/{id}/confirm`;
-        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
-
-        return {
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        };
-    }
-
-    /**
-     * Moves stock between warehouses at the current average cost. No GL entry. Error code: `insufficient_stock`.  **Response meta** - `meta` is empty. 
-     * Post transfer
-     */
-    async postStockTransferRaw(requestParameters: PostStockTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockTransferResponse>> {
-        const requestOptions = await this.postStockTransferRequestOpts(requestParameters);
-        const response = await this.request(requestOptions, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockTransferResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Moves stock between warehouses at the current average cost. No GL entry. Error code: `insufficient_stock`.  **Response meta** - `meta` is empty. 
-     * Post transfer
-     */
-    async postStockTransfer(requestParameters: PostStockTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockTransferResponse> {
-        const response = await this.postStockTransferRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
 }
 
-/**
- * @export
- */
-export const ListStockAdjustmentsStatusEnum = {
-    Draft: 'draft',
-    Posted: 'posted',
-} as const;
-export type ListStockAdjustmentsStatusEnum = typeof ListStockAdjustmentsStatusEnum[keyof typeof ListStockAdjustmentsStatusEnum];
 /**
  * @export
  */
@@ -820,11 +246,3 @@ export const ListStockMovementsTypeEnum = {
     TransferOut: 'transfer_out',
 } as const;
 export type ListStockMovementsTypeEnum = typeof ListStockMovementsTypeEnum[keyof typeof ListStockMovementsTypeEnum];
-/**
- * @export
- */
-export const ListStockTransfersStatusEnum = {
-    Draft: 'draft',
-    Posted: 'posted',
-} as const;
-export type ListStockTransfersStatusEnum = typeof ListStockTransfersStatusEnum[keyof typeof ListStockTransfersStatusEnum];

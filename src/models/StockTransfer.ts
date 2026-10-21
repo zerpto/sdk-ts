@@ -28,7 +28,7 @@ import {
  */
 export interface StockTransfer {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `trf-` followed by a UUID.
      */
     readonly id: string;
     /**

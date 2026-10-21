@@ -143,6 +143,7 @@ export * from './GoodsReceiptResponse';
 export * from './Health';
 export * from './HealthResponse';
 export * from './InventoryValuation';
+export * from './InventoryValuationLine';
 export * from './InventoryValuationResponse';
 export * from './InvoiceDocument';
 export * from './InvoiceDocumentResponse';

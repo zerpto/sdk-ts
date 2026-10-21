@@ -20,7 +20,7 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface StockMovement {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `mov-` followed by a UUID.
      */
     readonly id: string;
     /**

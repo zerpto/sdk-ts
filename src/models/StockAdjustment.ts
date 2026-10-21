@@ -28,7 +28,7 @@ import {
  */
 export interface StockAdjustment {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `adj-` followed by a UUID.
      */
     readonly id: string;
     /**

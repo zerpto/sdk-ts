@@ -28,7 +28,7 @@ import {
  */
 export interface ArInvoice {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `inv-` followed by a UUID.
      */
     readonly id: string;
     /**

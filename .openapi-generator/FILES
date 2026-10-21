@@ -9,8 +9,8 @@ docs/AccountListResponse.md
 docs/AccountResponse.md
 docs/AccountUpdate.md
 docs/AccountsApi.md
-docs/AccountsReceivableApi.md
 docs/Address.md
+docs/AdjustmentsApi.md
 docs/AgingReport.md
 docs/AgingReportResponse.md
 docs/AgingReportRowsInner.md
@@ -125,7 +125,9 @@ docs/CurrencyListResponse.md
 docs/CursorListMeta.md
 docs/CursorPagination.md
 docs/CustomerInput.md
+docs/CustomerInvoiceApi.md
 docs/CustomerListResponse.md
+docs/CustomerPaymentApi.md
 docs/CustomerResponse.md
 docs/CustomerUpdate.md
 docs/CustomersApi.md
@@ -159,6 +161,7 @@ docs/Health.md
 docs/HealthResponse.md
 docs/InventoryApi.md
 docs/InventoryValuation.md
+docs/InventoryValuationLine.md
 docs/InventoryValuationResponse.md
 docs/InvoiceApi.md
 docs/InvoiceDocument.md
@@ -324,6 +327,7 @@ docs/ThreeWayMatchLinesInner.md
 docs/ThreeWayMatchResponse.md
 docs/TokenPair.md
 docs/TokenPairResponse.md
+docs/TransfersApi.md
 docs/TrialBalance.md
 docs/TrialBalanceResponse.md
 docs/TrialBalanceRowsInner.md
@@ -384,12 +388,14 @@ package.json
 src/apis/APIApi.ts
 src/apis/APIKeysApi.ts
 src/apis/AccountsApi.ts
-src/apis/AccountsReceivableApi.ts
+src/apis/AdjustmentsApi.ts
 src/apis/ApprovalsApi.ts
 src/apis/AuthenticationApi.ts
 src/apis/BankReconciliationApi.ts
 src/apis/BillingApi.ts
 src/apis/CreditNotesApi.ts
+src/apis/CustomerInvoiceApi.ts
+src/apis/CustomerPaymentApi.ts
 src/apis/CustomersApi.ts
 src/apis/DeliveriesApi.ts
 src/apis/FixedAssetsApi.ts
@@ -418,6 +424,7 @@ src/apis/TaxAndCurrenciesApi.ts
 src/apis/TaxApi.ts
 src/apis/TenantApi.ts
 src/apis/TenantsApi.ts
+src/apis/TransfersApi.ts
 src/apis/UsersApi.ts
 src/apis/VendorsApi.ts
 src/apis/WarehousesApi.ts
@@ -567,6 +574,7 @@ src/models/GoodsReceiptResponse.ts
 src/models/Health.ts
 src/models/HealthResponse.ts
 src/models/InventoryValuation.ts
+src/models/InventoryValuationLine.ts
 src/models/InventoryValuationResponse.ts
 src/models/InvoiceDocument.ts
 src/models/InvoiceDocumentResponse.ts

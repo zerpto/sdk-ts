@@ -13,6 +13,21 @@
  */
 
 import { mapValues } from '../runtime';
+import type { Item } from './Item';
+import {
+    ItemFromJSON,
+    ItemFromJSONTyped,
+    ItemToJSON,
+    ItemToJSONTyped,
+} from './Item';
+import type { Warehouse } from './Warehouse';
+import {
+    WarehouseFromJSON,
+    WarehouseFromJSONTyped,
+    WarehouseToJSON,
+    WarehouseToJSONTyped,
+} from './Warehouse';
+
 /**
  * 
  * @export
@@ -22,11 +37,11 @@ export interface StockLevel {
     /**
      * 
      */
-    itemId: string;
+    item: Item;
     /**
      * 
      */
-    warehouseId: string;
+    warehouse: Warehouse;
     /**
      * Decimal number as a string. Never a float.
      */
@@ -45,8 +60,8 @@ export interface StockLevel {
  * Check if a given object implements the StockLevel interface.
  */
 export function instanceOfStockLevel(value: object): value is StockLevel {
-    if ((!('itemId' in (value as Record<string, any>)) && !('item_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['itemId'] === undefined && (value as Record<string, any>)['item_id'] === undefined)) return false;
-    if ((!('warehouseId' in (value as Record<string, any>)) && !('warehouse_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['warehouseId'] === undefined && (value as Record<string, any>)['warehouse_id'] === undefined)) return false;
+    if (!('item' in value) || value['item'] === undefined) return false;
+    if (!('warehouse' in value) || value['warehouse'] === undefined) return false;
     if (!('quantity' in value) || value['quantity'] === undefined) return false;
     return true;
 }
@@ -61,8 +76,8 @@ export function StockLevelFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'itemId': json['item_id'],
-        'warehouseId': json['warehouse_id'],
+        'item': ItemFromJSON(json['item']),
+        'warehouse': WarehouseFromJSON(json['warehouse']),
         'quantity': json['quantity'],
         'averageCost': json['average_cost'] == null ? undefined : json['average_cost'],
         'value': json['value'] == null ? undefined : json['value'],
@@ -80,8 +95,8 @@ export function StockLevelToJSONTyped(value?: StockLevel | null, ignoreDiscrimin
 
     return {
         
-        'item_id': value['itemId'],
-        'warehouse_id': value['warehouseId'],
+        'item': ItemToJSON(value['item']),
+        'warehouse': WarehouseToJSON(value['warehouse']),
         'quantity': value['quantity'],
         'average_cost': value['averageCost'],
         'value': value['value'],

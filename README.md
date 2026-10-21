@@ -74,15 +74,9 @@ All URIs are relative to *https://api.zerpto.com*
 *AccountsApi* | [**getAccount**](docs/AccountsApi.md#getaccount) | **GET** /v1/accounts/{id} | Get an account
 *AccountsApi* | [**listAccounts**](docs/AccountsApi.md#listaccounts) | **GET** /v1/accounts | List accounts
 *AccountsApi* | [**updateAccount**](docs/AccountsApi.md#updateaccount) | **PATCH** /v1/accounts/{id} | Update an account
-*AccountsReceivableApi* | [**createArInvoice**](docs/AccountsReceivableApi.md#createarinvoice) | **POST** /v1/ar/invoices | Create invoice
-*AccountsReceivableApi* | [**createArPayment**](docs/AccountsReceivableApi.md#createarpayment) | **POST** /v1/ar/payments | Record a payment
-*AccountsReceivableApi* | [**getArInvoice**](docs/AccountsReceivableApi.md#getarinvoice) | **GET** /v1/ar/invoices/{id} | Get ArInvoice
-*AccountsReceivableApi* | [**getArPayment**](docs/AccountsReceivableApi.md#getarpayment) | **GET** /v1/ar/payments/{id} | Get payment
-*AccountsReceivableApi* | [**listArInvoices**](docs/AccountsReceivableApi.md#listarinvoices) | **GET** /v1/ar/invoices | List invoices
-*AccountsReceivableApi* | [**listArPayments**](docs/AccountsReceivableApi.md#listarpayments) | **GET** /v1/ar/payments | List payments
-*AccountsReceivableApi* | [**postArInvoice**](docs/AccountsReceivableApi.md#postarinvoice) | **POST** /v1/ar/invoices/{id}/confirm | Post invoice to the GL
-*AccountsReceivableApi* | [**updateArInvoice**](docs/AccountsReceivableApi.md#updatearinvoice) | **PATCH** /v1/ar/invoices/{id} | Update ArInvoice
-*AccountsReceivableApi* | [**voidArInvoice**](docs/AccountsReceivableApi.md#voidarinvoice) | **POST** /v1/ar/invoices/{id}/void | Void invoice
+*AdjustmentsApi* | [**createStockAdjustment**](docs/AdjustmentsApi.md#createstockadjustment) | **POST** /v1/inventory/adjustments | Create a stock adjustment
+*AdjustmentsApi* | [**listStockAdjustments**](docs/AdjustmentsApi.md#liststockadjustments) | **GET** /v1/inventory/adjustments | List stock adjustments
+*AdjustmentsApi* | [**postStockAdjustment**](docs/AdjustmentsApi.md#poststockadjustment) | **POST** /v1/inventory/adjustments/{id}/confirm | Post a stock adjustment
 *ApprovalsApi* | [**approveApproval**](docs/ApprovalsApi.md#approveapproval) | **POST** /v1/approvals/{id}/approve | Approve
 *ApprovalsApi* | [**createApprovalRule**](docs/ApprovalsApi.md#createapprovalrule) | **POST** /v1/approval-rules | Create approval rule
 *ApprovalsApi* | [**deleteApprovalRule**](docs/ApprovalsApi.md#deleteapprovalrule) | **DELETE** /v1/approval-rules/{id} | Remove approval rule
@@ -130,6 +124,15 @@ All URIs are relative to *https://api.zerpto.com*
 *CreditNotesApi* | [**removeApCreditNoteAllocation**](docs/CreditNotesApi.md#removeapcreditnoteallocation) | **DELETE** /v1/ap/credit-notes/{id}/allocations/{invoice_id} | Remove a credit allocation
 *CreditNotesApi* | [**updateApCreditNote**](docs/CreditNotesApi.md#updateapcreditnote) | **PATCH** /v1/ap/credit-notes/{id} | Update credit note
 *CreditNotesApi* | [**voidApCreditNote**](docs/CreditNotesApi.md#voidapcreditnote) | **POST** /v1/ap/credit-notes/{id}/void | Void credit note
+*CustomerInvoiceApi* | [**createArInvoice**](docs/CustomerInvoiceApi.md#createarinvoice) | **POST** /v1/ar/invoices | Create invoice
+*CustomerInvoiceApi* | [**getArInvoice**](docs/CustomerInvoiceApi.md#getarinvoice) | **GET** /v1/ar/invoices/{id} | Get invoice
+*CustomerInvoiceApi* | [**listArInvoices**](docs/CustomerInvoiceApi.md#listarinvoices) | **GET** /v1/ar/invoices | List invoices
+*CustomerInvoiceApi* | [**postArInvoice**](docs/CustomerInvoiceApi.md#postarinvoice) | **POST** /v1/ar/invoices/{id}/confirm | Post invoice to the GL
+*CustomerInvoiceApi* | [**updateArInvoice**](docs/CustomerInvoiceApi.md#updatearinvoice) | **PATCH** /v1/ar/invoices/{id} | Update invoice
+*CustomerInvoiceApi* | [**voidArInvoice**](docs/CustomerInvoiceApi.md#voidarinvoice) | **POST** /v1/ar/invoices/{id}/void | Void invoice
+*CustomerPaymentApi* | [**createArPayment**](docs/CustomerPaymentApi.md#createarpayment) | **POST** /v1/ar/payments | Record a payment
+*CustomerPaymentApi* | [**getArPayment**](docs/CustomerPaymentApi.md#getarpayment) | **GET** /v1/ar/payments/{id} | Get payment
+*CustomerPaymentApi* | [**listArPayments**](docs/CustomerPaymentApi.md#listarpayments) | **GET** /v1/ar/payments | List payments
 *CustomersApi* | [**archiveCustomer**](docs/CustomersApi.md#archivecustomer) | **DELETE** /v1/customers/{id} | Archive Customer
 *CustomersApi* | [**createCustomer**](docs/CustomersApi.md#createcustomer) | **POST** /v1/customers | Create customer
 *CustomersApi* | [**getCustomer**](docs/CustomersApi.md#getcustomer) | **GET** /v1/customers/{id} | Get Customer
@@ -159,14 +162,8 @@ All URIs are relative to *https://api.zerpto.com*
 *GoodsReceiptApi* | [**getGoodsReceipt**](docs/GoodsReceiptApi.md#getgoodsreceipt) | **GET** /v1/purchasing/receipts/{id} | Get goods receipt
 *GoodsReceiptApi* | [**listGoodsReceipts**](docs/GoodsReceiptApi.md#listgoodsreceipts) | **GET** /v1/purchasing/receipts | List goods receipts
 *GoodsReceiptApi* | [**postGoodsReceipt**](docs/GoodsReceiptApi.md#postgoodsreceipt) | **POST** /v1/purchasing/receipts/{id}/confirm | Post goods receipt
-*InventoryApi* | [**createStockAdjustment**](docs/InventoryApi.md#createstockadjustment) | **POST** /v1/inventory/adjustments | Create a stock adjustment
-*InventoryApi* | [**createStockTransfer**](docs/InventoryApi.md#createstocktransfer) | **POST** /v1/inventory/transfers | Create warehouse transfer
 *InventoryApi* | [**listStock**](docs/InventoryApi.md#liststock) | **GET** /v1/inventory/stock | Stock on hand
-*InventoryApi* | [**listStockAdjustments**](docs/InventoryApi.md#liststockadjustments) | **GET** /v1/inventory/adjustments | List stock adjustments
 *InventoryApi* | [**listStockMovements**](docs/InventoryApi.md#liststockmovements) | **GET** /v1/inventory/movements | Stock movement ledger
-*InventoryApi* | [**listStockTransfers**](docs/InventoryApi.md#liststocktransfers) | **GET** /v1/inventory/transfers | List warehouse transfers
-*InventoryApi* | [**postStockAdjustment**](docs/InventoryApi.md#poststockadjustment) | **POST** /v1/inventory/adjustments/{id}/confirm | Post a stock adjustment
-*InventoryApi* | [**postStockTransfer**](docs/InventoryApi.md#poststocktransfer) | **POST** /v1/inventory/transfers/{id}/confirm | Post transfer
 *InvoiceApi* | [**createApInvoice**](docs/InvoiceApi.md#createapinvoice) | **POST** /v1/ap/invoices | Create invoice
 *InvoiceApi* | [**getApInvoice**](docs/InvoiceApi.md#getapinvoice) | **GET** /v1/ap/invoices/{id} | Get ApInvoice
 *InvoiceApi* | [**listApInvoices**](docs/InvoiceApi.md#listapinvoices) | **GET** /v1/ap/invoices | List invoices
@@ -264,6 +261,9 @@ All URIs are relative to *https://api.zerpto.com*
 *TenantsApi* | [**createTenant**](docs/TenantsApi.md#createtenant) | **POST** /v1/tenants | Create a tenant
 *TenantsApi* | [**getTenant**](docs/TenantsApi.md#gettenant) | **GET** /v1/tenant | Get current tenant
 *TenantsApi* | [**updateTenant**](docs/TenantsApi.md#updatetenant) | **PATCH** /v1/tenant | Update tenant settings
+*TransfersApi* | [**createStockTransfer**](docs/TransfersApi.md#createstocktransfer) | **POST** /v1/inventory/transfers | Create warehouse transfer
+*TransfersApi* | [**listStockTransfers**](docs/TransfersApi.md#liststocktransfers) | **GET** /v1/inventory/transfers | List warehouse transfers
+*TransfersApi* | [**postStockTransfer**](docs/TransfersApi.md#poststocktransfer) | **POST** /v1/inventory/transfers/{id}/confirm | Post transfer
 *UsersApi* | [**createUser**](docs/UsersApi.md#createuser) | **POST** /v1/users | Create user
 *UsersApi* | [**deactivateUser**](docs/UsersApi.md#deactivateuser) | **DELETE** /v1/users/{id} | Deactivate User
 *UsersApi* | [**getUser**](docs/UsersApi.md#getuser) | **GET** /v1/users/{id} | Get User
@@ -435,6 +435,7 @@ All URIs are relative to *https://api.zerpto.com*
 - [Health](docs/Health.md)
 - [HealthResponse](docs/HealthResponse.md)
 - [InventoryValuation](docs/InventoryValuation.md)
+- [InventoryValuationLine](docs/InventoryValuationLine.md)
 - [InventoryValuationResponse](docs/InventoryValuationResponse.md)
 - [InvoiceDocument](docs/InvoiceDocument.md)
 - [InvoiceDocumentResponse](docs/InvoiceDocumentResponse.md)

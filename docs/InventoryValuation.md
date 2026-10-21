@@ -9,7 +9,7 @@ Name | Type
 `asOf` | Date
 `currency` | string
 `total` | string
-`lines` | [Array&lt;StockLevel&gt;](StockLevel.md)
+`lines` | [Array&lt;InventoryValuationLine&gt;](InventoryValuationLine.md)
 
 ## Example
 

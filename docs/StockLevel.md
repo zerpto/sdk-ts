@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`itemId` | string
-`warehouseId` | string
+`item` | [Item](Item.md)
+`warehouse` | [Warehouse](Warehouse.md)
 `quantity` | string
 `averageCost` | string
 `value` | string
@@ -19,8 +19,8 @@ import type { StockLevel } from '@zerpto/sdk'
 
 // TODO: Update the object below with actual values
 const example = {
-  "itemId": null,
-  "warehouseId": null,
+  "item": null,
+  "warehouse": null,
   "quantity": 1500000.00,
   "averageCost": 1500000.00,
   "value": 1500000.00,

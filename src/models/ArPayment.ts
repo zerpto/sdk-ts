@@ -28,7 +28,7 @@ import {
  */
 export interface ArPayment {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID: `rcp-` followed by a UUID.
      */
     readonly id: string;
     /**

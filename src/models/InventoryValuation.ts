@@ -13,13 +13,13 @@
  */
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
-import type { StockLevel } from './StockLevel';
+import type { InventoryValuationLine } from './InventoryValuationLine';
 import {
-    StockLevelFromJSON,
-    StockLevelFromJSONTyped,
-    StockLevelToJSON,
-    StockLevelToJSONTyped,
-} from './StockLevel';
+    InventoryValuationLineFromJSON,
+    InventoryValuationLineFromJSONTyped,
+    InventoryValuationLineToJSON,
+    InventoryValuationLineToJSONTyped,
+} from './InventoryValuationLine';
 
 /**
  * 
@@ -42,7 +42,7 @@ export interface InventoryValuation {
     /**
      * 
      */
-    lines: Array<StockLevel>;
+    lines: Array<InventoryValuationLine>;
 }
 
 /**
@@ -69,7 +69,7 @@ export function InventoryValuationFromJSONTyped(json: any, ignoreDiscriminator: 
         'asOf': (json['as_of'] == null ? json['as_of'] : parseDate(json['as_of'])),
         'currency': json['currency'],
         'total': json['total'],
-        'lines': ((json['lines'] as Array<any>).map(StockLevelFromJSON)),
+        'lines': ((json['lines'] as Array<any>).map(InventoryValuationLineFromJSON)),
     };
 }
 
@@ -87,7 +87,7 @@ export function InventoryValuationToJSONTyped(value?: InventoryValuation | null,
         'as_of': value['asOf'] == null ? value['asOf'] : serializeDate(value['asOf']),
         'currency': value['currency'],
         'total': value['total'],
-        'lines': ((value['lines'] as Array<any>).map(StockLevelToJSON)),
+        'lines': ((value['lines'] as Array<any>).map(InventoryValuationLineToJSON)),
     };
 }
 
