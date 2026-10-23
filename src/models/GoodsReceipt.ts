@@ -13,6 +13,41 @@
  */
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
+import type { Warehouse } from './Warehouse';
+import {
+    WarehouseFromJSON,
+    WarehouseFromJSONTyped,
+    WarehouseToJSON,
+    WarehouseToJSONTyped,
+} from './Warehouse';
+import type { GoodsReceiptEvidence } from './GoodsReceiptEvidence';
+import {
+    GoodsReceiptEvidenceFromJSON,
+    GoodsReceiptEvidenceFromJSONTyped,
+    GoodsReceiptEvidenceToJSON,
+    GoodsReceiptEvidenceToJSONTyped,
+} from './GoodsReceiptEvidence';
+import type { BusinessPartner } from './BusinessPartner';
+import {
+    BusinessPartnerFromJSON,
+    BusinessPartnerFromJSONTyped,
+    BusinessPartnerToJSON,
+    BusinessPartnerToJSONTyped,
+} from './BusinessPartner';
+import type { PurchaseOrder } from './PurchaseOrder';
+import {
+    PurchaseOrderFromJSON,
+    PurchaseOrderFromJSONTyped,
+    PurchaseOrderToJSON,
+    PurchaseOrderToJSONTyped,
+} from './PurchaseOrder';
+import type { GoodsReceiptDeliveryNote } from './GoodsReceiptDeliveryNote';
+import {
+    GoodsReceiptDeliveryNoteFromJSON,
+    GoodsReceiptDeliveryNoteFromJSONTyped,
+    GoodsReceiptDeliveryNoteToJSON,
+    GoodsReceiptDeliveryNoteToJSONTyped,
+} from './GoodsReceiptDeliveryNote';
 import type { GoodsReceiptLine } from './GoodsReceiptLine';
 import {
     GoodsReceiptLineFromJSON,
@@ -36,17 +71,29 @@ export interface GoodsReceipt {
      */
     readonly number: string;
     /**
-     * 
+     * The distinct purchase orders covered by `lines`, derived from each line's `po_line_id`.
      */
-    purchaseOrderId: string;
+    readonly purchaseOrderIds: Array<string>;
+    /**
+     * The purchase orders named by `purchase_order_ids`, each with its own lines. Set only when fetched with `?include=purchase_orders` on [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}) (add `purchase_orders.items` to also embed each line's `item`). Absent otherwise.
+     */
+    purchaseOrders?: Array<PurchaseOrder> | null;
     /**
      * 
      */
-    vendorId?: string;
+    vendorId: string;
+    /**
+     * Set only when fetched with `?include=vendor` on [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}). Absent otherwise.
+     */
+    vendor?: BusinessPartner | null;
     /**
      * 
      */
     warehouseId: string;
+    /**
+     * Set only when fetched with `?include=warehouse` on [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}). Absent otherwise.
+     */
+    warehouse?: Warehouse | null;
     /**
      * 
      */
@@ -67,6 +114,14 @@ export interface GoodsReceipt {
      * 
      */
     lines: Array<GoodsReceiptLine>;
+    /**
+     * Set by [`POST /v1/purchasing/receipts/{id}/delivery-note`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/delivery-note). Null until the delivery note is uploaded.
+     */
+    deliveryNote: GoodsReceiptDeliveryNote | null;
+    /**
+     * Supporting files added with [`POST /v1/purchasing/receipts/{id}/evidences`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/evidences).
+     */
+    evidences: Array<GoodsReceiptEvidence>;
     /**
      * Set once posted.
      */
@@ -103,12 +158,15 @@ export type GoodsReceiptBillingStatusEnum = typeof GoodsReceiptBillingStatusEnum
 export function instanceOfGoodsReceipt(value: object): value is GoodsReceipt {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('number' in value) || value['number'] === undefined) return false;
-    if ((!('purchaseOrderId' in (value as Record<string, any>)) && !('purchase_order_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['purchaseOrderId'] === undefined && (value as Record<string, any>)['purchase_order_id'] === undefined)) return false;
+    if ((!('purchaseOrderIds' in (value as Record<string, any>)) && !('purchase_order_ids' in (value as Record<string, any>))) || ((value as Record<string, any>)['purchaseOrderIds'] === undefined && (value as Record<string, any>)['purchase_order_ids'] === undefined)) return false;
+    if ((!('vendorId' in (value as Record<string, any>)) && !('vendor_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['vendorId'] === undefined && (value as Record<string, any>)['vendor_id'] === undefined)) return false;
     if ((!('warehouseId' in (value as Record<string, any>)) && !('warehouse_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['warehouseId'] === undefined && (value as Record<string, any>)['warehouse_id'] === undefined)) return false;
     if ((!('receivedDate' in (value as Record<string, any>)) && !('received_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['receivedDate'] === undefined && (value as Record<string, any>)['received_date'] === undefined)) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     if ((!('billingStatus' in (value as Record<string, any>)) && !('billing_status' in (value as Record<string, any>))) || ((value as Record<string, any>)['billingStatus'] === undefined && (value as Record<string, any>)['billing_status'] === undefined)) return false;
     if (!('lines' in value) || value['lines'] === undefined) return false;
+    if ((!('deliveryNote' in (value as Record<string, any>)) && !('delivery_note' in (value as Record<string, any>))) || ((value as Record<string, any>)['deliveryNote'] === undefined && (value as Record<string, any>)['delivery_note'] === undefined)) return false;
+    if (!('evidences' in value) || value['evidences'] === undefined) return false;
     return true;
 }
 
@@ -124,14 +182,19 @@ export function GoodsReceiptFromJSONTyped(json: any, ignoreDiscriminator: boolea
         
         'id': json['id'],
         'number': json['number'],
-        'purchaseOrderId': json['purchase_order_id'],
-        'vendorId': json['vendor_id'] == null ? undefined : json['vendor_id'],
+        'purchaseOrderIds': json['purchase_order_ids'],
+        'purchaseOrders': json['purchase_orders'] === undefined ? undefined : json['purchase_orders'] === null ? null : ((json['purchase_orders'] as Array<any>).map(PurchaseOrderFromJSON)),
+        'vendorId': json['vendor_id'],
+        'vendor': json['vendor'] === undefined ? undefined : json['vendor'] === null ? null : BusinessPartnerFromJSON(json['vendor']),
         'warehouseId': json['warehouse_id'],
+        'warehouse': json['warehouse'] === undefined ? undefined : json['warehouse'] === null ? null : WarehouseFromJSON(json['warehouse']),
         'receivedDate': (json['received_date'] == null ? json['received_date'] : parseDate(json['received_date'])),
         'status': json['status'],
         'billingStatus': json['billing_status'],
         'billId': json['bill_id'] === undefined ? undefined : json['bill_id'] === null ? null : json['bill_id'],
         'lines': ((json['lines'] as Array<any>).map(GoodsReceiptLineFromJSON)),
+        'deliveryNote': GoodsReceiptDeliveryNoteFromJSON(json['delivery_note']),
+        'evidences': ((json['evidences'] as Array<any>).map(GoodsReceiptEvidenceFromJSON)),
         'journalEntryId': json['journal_entry_id'] === undefined ? undefined : json['journal_entry_id'] === null ? null : json['journal_entry_id'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
     };
@@ -141,21 +204,25 @@ export function GoodsReceiptToJSON(json: any): GoodsReceipt {
     return GoodsReceiptToJSONTyped(json, false);
 }
 
-export function GoodsReceiptToJSONTyped(value?: Omit<GoodsReceipt, 'id'|'number'|'createdAt'> | null, ignoreDiscriminator: boolean = false): any {
+export function GoodsReceiptToJSONTyped(value?: Omit<GoodsReceipt, 'id'|'number'|'purchaseOrderIds'|'createdAt'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'purchase_order_id': value['purchaseOrderId'],
+        'purchase_orders': value['purchaseOrders'] == null ? undefined : ((value['purchaseOrders'] as Array<any>).map(PurchaseOrderToJSON)),
         'vendor_id': value['vendorId'],
+        'vendor': BusinessPartnerToJSON(value['vendor']),
         'warehouse_id': value['warehouseId'],
+        'warehouse': WarehouseToJSON(value['warehouse']),
         'received_date': value['receivedDate'] == null ? value['receivedDate'] : serializeDate(value['receivedDate']),
         'status': value['status'],
         'billing_status': value['billingStatus'],
         'bill_id': value['billId'],
         'lines': ((value['lines'] as Array<any>).map(GoodsReceiptLineToJSON)),
+        'delivery_note': GoodsReceiptDeliveryNoteToJSON(value['deliveryNote']),
+        'evidences': ((value['evidences'] as Array<any>).map(GoodsReceiptEvidenceToJSON)),
         'journal_entry_id': value['journalEntryId'],
     };
 }

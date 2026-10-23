@@ -155,6 +155,8 @@ docs/ForgotPasswordInput.md
 docs/GeneralLedgerApi.md
 docs/GoodsReceipt.md
 docs/GoodsReceiptApi.md
+docs/GoodsReceiptDeliveryNote.md
+docs/GoodsReceiptEvidence.md
 docs/GoodsReceiptInput.md
 docs/GoodsReceiptInputLinesInner.md
 docs/GoodsReceiptLine.md
@@ -574,6 +576,8 @@ src/models/DepreciationScheduleResponse.ts
 src/models/ErrorError.ts
 src/models/ForgotPasswordInput.ts
 src/models/GoodsReceipt.ts
+src/models/GoodsReceiptDeliveryNote.ts
+src/models/GoodsReceiptEvidence.ts
 src/models/GoodsReceiptInput.ts
 src/models/GoodsReceiptInputLinesInner.ts
 src/models/GoodsReceiptLine.ts

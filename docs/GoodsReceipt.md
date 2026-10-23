@@ -8,14 +8,19 @@ Name | Type
 ------------ | -------------
 `id` | string
 `number` | string
-`purchaseOrderId` | string
+`purchaseOrderIds` | Array&lt;string&gt;
+`purchaseOrders` | [Array&lt;PurchaseOrder&gt;](PurchaseOrder.md)
 `vendorId` | string
+`vendor` | [BusinessPartner](BusinessPartner.md)
 `warehouseId` | string
+`warehouse` | [Warehouse](Warehouse.md)
 `receivedDate` | Date
 `status` | string
 `billingStatus` | string
 `billId` | string
 `lines` | [Array&lt;GoodsReceiptLine&gt;](GoodsReceiptLine.md)
+`deliveryNote` | [GoodsReceiptDeliveryNote](GoodsReceiptDeliveryNote.md)
+`evidences` | [Array&lt;GoodsReceiptEvidence&gt;](GoodsReceiptEvidence.md)
 `journalEntryId` | string
 `createdAt` | Date
 
@@ -28,14 +33,19 @@ import type { GoodsReceipt } from '@zerpto/sdk'
 const example = {
   "id": null,
   "number": null,
-  "purchaseOrderId": null,
+  "purchaseOrderIds": null,
+  "purchaseOrders": null,
   "vendorId": null,
+  "vendor": null,
   "warehouseId": null,
+  "warehouse": null,
   "receivedDate": null,
   "status": null,
   "billingStatus": null,
   "billId": null,
   "lines": null,
+  "deliveryNote": null,
+  "evidences": null,
   "journalEntryId": null,
   "createdAt": null,
 } satisfies GoodsReceipt

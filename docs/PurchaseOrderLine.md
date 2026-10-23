@@ -19,6 +19,7 @@ Name | Type
 `lineTotal` | string
 `receivedQuantity` | string
 `billedQuantity` | string
+`item` | object
 
 ## Example
 
@@ -40,6 +41,7 @@ const example = {
   "lineTotal": 1500000.00,
   "receivedQuantity": 1500000.00,
   "billedQuantity": 1500000.00,
+  "item": null,
 } satisfies PurchaseOrderLine
 
 console.log(example)

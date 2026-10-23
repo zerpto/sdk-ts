@@ -45,6 +45,11 @@ export interface GetGoodsReceiptRequest {
      * Resource ID.
      */
     id: string;
+    /**
+     * Comma-separated relations to embed as full objects: `vendor`, `warehouse`, `purchase_orders`, `purchase_orders.items`. `purchase_orders.items` also embeds `purchase_orders` even if not listed on its own. Without it, only the plain `vendor_id`, `warehouse_id` and `purchase_order_ids` are returned.
+     * 
+     */
+    include?: string;
 }
 
 export interface ListGoodsReceiptsRequest {
@@ -69,7 +74,7 @@ export interface ListGoodsReceiptsRequest {
      */
     createdBefore?: Date;
     /**
-     * Filter by purchase order.
+     * Filter by a purchase order among the receipt's `purchase_order_ids`.
      */
     purchaseOrderId?: string;
     /**
@@ -91,6 +96,36 @@ export interface PostGoodsReceiptRequest {
      * Resource ID.
      */
     id: string;
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
+}
+
+export interface UploadGoodsReceiptDeliveryNoteRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * PDF, JPEG or PNG, up to 10 MB.
+     */
+    file: Blob;
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
+}
+
+export interface UploadGoodsReceiptEvidencesRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * Image, video or PDF, up to 50 MB each.
+     */
+    files: Array<Blob>;
     /**
      * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
      */
@@ -152,7 +187,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
     }
 
     /**
-     * Records a delivery against an approved purchase order, as a draft. Send the `purchase_order_id`, the `warehouse_id` where the goods arrived, the `received_date`, and for each line the `po_line_id` and the quantity received now. One order can have many receipts for partial deliveries, but the total received on a line cannot exceed the quantity ordered. Nothing moves in stock until the receipt is posted. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `purchase_order_id` and the `po_line_id` of each line from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}), and the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Check the draft with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}), then call [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) to move the stock in. Once the vendor\'s invoice arrives, bill the receipt with [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills) or [`POST /v1/purchasing/orders/{id}/bill`](#tag/purchase-bill/POST/v1/purchasing/orders/{id}/bill).  Error codes: `order_not_receivable`, `unknown_po_line`, `unknown_warehouse`, `over_receipt`.  **Response meta** - `meta` is empty. 
+     * Records a delivery against one or more approved purchase orders of the same vendor, as a draft. Send the `vendor_id`, the `warehouse_id` where the goods arrived, the `received_date`, and for each line the `po_line_id` and the quantity received now; lines can mix `po_line_id` values from different orders as long as every order belongs to `vendor_id`. One order can have many receipts for partial deliveries, but the total received on a line cannot exceed the quantity ordered, and the quantity received now cannot exceed what remains to receive on that line. Nothing moves in stock until the receipt is posted. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `vendor_id` from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), the `po_line_id` of each line from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}) for every order of that vendor you are receiving against, and the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Check the draft with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}), then call [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) to move the stock in. Once the vendor\'s invoice arrives, bill the receipt with [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills) or [`POST /v1/purchasing/orders/{id}/bill`](#tag/purchase-bill/POST/v1/purchasing/orders/{id}/bill).  Error codes: `order_not_receivable`, `unknown_po_line`, `unknown_warehouse`, `over_receipt`.  **Response meta** - `meta` is empty. 
      * Create goods receipt
      */
     async createGoodsReceiptRaw(requestParameters: CreateGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GoodsReceiptResponse>> {
@@ -163,7 +198,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
     }
 
     /**
-     * Records a delivery against an approved purchase order, as a draft. Send the `purchase_order_id`, the `warehouse_id` where the goods arrived, the `received_date`, and for each line the `po_line_id` and the quantity received now. One order can have many receipts for partial deliveries, but the total received on a line cannot exceed the quantity ordered. Nothing moves in stock until the receipt is posted. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `purchase_order_id` and the `po_line_id` of each line from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}), and the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Check the draft with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}), then call [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) to move the stock in. Once the vendor\'s invoice arrives, bill the receipt with [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills) or [`POST /v1/purchasing/orders/{id}/bill`](#tag/purchase-bill/POST/v1/purchasing/orders/{id}/bill).  Error codes: `order_not_receivable`, `unknown_po_line`, `unknown_warehouse`, `over_receipt`.  **Response meta** - `meta` is empty. 
+     * Records a delivery against one or more approved purchase orders of the same vendor, as a draft. Send the `vendor_id`, the `warehouse_id` where the goods arrived, the `received_date`, and for each line the `po_line_id` and the quantity received now; lines can mix `po_line_id` values from different orders as long as every order belongs to `vendor_id`. One order can have many receipts for partial deliveries, but the total received on a line cannot exceed the quantity ordered, and the quantity received now cannot exceed what remains to receive on that line. Nothing moves in stock until the receipt is posted. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `vendor_id` from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), the `po_line_id` of each line from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}) for every order of that vendor you are receiving against, and the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Check the draft with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}), then call [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) to move the stock in. Once the vendor\'s invoice arrives, bill the receipt with [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills) or [`POST /v1/purchasing/orders/{id}/bill`](#tag/purchase-bill/POST/v1/purchasing/orders/{id}/bill).  Error codes: `order_not_receivable`, `unknown_po_line`, `unknown_warehouse`, `over_receipt`.  **Response meta** - `meta` is empty. 
      * Create goods receipt
      */
     async createGoodsReceipt(requestParameters: CreateGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
@@ -183,6 +218,10 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters['include'] != null) {
+            queryParameters['include'] = requestParameters['include'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -215,7 +254,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns one goods receipt by its `id`, with the purchase order, vendor, warehouse, received date, status, billing status, the bill that covers it, and every line with the quantity received and the quantity returned since. Use it to review a draft before you post it, or to see whether a delivery has been billed.  Take the `id` from [`GET /v1/purchasing/receipts`](#tag/goods-receipt/GET/v1/purchasing/receipts) or from the response of [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). A draft is posted with [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). If a posted delivery has to go back to the vendor, record that with [`POST /v1/purchasing/returns`](#tag/return/POST/v1/purchasing/returns). The order the receipt belongs to is read with [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns one goods receipt by its `id`, with the purchase orders it covers, vendor, warehouse, received date, status, billing status, the bill that covers it, every line with the quantity received and the quantity returned since, the delivery note, and any evidence files. Use `include` to embed the vendor, warehouse and covered purchase orders as full objects instead of just their ids, for a detail screen that would otherwise need a separate call for each. Use it to review a draft before you post it, or to see whether a delivery has been billed.  Take the `id` from [`GET /v1/purchasing/receipts`](#tag/goods-receipt/GET/v1/purchasing/receipts) or from the response of [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). A draft is posted with [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). If a posted delivery has to go back to the vendor, record that with [`POST /v1/purchasing/returns`](#tag/return/POST/v1/purchasing/returns). The order the receipt belongs to is read with [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get goods receipt
      */
     async getGoodsReceiptRaw(requestParameters: GetGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GoodsReceiptResponse>> {
@@ -226,7 +265,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns one goods receipt by its `id`, with the purchase order, vendor, warehouse, received date, status, billing status, the bill that covers it, and every line with the quantity received and the quantity returned since. Use it to review a draft before you post it, or to see whether a delivery has been billed.  Take the `id` from [`GET /v1/purchasing/receipts`](#tag/goods-receipt/GET/v1/purchasing/receipts) or from the response of [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). A draft is posted with [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). If a posted delivery has to go back to the vendor, record that with [`POST /v1/purchasing/returns`](#tag/return/POST/v1/purchasing/returns). The order the receipt belongs to is read with [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns one goods receipt by its `id`, with the purchase orders it covers, vendor, warehouse, received date, status, billing status, the bill that covers it, every line with the quantity received and the quantity returned since, the delivery note, and any evidence files. Use `include` to embed the vendor, warehouse and covered purchase orders as full objects instead of just their ids, for a detail screen that would otherwise need a separate call for each. Use it to review a draft before you post it, or to see whether a delivery has been billed.  Take the `id` from [`GET /v1/purchasing/receipts`](#tag/goods-receipt/GET/v1/purchasing/receipts) or from the response of [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). A draft is posted with [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). If a posted delivery has to go back to the vendor, record that with [`POST /v1/purchasing/returns`](#tag/return/POST/v1/purchasing/returns). The order the receipt belongs to is read with [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get goods receipt
      */
     async getGoodsReceipt(requestParameters: GetGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
@@ -306,7 +345,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists the goods receipts that record what vendors delivered, with their purchase order, warehouse, date, status and billing status. Use it to see which deliveries are still drafts waiting to be posted, which posted ones have not been billed yet, or the delivery history of one order. Filter by `purchase_order_id` or `status`, and narrow by creation date.  Take the `purchase_order_id` for the filter from [`GET /v1/purchasing/orders`](#tag/orders/GET/v1/purchasing/orders). New receipts are made with [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts), and one receipt is read with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}). Receipts that show `billing_status` of `unbilled` are the ones you pick for [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the goods receipts that record what vendors delivered, with the purchase orders they cover, warehouse, date, status and billing status. Use it to see which deliveries are still drafts waiting to be posted, which posted ones have not been billed yet, or the delivery history of one order. Filter by `purchase_order_id` or `status`, and narrow by creation date.  Take the `purchase_order_id` for the filter from [`GET /v1/purchasing/orders`](#tag/orders/GET/v1/purchasing/orders). New receipts are made with [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts), and one receipt is read with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}). Receipts that show `billing_status` of `unbilled` are the ones you pick for [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List goods receipts
      */
     async listGoodsReceiptsRaw(requestParameters: ListGoodsReceiptsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GoodsReceiptListResponse>> {
@@ -317,7 +356,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists the goods receipts that record what vendors delivered, with their purchase order, warehouse, date, status and billing status. Use it to see which deliveries are still drafts waiting to be posted, which posted ones have not been billed yet, or the delivery history of one order. Filter by `purchase_order_id` or `status`, and narrow by creation date.  Take the `purchase_order_id` for the filter from [`GET /v1/purchasing/orders`](#tag/orders/GET/v1/purchasing/orders). New receipts are made with [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts), and one receipt is read with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}). Receipts that show `billing_status` of `unbilled` are the ones you pick for [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the goods receipts that record what vendors delivered, with the purchase orders they cover, warehouse, date, status and billing status. Use it to see which deliveries are still drafts waiting to be posted, which posted ones have not been billed yet, or the delivery history of one order. Filter by `purchase_order_id` or `status`, and narrow by creation date.  Take the `purchase_order_id` for the filter from [`GET /v1/purchasing/orders`](#tag/orders/GET/v1/purchasing/orders). New receipts are made with [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts), and one receipt is read with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}). Receipts that show `billing_status` of `unbilled` are the ones you pick for [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List goods receipts
      */
     async listGoodsReceipts(requestParameters: ListGoodsReceiptsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptListResponse> {
@@ -389,6 +428,198 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
      */
     async postGoodsReceipt(requestParameters: PostGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
         const response = await this.postGoodsReceiptRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for uploadGoodsReceiptDeliveryNote without sending the request
+     */
+    async uploadGoodsReceiptDeliveryNoteRequestOpts(requestParameters: UploadGoodsReceiptDeliveryNoteRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling uploadGoodsReceiptDeliveryNote().'
+            );
+        }
+
+        if (requestParameters['file'] == null) {
+            throw new runtime.RequiredError(
+                'file',
+                'Required parameter "file" was null or undefined when calling uploadGoodsReceiptDeliveryNote().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const consumes: runtime.Consume[] = [
+            { contentType: 'multipart/form-data' },
+        ];
+        // @ts-ignore: canConsumeForm may be unused
+        const canConsumeForm = runtime.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any };
+        let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new URLSearchParams();
+        }
+
+        if (requestParameters['file'] != null) {
+            formParams.append('file', requestParameters['file'] as any);
+        }
+
+
+        let urlPath = `/v1/purchasing/receipts/{id}/delivery-note`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: formParams,
+        };
+    }
+
+    /**
+     * Attaches the delivery note for this receipt, as proof of delivery. Send the scanned or photographed file. A repeated call replaces the receipt\'s delivery note with the new file. Can be called whether the receipt is a draft or posted.  Create the receipt first with [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). The uploaded file is read back with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}) as `delivery_note`. Attach supporting photos or video separately with [`POST /v1/purchasing/receipts/{id}/evidences`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/evidences).  Error codes: `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
+     * Upload delivery note
+     */
+    async uploadGoodsReceiptDeliveryNoteRaw(requestParameters: UploadGoodsReceiptDeliveryNoteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GoodsReceiptResponse>> {
+        const requestOptions = await this.uploadGoodsReceiptDeliveryNoteRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GoodsReceiptResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Attaches the delivery note for this receipt, as proof of delivery. Send the scanned or photographed file. A repeated call replaces the receipt\'s delivery note with the new file. Can be called whether the receipt is a draft or posted.  Create the receipt first with [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). The uploaded file is read back with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}) as `delivery_note`. Attach supporting photos or video separately with [`POST /v1/purchasing/receipts/{id}/evidences`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/evidences).  Error codes: `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
+     * Upload delivery note
+     */
+    async uploadGoodsReceiptDeliveryNote(requestParameters: UploadGoodsReceiptDeliveryNoteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
+        const response = await this.uploadGoodsReceiptDeliveryNoteRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for uploadGoodsReceiptEvidences without sending the request
+     */
+    async uploadGoodsReceiptEvidencesRequestOpts(requestParameters: UploadGoodsReceiptEvidencesRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling uploadGoodsReceiptEvidences().'
+            );
+        }
+
+        if (requestParameters['files'] == null) {
+            throw new runtime.RequiredError(
+                'files',
+                'Required parameter "files" was null or undefined when calling uploadGoodsReceiptEvidences().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const consumes: runtime.Consume[] = [
+            { contentType: 'multipart/form-data' },
+        ];
+        // @ts-ignore: canConsumeForm may be unused
+        const canConsumeForm = runtime.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any };
+        let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new URLSearchParams();
+        }
+
+        if (requestParameters['files'] != null) {
+            requestParameters['files'].forEach((element) => {
+                formParams.append('files', element as any);
+            })
+        }
+
+
+        let urlPath = `/v1/purchasing/receipts/{id}/evidences`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: formParams,
+        };
+    }
+
+    /**
+     * Adds supporting evidence to this receipt, such as an unboxing video, photos of the goods on arrival, or scans of accompanying paperwork. Send one or more files in a single call; each one appends a new item to the receipt\'s `evidences` list rather than replacing anything. Can be called whether the receipt is a draft or posted.  Create the receipt first with [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). The full list is read back with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}) as `evidences`. The delivery note itself is attached separately with [`POST /v1/purchasing/receipts/{id}/delivery-note`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/delivery-note).  Error codes: `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
+     * Add goods receipt evidences
+     */
+    async uploadGoodsReceiptEvidencesRaw(requestParameters: UploadGoodsReceiptEvidencesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GoodsReceiptResponse>> {
+        const requestOptions = await this.uploadGoodsReceiptEvidencesRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GoodsReceiptResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Adds supporting evidence to this receipt, such as an unboxing video, photos of the goods on arrival, or scans of accompanying paperwork. Send one or more files in a single call; each one appends a new item to the receipt\'s `evidences` list rather than replacing anything. Can be called whether the receipt is a draft or posted.  Create the receipt first with [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). The full list is read back with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}) as `evidences`. The delivery note itself is attached separately with [`POST /v1/purchasing/receipts/{id}/delivery-note`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/delivery-note).  Error codes: `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
+     * Add goods receipt evidences
+     */
+    async uploadGoodsReceiptEvidences(requestParameters: UploadGoodsReceiptEvidencesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
+        const response = await this.uploadGoodsReceiptEvidencesRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -71,6 +71,10 @@ export interface PurchaseOrderLine {
      * Sum over all posted bills.
      */
     billedQuantity?: string;
+    /**
+     * Set only when the enclosing purchase order was fetched with `?include=purchase_orders.items` on [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}). Absent otherwise.
+     */
+    item?: object | null;
 }
 
 /**
@@ -111,6 +115,7 @@ export function PurchaseOrderLineFromJSONTyped(json: any, ignoreDiscriminator: b
         'lineTotal': json['line_total'],
         'receivedQuantity': json['received_quantity'] == null ? undefined : json['received_quantity'],
         'billedQuantity': json['billed_quantity'] == null ? undefined : json['billed_quantity'],
+        'item': json['item'] === undefined ? undefined : json['item'] === null ? null : json['item'],
     };
 }
 
@@ -137,6 +142,7 @@ export function PurchaseOrderLineToJSONTyped(value?: Omit<PurchaseOrderLine, 'id
         'line_total': value['lineTotal'],
         'received_quantity': value['receivedQuantity'],
         'billed_quantity': value['billedQuantity'],
+        'item': value['item'],
     };
 }
 

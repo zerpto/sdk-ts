@@ -135,6 +135,8 @@ export * from './DepreciationScheduleResponse';
 export * from './ErrorError';
 export * from './ForgotPasswordInput';
 export * from './GoodsReceipt';
+export * from './GoodsReceiptDeliveryNote';
+export * from './GoodsReceiptEvidence';
 export * from './GoodsReceiptInput';
 export * from './GoodsReceiptInputLinesInner';
 export * from './GoodsReceiptLine';

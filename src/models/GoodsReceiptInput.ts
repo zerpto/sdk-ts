@@ -28,9 +28,9 @@ import {
  */
 export interface GoodsReceiptInput {
     /**
-     * 
+     * All `po_line_id` values in `lines` must belong to approved purchase orders of this vendor.
      */
-    purchaseOrderId: string;
+    vendorId: string;
     /**
      * 
      */
@@ -40,7 +40,7 @@ export interface GoodsReceiptInput {
      */
     receivedDate: Date;
     /**
-     * 
+     * Lines can mix `po_line_id` values from more than one purchase order of the same vendor.
      */
     lines: Array<GoodsReceiptInputLinesInner>;
 }
@@ -49,7 +49,7 @@ export interface GoodsReceiptInput {
  * Check if a given object implements the GoodsReceiptInput interface.
  */
 export function instanceOfGoodsReceiptInput(value: object): value is GoodsReceiptInput {
-    if ((!('purchaseOrderId' in (value as Record<string, any>)) && !('purchase_order_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['purchaseOrderId'] === undefined && (value as Record<string, any>)['purchase_order_id'] === undefined)) return false;
+    if ((!('vendorId' in (value as Record<string, any>)) && !('vendor_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['vendorId'] === undefined && (value as Record<string, any>)['vendor_id'] === undefined)) return false;
     if ((!('warehouseId' in (value as Record<string, any>)) && !('warehouse_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['warehouseId'] === undefined && (value as Record<string, any>)['warehouse_id'] === undefined)) return false;
     if ((!('receivedDate' in (value as Record<string, any>)) && !('received_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['receivedDate'] === undefined && (value as Record<string, any>)['received_date'] === undefined)) return false;
     if (!('lines' in value) || value['lines'] === undefined) return false;
@@ -66,7 +66,7 @@ export function GoodsReceiptInputFromJSONTyped(json: any, ignoreDiscriminator: b
     }
     return {
         
-        'purchaseOrderId': json['purchase_order_id'],
+        'vendorId': json['vendor_id'],
         'warehouseId': json['warehouse_id'],
         'receivedDate': (json['received_date'] == null ? json['received_date'] : parseDate(json['received_date'])),
         'lines': ((json['lines'] as Array<any>).map(GoodsReceiptInputLinesInnerFromJSON)),
@@ -84,7 +84,7 @@ export function GoodsReceiptInputToJSONTyped(value?: GoodsReceiptInput | null, i
 
     return {
         
-        'purchase_order_id': value['purchaseOrderId'],
+        'vendor_id': value['vendorId'],
         'warehouse_id': value['warehouseId'],
         'received_date': value['receivedDate'] == null ? value['receivedDate'] : serializeDate(value['receivedDate']),
         'lines': ((value['lines'] as Array<any>).map(GoodsReceiptInputLinesInnerToJSON)),

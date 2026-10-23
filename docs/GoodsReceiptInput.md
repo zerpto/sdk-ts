@@ -6,7 +6,7 @@
 
 Name | Type
 ------------ | -------------
-`purchaseOrderId` | string
+`vendorId` | string
 `warehouseId` | string
 `receivedDate` | Date
 `lines` | [Array&lt;GoodsReceiptInputLinesInner&gt;](GoodsReceiptInputLinesInner.md)
@@ -18,7 +18,7 @@ import type { GoodsReceiptInput } from '@zerpto/sdk'
 
 // TODO: Update the object below with actual values
 const example = {
-  "purchaseOrderId": null,
+  "vendorId": null,
   "warehouseId": null,
   "receivedDate": null,
   "lines": null,

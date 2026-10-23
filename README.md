@@ -158,6 +158,8 @@ All URIs are relative to *https://api.zerpto.com*
 *GoodsReceiptApi* | [**getGoodsReceipt**](docs/GoodsReceiptApi.md#getgoodsreceipt) | **GET** /v1/purchasing/receipts/{id} | Get goods receipt
 *GoodsReceiptApi* | [**listGoodsReceipts**](docs/GoodsReceiptApi.md#listgoodsreceipts) | **GET** /v1/purchasing/receipts | List goods receipts
 *GoodsReceiptApi* | [**postGoodsReceipt**](docs/GoodsReceiptApi.md#postgoodsreceipt) | **POST** /v1/purchasing/receipts/{id}/confirm | Post goods receipt
+*GoodsReceiptApi* | [**uploadGoodsReceiptDeliveryNote**](docs/GoodsReceiptApi.md#uploadgoodsreceiptdeliverynote) | **POST** /v1/purchasing/receipts/{id}/delivery-note | Upload delivery note
+*GoodsReceiptApi* | [**uploadGoodsReceiptEvidences**](docs/GoodsReceiptApi.md#uploadgoodsreceiptevidences) | **POST** /v1/purchasing/receipts/{id}/evidences | Add goods receipt evidences
 *InventoryApi* | [**listStock**](docs/InventoryApi.md#liststock) | **GET** /v1/inventory/stock | Stock on hand
 *InventoryApi* | [**listStockMovements**](docs/InventoryApi.md#liststockmovements) | **GET** /v1/inventory/movements | Stock movement ledger
 *InvoiceApi* | [**createApInvoice**](docs/InvoiceApi.md#createapinvoice) | **POST** /v1/ap/invoices | Create invoice
@@ -427,6 +429,8 @@ All URIs are relative to *https://api.zerpto.com*
 - [ErrorError](docs/ErrorError.md)
 - [ForgotPasswordInput](docs/ForgotPasswordInput.md)
 - [GoodsReceipt](docs/GoodsReceipt.md)
+- [GoodsReceiptDeliveryNote](docs/GoodsReceiptDeliveryNote.md)
+- [GoodsReceiptEvidence](docs/GoodsReceiptEvidence.md)
 - [GoodsReceiptInput](docs/GoodsReceiptInput.md)
 - [GoodsReceiptInputLinesInner](docs/GoodsReceiptInputLinesInner.md)
 - [GoodsReceiptLine](docs/GoodsReceiptLine.md)
