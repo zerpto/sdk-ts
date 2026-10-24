@@ -139,6 +139,7 @@ export interface GoodsReceipt {
 export const GoodsReceiptStatusEnum = {
     Draft: 'draft',
     Posted: 'posted',
+    Cancelled: 'cancelled',
 } as const;
 export type GoodsReceiptStatusEnum = typeof GoodsReceiptStatusEnum[keyof typeof GoodsReceiptStatusEnum];
 

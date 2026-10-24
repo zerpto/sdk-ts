@@ -28,6 +28,22 @@ import {
     GoodsReceiptResponseFromJSON,
     GoodsReceiptResponseToJSON,
 } from '../models/GoodsReceiptResponse';
+import {
+    type GoodsReceiptUpdate,
+    GoodsReceiptUpdateFromJSON,
+    GoodsReceiptUpdateToJSON,
+} from '../models/GoodsReceiptUpdate';
+
+export interface CancelGoodsReceiptRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
+}
 
 export interface CreateGoodsReceiptRequest {
     /**
@@ -102,6 +118,17 @@ export interface PostGoodsReceiptRequest {
     idempotencyKey?: string;
 }
 
+export interface UpdateGoodsReceiptRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * 
+     */
+    goodsReceiptUpdate: GoodsReceiptUpdate;
+}
+
 export interface UploadGoodsReceiptDeliveryNoteRequest {
     /**
      * Resource ID.
@@ -136,6 +163,73 @@ export interface UploadGoodsReceiptEvidencesRequest {
  * 
  */
 export class GoodsReceiptApi extends runtime.BaseAPI {
+
+    /**
+     * Creates request options for cancelGoodsReceipt without sending the request
+     */
+    async cancelGoodsReceiptRequestOpts(requestParameters: CancelGoodsReceiptRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling cancelGoodsReceipt().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/purchasing/receipts/{id}/cancel`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Cancels a draft goods receipt that you no longer want to post. The receipt becomes `cancelled`, nothing moves in stock and no entry is booked. Only drafts can be cancelled. A posted receipt cannot be cancelled; if the goods go back to the vendor, correct it with a purchase return instead. A repeated request with the same `Idempotency-Key` returns the first result.  Use it on a draft from [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts) or [`PATCH /v1/purchasing/receipts/{id}`](#tag/goods-receipt/PATCH/v1/purchasing/receipts/{id}). Once you have called [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm), the receipt is final and a purchase return from [`POST /v1/purchasing/returns`](#tag/return/POST/v1/purchasing/returns) is the way to send goods back. A cancelled receipt stays in [`GET /v1/purchasing/receipts`](#tag/goods-receipt/GET/v1/purchasing/receipts) with the status `cancelled`.  Error codes: `receipt_not_cancellable`.  **Response meta** - `meta` is empty. 
+     * Cancel goods receipt
+     */
+    async cancelGoodsReceiptRaw(requestParameters: CancelGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GoodsReceiptResponse>> {
+        const requestOptions = await this.cancelGoodsReceiptRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GoodsReceiptResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Cancels a draft goods receipt that you no longer want to post. The receipt becomes `cancelled`, nothing moves in stock and no entry is booked. Only drafts can be cancelled. A posted receipt cannot be cancelled; if the goods go back to the vendor, correct it with a purchase return instead. A repeated request with the same `Idempotency-Key` returns the first result.  Use it on a draft from [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts) or [`PATCH /v1/purchasing/receipts/{id}`](#tag/goods-receipt/PATCH/v1/purchasing/receipts/{id}). Once you have called [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm), the receipt is final and a purchase return from [`POST /v1/purchasing/returns`](#tag/return/POST/v1/purchasing/returns) is the way to send goods back. A cancelled receipt stays in [`GET /v1/purchasing/receipts`](#tag/goods-receipt/GET/v1/purchasing/receipts) with the status `cancelled`.  Error codes: `receipt_not_cancellable`.  **Response meta** - `meta` is empty. 
+     * Cancel goods receipt
+     */
+    async cancelGoodsReceipt(requestParameters: CancelGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
+        const response = await this.cancelGoodsReceiptRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Creates request options for createGoodsReceipt without sending the request
@@ -187,7 +281,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
     }
 
     /**
-     * Records a delivery against one or more approved purchase orders of the same vendor, as a draft. Send the `vendor_id`, the `warehouse_id` where the goods arrived, the `received_date`, and for each line the `po_line_id` and the quantity received now; lines can mix `po_line_id` values from different orders as long as every order belongs to `vendor_id`. One order can have many receipts for partial deliveries, but the total received on a line cannot exceed the quantity ordered, and the quantity received now cannot exceed what remains to receive on that line. Nothing moves in stock until the receipt is posted. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `vendor_id` from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), the `po_line_id` of each line from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}) for every order of that vendor you are receiving against, and the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Check the draft with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}), then call [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) to move the stock in. Once the vendor\'s invoice arrives, bill the receipt with [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills) or [`POST /v1/purchasing/orders/{id}/bill`](#tag/purchase-bill/POST/v1/purchasing/orders/{id}/bill).  Error codes: `order_not_receivable`, `unknown_po_line`, `unknown_warehouse`, `over_receipt`.  **Response meta** - `meta` is empty. 
+     * Records a delivery against one or more approved purchase orders of the same vendor, as a draft. Send the `vendor_id`, the `warehouse_id` where the goods arrived, the `received_date`, and for each line the `po_line_id` and the quantity received now; lines can mix `po_line_id` values from different orders as long as every order belongs to `vendor_id`. One order can have many receipts for partial deliveries, but the total received on a line cannot exceed the quantity ordered, and the quantity received now cannot exceed what remains to receive on that line. Nothing moves in stock until the receipt is posted. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `vendor_id` from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), the `po_line_id` of each line from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}) for every order of that vendor you are receiving against, and the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Check the draft with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}), fix it with [`PATCH /v1/purchasing/receipts/{id}`](#tag/goods-receipt/PATCH/v1/purchasing/receipts/{id}) or drop it with [`POST /v1/purchasing/receipts/{id}/cancel`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/cancel), then call [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) to move the stock in. Once the vendor\'s invoice arrives, bill the receipt with [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills) or [`POST /v1/purchasing/orders/{id}/bill`](#tag/purchase-bill/POST/v1/purchasing/orders/{id}/bill).  Error codes: `order_not_receivable`, `unknown_po_line`, `unknown_warehouse`, `over_receipt`.  **Response meta** - `meta` is empty. 
      * Create goods receipt
      */
     async createGoodsReceiptRaw(requestParameters: CreateGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GoodsReceiptResponse>> {
@@ -198,7 +292,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
     }
 
     /**
-     * Records a delivery against one or more approved purchase orders of the same vendor, as a draft. Send the `vendor_id`, the `warehouse_id` where the goods arrived, the `received_date`, and for each line the `po_line_id` and the quantity received now; lines can mix `po_line_id` values from different orders as long as every order belongs to `vendor_id`. One order can have many receipts for partial deliveries, but the total received on a line cannot exceed the quantity ordered, and the quantity received now cannot exceed what remains to receive on that line. Nothing moves in stock until the receipt is posted. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `vendor_id` from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), the `po_line_id` of each line from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}) for every order of that vendor you are receiving against, and the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Check the draft with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}), then call [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) to move the stock in. Once the vendor\'s invoice arrives, bill the receipt with [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills) or [`POST /v1/purchasing/orders/{id}/bill`](#tag/purchase-bill/POST/v1/purchasing/orders/{id}/bill).  Error codes: `order_not_receivable`, `unknown_po_line`, `unknown_warehouse`, `over_receipt`.  **Response meta** - `meta` is empty. 
+     * Records a delivery against one or more approved purchase orders of the same vendor, as a draft. Send the `vendor_id`, the `warehouse_id` where the goods arrived, the `received_date`, and for each line the `po_line_id` and the quantity received now; lines can mix `po_line_id` values from different orders as long as every order belongs to `vendor_id`. One order can have many receipts for partial deliveries, but the total received on a line cannot exceed the quantity ordered, and the quantity received now cannot exceed what remains to receive on that line. Nothing moves in stock until the receipt is posted. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `vendor_id` from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), the `po_line_id` of each line from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}) for every order of that vendor you are receiving against, and the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Check the draft with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}), fix it with [`PATCH /v1/purchasing/receipts/{id}`](#tag/goods-receipt/PATCH/v1/purchasing/receipts/{id}) or drop it with [`POST /v1/purchasing/receipts/{id}/cancel`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/cancel), then call [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) to move the stock in. Once the vendor\'s invoice arrives, bill the receipt with [`POST /v1/purchasing/bills`](#tag/purchase-bill/POST/v1/purchasing/bills) or [`POST /v1/purchasing/orders/{id}/bill`](#tag/purchase-bill/POST/v1/purchasing/orders/{id}/bill).  Error codes: `order_not_receivable`, `unknown_po_line`, `unknown_warehouse`, `over_receipt`.  **Response meta** - `meta` is empty. 
      * Create goods receipt
      */
     async createGoodsReceipt(requestParameters: CreateGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
@@ -254,7 +348,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns one goods receipt by its `id`, with the purchase orders it covers, vendor, warehouse, received date, status, billing status, the bill that covers it, every line with the quantity received and the quantity returned since, the delivery note, and any evidence files. Use `include` to embed the vendor, warehouse and covered purchase orders as full objects instead of just their ids, for a detail screen that would otherwise need a separate call for each. Use it to review a draft before you post it, or to see whether a delivery has been billed.  Take the `id` from [`GET /v1/purchasing/receipts`](#tag/goods-receipt/GET/v1/purchasing/receipts) or from the response of [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). A draft is posted with [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). If a posted delivery has to go back to the vendor, record that with [`POST /v1/purchasing/returns`](#tag/return/POST/v1/purchasing/returns). The order the receipt belongs to is read with [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns one goods receipt by its `id`, with the purchase orders it covers, vendor, warehouse, received date, status, billing status, the bill that covers it, every line with the quantity received and the quantity returned since, the delivery note, and any evidence files. Use `include` to embed the vendor, warehouse and covered purchase orders as full objects instead of just their ids, for a detail screen that would otherwise need a separate call for each. Use it to review a draft before you post it, or to see whether a delivery has been billed.  Take the `id` from [`GET /v1/purchasing/receipts`](#tag/goods-receipt/GET/v1/purchasing/receipts) or from the response of [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). While it is a draft, change it with [`PATCH /v1/purchasing/receipts/{id}`](#tag/goods-receipt/PATCH/v1/purchasing/receipts/{id}) or drop it with [`POST /v1/purchasing/receipts/{id}/cancel`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/cancel); otherwise post it with [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). If a posted delivery has to go back to the vendor, record that with [`POST /v1/purchasing/returns`](#tag/return/POST/v1/purchasing/returns). The order the receipt belongs to is read with [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get goods receipt
      */
     async getGoodsReceiptRaw(requestParameters: GetGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GoodsReceiptResponse>> {
@@ -265,7 +359,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns one goods receipt by its `id`, with the purchase orders it covers, vendor, warehouse, received date, status, billing status, the bill that covers it, every line with the quantity received and the quantity returned since, the delivery note, and any evidence files. Use `include` to embed the vendor, warehouse and covered purchase orders as full objects instead of just their ids, for a detail screen that would otherwise need a separate call for each. Use it to review a draft before you post it, or to see whether a delivery has been billed.  Take the `id` from [`GET /v1/purchasing/receipts`](#tag/goods-receipt/GET/v1/purchasing/receipts) or from the response of [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). A draft is posted with [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). If a posted delivery has to go back to the vendor, record that with [`POST /v1/purchasing/returns`](#tag/return/POST/v1/purchasing/returns). The order the receipt belongs to is read with [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns one goods receipt by its `id`, with the purchase orders it covers, vendor, warehouse, received date, status, billing status, the bill that covers it, every line with the quantity received and the quantity returned since, the delivery note, and any evidence files. Use `include` to embed the vendor, warehouse and covered purchase orders as full objects instead of just their ids, for a detail screen that would otherwise need a separate call for each. Use it to review a draft before you post it, or to see whether a delivery has been billed.  Take the `id` from [`GET /v1/purchasing/receipts`](#tag/goods-receipt/GET/v1/purchasing/receipts) or from the response of [`POST /v1/purchasing/receipts`](#tag/goods-receipt/POST/v1/purchasing/receipts). While it is a draft, change it with [`PATCH /v1/purchasing/receipts/{id}`](#tag/goods-receipt/PATCH/v1/purchasing/receipts/{id}) or drop it with [`POST /v1/purchasing/receipts/{id}/cancel`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/cancel); otherwise post it with [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). If a posted delivery has to go back to the vendor, record that with [`POST /v1/purchasing/returns`](#tag/return/POST/v1/purchasing/returns). The order the receipt belongs to is read with [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get goods receipt
      */
     async getGoodsReceipt(requestParameters: GetGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
@@ -428,6 +522,79 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
      */
     async postGoodsReceipt(requestParameters: PostGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
         const response = await this.postGoodsReceiptRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for updateGoodsReceipt without sending the request
+     */
+    async updateGoodsReceiptRequestOpts(requestParameters: UpdateGoodsReceiptRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling updateGoodsReceipt().'
+            );
+        }
+
+        if (requestParameters['goodsReceiptUpdate'] == null) {
+            throw new runtime.RequiredError(
+                'goodsReceiptUpdate',
+                'Required parameter "goodsReceiptUpdate" was null or undefined when calling updateGoodsReceipt().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/purchasing/receipts/{id}`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: GoodsReceiptUpdateToJSON(requestParameters['goodsReceiptUpdate']),
+        };
+    }
+
+    /**
+     * Changes a goods receipt that is still a `draft`. Send only the fields you want to change. When you send `lines`, the whole list replaces the old one, so include every line you want to keep, and it can still mix `po_line_id` values from more than one purchase order of the same vendor. A receipt that was posted or cancelled can no longer be edited, and the call returns 409.  Read the current draft with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}) first, and take a new `po_line_id` from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}). When the draft is right, post it with [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). To drop it, call [`POST /v1/purchasing/receipts/{id}/cancel`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/cancel).  Error codes: `receipt_not_editable`, `unknown_po_line`, `unknown_warehouse`, `over_receipt`.  **Response meta** - `meta` is empty. 
+     * Update goods receipt
+     */
+    async updateGoodsReceiptRaw(requestParameters: UpdateGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GoodsReceiptResponse>> {
+        const requestOptions = await this.updateGoodsReceiptRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GoodsReceiptResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Changes a goods receipt that is still a `draft`. Send only the fields you want to change. When you send `lines`, the whole list replaces the old one, so include every line you want to keep, and it can still mix `po_line_id` values from more than one purchase order of the same vendor. A receipt that was posted or cancelled can no longer be edited, and the call returns 409.  Read the current draft with [`GET /v1/purchasing/receipts/{id}`](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}) first, and take a new `po_line_id` from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}). When the draft is right, post it with [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). To drop it, call [`POST /v1/purchasing/receipts/{id}/cancel`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/cancel).  Error codes: `receipt_not_editable`, `unknown_po_line`, `unknown_warehouse`, `over_receipt`.  **Response meta** - `meta` is empty. 
+     * Update goods receipt
+     */
+    async updateGoodsReceipt(requestParameters: UpdateGoodsReceiptRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GoodsReceiptResponse> {
+        const response = await this.updateGoodsReceiptRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -631,6 +798,7 @@ export class GoodsReceiptApi extends runtime.BaseAPI {
 export const ListGoodsReceiptsStatusEnum = {
     Draft: 'draft',
     Posted: 'posted',
+    Cancelled: 'cancelled',
 } as const;
 export type ListGoodsReceiptsStatusEnum = typeof ListGoodsReceiptsStatusEnum[keyof typeof ListGoodsReceiptsStatusEnum];
 /**

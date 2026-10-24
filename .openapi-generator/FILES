@@ -162,6 +162,7 @@ docs/GoodsReceiptInputLinesInner.md
 docs/GoodsReceiptLine.md
 docs/GoodsReceiptListResponse.md
 docs/GoodsReceiptResponse.md
+docs/GoodsReceiptUpdate.md
 docs/Health.md
 docs/HealthResponse.md
 docs/InventoryApi.md
@@ -583,6 +584,7 @@ src/models/GoodsReceiptInputLinesInner.ts
 src/models/GoodsReceiptLine.ts
 src/models/GoodsReceiptListResponse.ts
 src/models/GoodsReceiptResponse.ts
+src/models/GoodsReceiptUpdate.ts
 src/models/Health.ts
 src/models/HealthResponse.ts
 src/models/InventoryValuation.ts

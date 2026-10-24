@@ -4,13 +4,97 @@ All URIs are relative to *https://api.zerpto.com*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
+| [**cancelGoodsReceipt**](GoodsReceiptApi.md#cancelgoodsreceipt) | **POST** /v1/purchasing/receipts/{id}/cancel | Cancel goods receipt |
 | [**createGoodsReceipt**](GoodsReceiptApi.md#creategoodsreceipt) | **POST** /v1/purchasing/receipts | Create goods receipt |
 | [**getGoodsReceipt**](GoodsReceiptApi.md#getgoodsreceipt) | **GET** /v1/purchasing/receipts/{id} | Get goods receipt |
 | [**listGoodsReceipts**](GoodsReceiptApi.md#listgoodsreceipts) | **GET** /v1/purchasing/receipts | List goods receipts |
 | [**postGoodsReceipt**](GoodsReceiptApi.md#postgoodsreceipt) | **POST** /v1/purchasing/receipts/{id}/confirm | Post goods receipt |
+| [**updateGoodsReceipt**](GoodsReceiptApi.md#updategoodsreceipt) | **PATCH** /v1/purchasing/receipts/{id} | Update goods receipt |
 | [**uploadGoodsReceiptDeliveryNote**](GoodsReceiptApi.md#uploadgoodsreceiptdeliverynote) | **POST** /v1/purchasing/receipts/{id}/delivery-note | Upload delivery note |
 | [**uploadGoodsReceiptEvidences**](GoodsReceiptApi.md#uploadgoodsreceiptevidences) | **POST** /v1/purchasing/receipts/{id}/evidences | Add goods receipt evidences |
 
+
+
+## cancelGoodsReceipt
+
+> GoodsReceiptResponse cancelGoodsReceipt(id, idempotencyKey)
+
+Cancel goods receipt
+
+Cancels a draft goods receipt that you no longer want to post. The receipt becomes &#x60;cancelled&#x60;, nothing moves in stock and no entry is booked. Only drafts can be cancelled. A posted receipt cannot be cancelled; if the goods go back to the vendor, correct it with a purchase return instead. A repeated request with the same &#x60;Idempotency-Key&#x60; returns the first result.  Use it on a draft from [&#x60;POST /v1/purchasing/receipts&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts) or [&#x60;PATCH /v1/purchasing/receipts/{id}&#x60;](#tag/goods-receipt/PATCH/v1/purchasing/receipts/{id}). Once you have called [&#x60;POST /v1/purchasing/receipts/{id}/confirm&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm), the receipt is final and a purchase return from [&#x60;POST /v1/purchasing/returns&#x60;](#tag/return/POST/v1/purchasing/returns) is the way to send goods back. A cancelled receipt stays in [&#x60;GET /v1/purchasing/receipts&#x60;](#tag/goods-receipt/GET/v1/purchasing/receipts) with the status &#x60;cancelled&#x60;.  Error codes: &#x60;receipt_not_cancellable&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  GoodsReceiptApi,
+} from '@zerpto/sdk';
+import type { CancelGoodsReceiptRequest } from '@zerpto/sdk';
+
+async function example() {
+  console.log("🚀 Testing @zerpto/sdk SDK...");
+  const config = new Configuration({ 
+    // Configure HTTP bearer authorization: ApiKeyAuth
+    accessToken: "YOUR BEARER TOKEN",
+    // Configure HTTP bearer authorization: UserJWT
+    accessToken: "YOUR BEARER TOKEN",
+  });
+  const api = new GoodsReceiptApi(config);
+
+  const body = {
+    // string | Resource ID.
+    id: id_example,
+    // string | Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours. (optional)
+    idempotencyKey: idempotencyKey_example,
+  } satisfies CancelGoodsReceiptRequest;
+
+  try {
+    const data = await api.cancelGoodsReceipt(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **id** | `string` | Resource ID. | [Defaults to `undefined`] |
+| **idempotencyKey** | `string` | Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours. | [Optional] [Defaults to `undefined`] |
+
+### Return type
+
+[**GoodsReceiptResponse**](GoodsReceiptResponse.md)
+
+### Authorization
+
+[ApiKeyAuth](../README.md#ApiKeyAuth), [UserJWT](../README.md#UserJWT)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Success |  -  |
+| **401** | Missing, invalid or revoked API key. |  -  |
+| **403** | The key or user lacks permission for this action. |  -  |
+| **404** | Resource not found in this tenant. |  -  |
+| **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
+| **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
+| **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## createGoodsReceipt
@@ -19,7 +103,7 @@ All URIs are relative to *https://api.zerpto.com*
 
 Create goods receipt
 
-Records a delivery against one or more approved purchase orders of the same vendor, as a draft. Send the &#x60;vendor_id&#x60;, the &#x60;warehouse_id&#x60; where the goods arrived, the &#x60;received_date&#x60;, and for each line the &#x60;po_line_id&#x60; and the quantity received now; lines can mix &#x60;po_line_id&#x60; values from different orders as long as every order belongs to &#x60;vendor_id&#x60;. One order can have many receipts for partial deliveries, but the total received on a line cannot exceed the quantity ordered, and the quantity received now cannot exceed what remains to receive on that line. Nothing moves in stock until the receipt is posted. A repeated request with the same &#x60;Idempotency-Key&#x60; returns the first result.  Take the &#x60;vendor_id&#x60; from [&#x60;GET /v1/vendors&#x60;](#tag/vendors/GET/v1/vendors), the &#x60;po_line_id&#x60; of each line from [&#x60;GET /v1/purchasing/orders/{id}&#x60;](#tag/orders/GET/v1/purchasing/orders/{id}) for every order of that vendor you are receiving against, and the &#x60;warehouse_id&#x60; from [&#x60;GET /v1/inventory/warehouses&#x60;](#tag/warehouses/GET/v1/inventory/warehouses). Check the draft with [&#x60;GET /v1/purchasing/receipts/{id}&#x60;](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}), then call [&#x60;POST /v1/purchasing/receipts/{id}/confirm&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) to move the stock in. Once the vendor\&#39;s invoice arrives, bill the receipt with [&#x60;POST /v1/purchasing/bills&#x60;](#tag/purchase-bill/POST/v1/purchasing/bills) or [&#x60;POST /v1/purchasing/orders/{id}/bill&#x60;](#tag/purchase-bill/POST/v1/purchasing/orders/{id}/bill).  Error codes: &#x60;order_not_receivable&#x60;, &#x60;unknown_po_line&#x60;, &#x60;unknown_warehouse&#x60;, &#x60;over_receipt&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+Records a delivery against one or more approved purchase orders of the same vendor, as a draft. Send the &#x60;vendor_id&#x60;, the &#x60;warehouse_id&#x60; where the goods arrived, the &#x60;received_date&#x60;, and for each line the &#x60;po_line_id&#x60; and the quantity received now; lines can mix &#x60;po_line_id&#x60; values from different orders as long as every order belongs to &#x60;vendor_id&#x60;. One order can have many receipts for partial deliveries, but the total received on a line cannot exceed the quantity ordered, and the quantity received now cannot exceed what remains to receive on that line. Nothing moves in stock until the receipt is posted. A repeated request with the same &#x60;Idempotency-Key&#x60; returns the first result.  Take the &#x60;vendor_id&#x60; from [&#x60;GET /v1/vendors&#x60;](#tag/vendors/GET/v1/vendors), the &#x60;po_line_id&#x60; of each line from [&#x60;GET /v1/purchasing/orders/{id}&#x60;](#tag/orders/GET/v1/purchasing/orders/{id}) for every order of that vendor you are receiving against, and the &#x60;warehouse_id&#x60; from [&#x60;GET /v1/inventory/warehouses&#x60;](#tag/warehouses/GET/v1/inventory/warehouses). Check the draft with [&#x60;GET /v1/purchasing/receipts/{id}&#x60;](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}), fix it with [&#x60;PATCH /v1/purchasing/receipts/{id}&#x60;](#tag/goods-receipt/PATCH/v1/purchasing/receipts/{id}) or drop it with [&#x60;POST /v1/purchasing/receipts/{id}/cancel&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/cancel), then call [&#x60;POST /v1/purchasing/receipts/{id}/confirm&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) to move the stock in. Once the vendor\&#39;s invoice arrives, bill the receipt with [&#x60;POST /v1/purchasing/bills&#x60;](#tag/purchase-bill/POST/v1/purchasing/bills) or [&#x60;POST /v1/purchasing/orders/{id}/bill&#x60;](#tag/purchase-bill/POST/v1/purchasing/orders/{id}/bill).  Error codes: &#x60;order_not_receivable&#x60;, &#x60;unknown_po_line&#x60;, &#x60;unknown_warehouse&#x60;, &#x60;over_receipt&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -101,7 +185,7 @@ example().catch(console.error);
 
 Get goods receipt
 
-Returns one goods receipt by its &#x60;id&#x60;, with the purchase orders it covers, vendor, warehouse, received date, status, billing status, the bill that covers it, every line with the quantity received and the quantity returned since, the delivery note, and any evidence files. Use &#x60;include&#x60; to embed the vendor, warehouse and covered purchase orders as full objects instead of just their ids, for a detail screen that would otherwise need a separate call for each. Use it to review a draft before you post it, or to see whether a delivery has been billed.  Take the &#x60;id&#x60; from [&#x60;GET /v1/purchasing/receipts&#x60;](#tag/goods-receipt/GET/v1/purchasing/receipts) or from the response of [&#x60;POST /v1/purchasing/receipts&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts). A draft is posted with [&#x60;POST /v1/purchasing/receipts/{id}/confirm&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). If a posted delivery has to go back to the vendor, record that with [&#x60;POST /v1/purchasing/returns&#x60;](#tag/return/POST/v1/purchasing/returns). The order the receipt belongs to is read with [&#x60;GET /v1/purchasing/orders/{id}&#x60;](#tag/orders/GET/v1/purchasing/orders/{id}).  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
+Returns one goods receipt by its &#x60;id&#x60;, with the purchase orders it covers, vendor, warehouse, received date, status, billing status, the bill that covers it, every line with the quantity received and the quantity returned since, the delivery note, and any evidence files. Use &#x60;include&#x60; to embed the vendor, warehouse and covered purchase orders as full objects instead of just their ids, for a detail screen that would otherwise need a separate call for each. Use it to review a draft before you post it, or to see whether a delivery has been billed.  Take the &#x60;id&#x60; from [&#x60;GET /v1/purchasing/receipts&#x60;](#tag/goods-receipt/GET/v1/purchasing/receipts) or from the response of [&#x60;POST /v1/purchasing/receipts&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts). While it is a draft, change it with [&#x60;PATCH /v1/purchasing/receipts/{id}&#x60;](#tag/goods-receipt/PATCH/v1/purchasing/receipts/{id}) or drop it with [&#x60;POST /v1/purchasing/receipts/{id}/cancel&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/cancel); otherwise post it with [&#x60;POST /v1/purchasing/receipts/{id}/confirm&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). If a posted delivery has to go back to the vendor, record that with [&#x60;POST /v1/purchasing/returns&#x60;](#tag/return/POST/v1/purchasing/returns). The order the receipt belongs to is read with [&#x60;GET /v1/purchasing/orders/{id}&#x60;](#tag/orders/GET/v1/purchasing/orders/{id}).  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -214,7 +298,7 @@ async function example() {
     createdBefore: 2013-10-20T19:20:30+01:00,
     // string | Filter by a purchase order among the receipt\'s `purchase_order_ids`. (optional)
     purchaseOrderId: purchaseOrderId_example,
-    // 'draft' | 'posted' | Filter by status. (optional)
+    // 'draft' | 'posted' | 'cancelled' | Filter by status. (optional)
     status: status_example,
     // 'unbilled' | 'billed' | Filter by whether a bill covers the receipt. (optional)
     billingStatus: billingStatus_example,
@@ -245,7 +329,7 @@ example().catch(console.error);
 | **createdAfter** | `Date` | Only records created after this time. | [Optional] [Defaults to `undefined`] |
 | **createdBefore** | `Date` | Only records created before this time. | [Optional] [Defaults to `undefined`] |
 | **purchaseOrderId** | `string` | Filter by a purchase order among the receipt\&#39;s &#x60;purchase_order_ids&#x60;. | [Optional] [Defaults to `undefined`] |
-| **status** | `draft`, `posted` | Filter by status. | [Optional] [Defaults to `undefined`] [Enum: draft, posted] |
+| **status** | `draft`, `posted`, `cancelled` | Filter by status. | [Optional] [Defaults to `undefined`] [Enum: draft, posted, cancelled] |
 | **billingStatus** | `unbilled`, `billed` | Filter by whether a bill covers the receipt. | [Optional] [Defaults to `undefined`] [Enum: unbilled, billed] |
 | **vendorId** | `string` | Filter by vendor. | [Optional] [Defaults to `undefined`] |
 
@@ -346,6 +430,89 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Success |  -  |
+| **401** | Missing, invalid or revoked API key. |  -  |
+| **403** | The key or user lacks permission for this action. |  -  |
+| **404** | Resource not found in this tenant. |  -  |
+| **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
+| **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
+| **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## updateGoodsReceipt
+
+> GoodsReceiptResponse updateGoodsReceipt(id, goodsReceiptUpdate)
+
+Update goods receipt
+
+Changes a goods receipt that is still a &#x60;draft&#x60;. Send only the fields you want to change. When you send &#x60;lines&#x60;, the whole list replaces the old one, so include every line you want to keep, and it can still mix &#x60;po_line_id&#x60; values from more than one purchase order of the same vendor. A receipt that was posted or cancelled can no longer be edited, and the call returns 409.  Read the current draft with [&#x60;GET /v1/purchasing/receipts/{id}&#x60;](#tag/goods-receipt/GET/v1/purchasing/receipts/{id}) first, and take a new &#x60;po_line_id&#x60; from [&#x60;GET /v1/purchasing/orders/{id}&#x60;](#tag/orders/GET/v1/purchasing/orders/{id}). When the draft is right, post it with [&#x60;POST /v1/purchasing/receipts/{id}/confirm&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm). To drop it, call [&#x60;POST /v1/purchasing/receipts/{id}/cancel&#x60;](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/cancel).  Error codes: &#x60;receipt_not_editable&#x60;, &#x60;unknown_po_line&#x60;, &#x60;unknown_warehouse&#x60;, &#x60;over_receipt&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  GoodsReceiptApi,
+} from '@zerpto/sdk';
+import type { UpdateGoodsReceiptRequest } from '@zerpto/sdk';
+
+async function example() {
+  console.log("🚀 Testing @zerpto/sdk SDK...");
+  const config = new Configuration({ 
+    // Configure HTTP bearer authorization: ApiKeyAuth
+    accessToken: "YOUR BEARER TOKEN",
+    // Configure HTTP bearer authorization: UserJWT
+    accessToken: "YOUR BEARER TOKEN",
+  });
+  const api = new GoodsReceiptApi(config);
+
+  const body = {
+    // string | Resource ID.
+    id: id_example,
+    // GoodsReceiptUpdate
+    goodsReceiptUpdate: ...,
+  } satisfies UpdateGoodsReceiptRequest;
+
+  try {
+    const data = await api.updateGoodsReceipt(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **id** | `string` | Resource ID. | [Defaults to `undefined`] |
+| **goodsReceiptUpdate** | [GoodsReceiptUpdate](GoodsReceiptUpdate.md) |  | |
+
+### Return type
+
+[**GoodsReceiptResponse**](GoodsReceiptResponse.md)
+
+### Authorization
+
+[ApiKeyAuth](../README.md#ApiKeyAuth), [UserJWT](../README.md#UserJWT)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Success |  -  |
+| **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
 | **403** | The key or user lacks permission for this action. |  -  |
 | **404** | Resource not found in this tenant. |  -  |

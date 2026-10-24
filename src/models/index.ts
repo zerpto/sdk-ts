@@ -142,6 +142,7 @@ export * from './GoodsReceiptInputLinesInner';
 export * from './GoodsReceiptLine';
 export * from './GoodsReceiptListResponse';
 export * from './GoodsReceiptResponse';
+export * from './GoodsReceiptUpdate';
 export * from './Health';
 export * from './HealthResponse';
 export * from './InventoryValuation';

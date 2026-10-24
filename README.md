@@ -154,10 +154,12 @@ All URIs are relative to *https://api.zerpto.com*
 *ForgotPasswordApi* | [**resetPassword**](docs/ForgotPasswordApi.md#resetpassword) | **PUT** /v1/auth/reset-password | Reset password using a token
 *GeneralLedgerApi* | [**closePeriod**](docs/GeneralLedgerApi.md#closeperiod) | **POST** /v1/gl/periods/{id}/close | Close an accounting period
 *GeneralLedgerApi* | [**listPeriods**](docs/GeneralLedgerApi.md#listperiods) | **GET** /v1/gl/periods | List accounting periods
+*GoodsReceiptApi* | [**cancelGoodsReceipt**](docs/GoodsReceiptApi.md#cancelgoodsreceipt) | **POST** /v1/purchasing/receipts/{id}/cancel | Cancel goods receipt
 *GoodsReceiptApi* | [**createGoodsReceipt**](docs/GoodsReceiptApi.md#creategoodsreceipt) | **POST** /v1/purchasing/receipts | Create goods receipt
 *GoodsReceiptApi* | [**getGoodsReceipt**](docs/GoodsReceiptApi.md#getgoodsreceipt) | **GET** /v1/purchasing/receipts/{id} | Get goods receipt
 *GoodsReceiptApi* | [**listGoodsReceipts**](docs/GoodsReceiptApi.md#listgoodsreceipts) | **GET** /v1/purchasing/receipts | List goods receipts
 *GoodsReceiptApi* | [**postGoodsReceipt**](docs/GoodsReceiptApi.md#postgoodsreceipt) | **POST** /v1/purchasing/receipts/{id}/confirm | Post goods receipt
+*GoodsReceiptApi* | [**updateGoodsReceipt**](docs/GoodsReceiptApi.md#updategoodsreceipt) | **PATCH** /v1/purchasing/receipts/{id} | Update goods receipt
 *GoodsReceiptApi* | [**uploadGoodsReceiptDeliveryNote**](docs/GoodsReceiptApi.md#uploadgoodsreceiptdeliverynote) | **POST** /v1/purchasing/receipts/{id}/delivery-note | Upload delivery note
 *GoodsReceiptApi* | [**uploadGoodsReceiptEvidences**](docs/GoodsReceiptApi.md#uploadgoodsreceiptevidences) | **POST** /v1/purchasing/receipts/{id}/evidences | Add goods receipt evidences
 *InventoryApi* | [**listStock**](docs/InventoryApi.md#liststock) | **GET** /v1/inventory/stock | Stock on hand
@@ -436,6 +438,7 @@ All URIs are relative to *https://api.zerpto.com*
 - [GoodsReceiptLine](docs/GoodsReceiptLine.md)
 - [GoodsReceiptListResponse](docs/GoodsReceiptListResponse.md)
 - [GoodsReceiptResponse](docs/GoodsReceiptResponse.md)
+- [GoodsReceiptUpdate](docs/GoodsReceiptUpdate.md)
 - [Health](docs/Health.md)
 - [HealthResponse](docs/HealthResponse.md)
 - [InventoryValuation](docs/InventoryValuation.md)
