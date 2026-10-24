@@ -150,6 +150,15 @@ All URIs are relative to *https://api.zerpto.com*
 *DepreciationApi* | [**createDepreciationRun**](docs/DepreciationApi.md#createdepreciationrun) | **POST** /v1/assets/depreciation-runs | Run monthly depreciation
 *DepreciationApi* | [**getAssetSchedule**](docs/DepreciationApi.md#getassetschedule) | **GET** /v1/assets/{id}/schedule | Depreciation schedule
 *DepreciationApi* | [**getDepreciationRun**](docs/DepreciationApi.md#getdepreciationrun) | **GET** /v1/assets/depreciation-runs/{id} | Get a depreciation run
+*ExpensesApi* | [**cancelExpense**](docs/ExpensesApi.md#cancelexpense) | **POST** /v1/expenses/{id}/cancel | Cancel expense
+*ExpensesApi* | [**createExpense**](docs/ExpensesApi.md#createexpense) | **POST** /v1/expenses | Record an expense
+*ExpensesApi* | [**deleteExpenseAttachment**](docs/ExpensesApi.md#deleteexpenseattachment) | **DELETE** /v1/expenses/{id}/attachments/{attachment_id} | Remove expense attachment
+*ExpensesApi* | [**getExpense**](docs/ExpensesApi.md#getexpense) | **GET** /v1/expenses/{id} | Get expense
+*ExpensesApi* | [**listExpenses**](docs/ExpensesApi.md#listexpenses) | **GET** /v1/expenses | List expenses
+*ExpensesApi* | [**postExpense**](docs/ExpensesApi.md#postexpense) | **POST** /v1/expenses/{id}/confirm | Post expense to the GL
+*ExpensesApi* | [**updateExpense**](docs/ExpensesApi.md#updateexpense) | **PATCH** /v1/expenses/{id} | Update expense
+*ExpensesApi* | [**uploadExpenseAttachments**](docs/ExpensesApi.md#uploadexpenseattachments) | **POST** /v1/expenses/{id}/attachments | Upload expense receipts
+*ExpensesApi* | [**voidExpense**](docs/ExpensesApi.md#voidexpense) | **POST** /v1/expenses/{id}/void | Void expense
 *ForgotPasswordApi* | [**forgotPassword**](docs/ForgotPasswordApi.md#forgotpassword) | **POST** /v1/auth/reset-password | Send a password reset email
 *ForgotPasswordApi* | [**resetPassword**](docs/ForgotPasswordApi.md#resetpassword) | **PUT** /v1/auth/reset-password | Reset password using a token
 *GeneralLedgerApi* | [**closePeriod**](docs/GeneralLedgerApi.md#closeperiod) | **POST** /v1/gl/periods/{id}/close | Close an accounting period
@@ -434,9 +443,16 @@ All URIs are relative to *https://api.zerpto.com*
 - [DepreciationScheduleLinesInner](docs/DepreciationScheduleLinesInner.md)
 - [DepreciationScheduleResponse](docs/DepreciationScheduleResponse.md)
 - [ErrorError](docs/ErrorError.md)
+- [Expense](docs/Expense.md)
+- [ExpenseInput](docs/ExpenseInput.md)
+- [ExpenseLine](docs/ExpenseLine.md)
+- [ExpenseLineInput](docs/ExpenseLineInput.md)
+- [ExpenseListResponse](docs/ExpenseListResponse.md)
+- [ExpenseResponse](docs/ExpenseResponse.md)
+- [ExpenseUpdate](docs/ExpenseUpdate.md)
+- [FileAttachment](docs/FileAttachment.md)
 - [ForgotPasswordInput](docs/ForgotPasswordInput.md)
 - [GoodsReceipt](docs/GoodsReceipt.md)
-- [GoodsReceiptDeliveryNote](docs/GoodsReceiptDeliveryNote.md)
 - [GoodsReceiptEvidence](docs/GoodsReceiptEvidence.md)
 - [GoodsReceiptInput](docs/GoodsReceiptInput.md)
 - [GoodsReceiptInputLinesInner](docs/GoodsReceiptInputLinesInner.md)

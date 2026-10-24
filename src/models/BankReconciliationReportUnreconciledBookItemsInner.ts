@@ -48,6 +48,7 @@ export interface BankReconciliationReportUnreconciledBookItemsInner {
 export const BankReconciliationReportUnreconciledBookItemsInnerTypeEnum = {
     ArPayment: 'ar_payment',
     ApPayment: 'ap_payment',
+    Expense: 'expense',
     JournalEntry: 'journal_entry',
 } as const;
 export type BankReconciliationReportUnreconciledBookItemsInnerTypeEnum = typeof BankReconciliationReportUnreconciledBookItemsInnerTypeEnum[keyof typeof BankReconciliationReportUnreconciledBookItemsInnerTypeEnum];

@@ -20,6 +20,13 @@ import {
     WarehouseToJSON,
     WarehouseToJSONTyped,
 } from './Warehouse';
+import type { FileAttachment } from './FileAttachment';
+import {
+    FileAttachmentFromJSON,
+    FileAttachmentFromJSONTyped,
+    FileAttachmentToJSON,
+    FileAttachmentToJSONTyped,
+} from './FileAttachment';
 import type { GoodsReceiptEvidence } from './GoodsReceiptEvidence';
 import {
     GoodsReceiptEvidenceFromJSON,
@@ -41,13 +48,6 @@ import {
     PurchaseOrderToJSON,
     PurchaseOrderToJSONTyped,
 } from './PurchaseOrder';
-import type { GoodsReceiptDeliveryNote } from './GoodsReceiptDeliveryNote';
-import {
-    GoodsReceiptDeliveryNoteFromJSON,
-    GoodsReceiptDeliveryNoteFromJSONTyped,
-    GoodsReceiptDeliveryNoteToJSON,
-    GoodsReceiptDeliveryNoteToJSONTyped,
-} from './GoodsReceiptDeliveryNote';
 import type { GoodsReceiptLine } from './GoodsReceiptLine';
 import {
     GoodsReceiptLineFromJSON,
@@ -117,7 +117,7 @@ export interface GoodsReceipt {
     /**
      * Set by [`POST /v1/purchasing/receipts/{id}/delivery-note`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/delivery-note). Null until the delivery note is uploaded.
      */
-    deliveryNote: GoodsReceiptDeliveryNote | null;
+    deliveryNote: FileAttachment | null;
     /**
      * Supporting files added with [`POST /v1/purchasing/receipts/{id}/evidences`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/evidences).
      */
@@ -194,7 +194,7 @@ export function GoodsReceiptFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'billingStatus': json['billing_status'],
         'billId': json['bill_id'] === undefined ? undefined : json['bill_id'] === null ? null : json['bill_id'],
         'lines': ((json['lines'] as Array<any>).map(GoodsReceiptLineFromJSON)),
-        'deliveryNote': GoodsReceiptDeliveryNoteFromJSON(json['delivery_note']),
+        'deliveryNote': FileAttachmentFromJSON(json['delivery_note']),
         'evidences': ((json['evidences'] as Array<any>).map(GoodsReceiptEvidenceFromJSON)),
         'journalEntryId': json['journal_entry_id'] === undefined ? undefined : json['journal_entry_id'] === null ? null : json['journal_entry_id'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
@@ -222,7 +222,7 @@ export function GoodsReceiptToJSONTyped(value?: Omit<GoodsReceipt, 'id'|'number'
         'billing_status': value['billingStatus'],
         'bill_id': value['billId'],
         'lines': ((value['lines'] as Array<any>).map(GoodsReceiptLineToJSON)),
-        'delivery_note': GoodsReceiptDeliveryNoteToJSON(value['deliveryNote']),
+        'delivery_note': FileAttachmentToJSON(value['deliveryNote']),
         'evidences': ((value['evidences'] as Array<any>).map(GoodsReceiptEvidenceToJSON)),
         'journal_entry_id': value['journalEntryId'],
     };

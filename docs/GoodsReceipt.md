@@ -19,7 +19,7 @@ Name | Type
 `billingStatus` | string
 `billId` | string
 `lines` | [Array&lt;GoodsReceiptLine&gt;](GoodsReceiptLine.md)
-`deliveryNote` | [GoodsReceiptDeliveryNote](GoodsReceiptDeliveryNote.md)
+`deliveryNote` | [FileAttachment](FileAttachment.md)
 `evidences` | [Array&lt;GoodsReceiptEvidence&gt;](GoodsReceiptEvidence.md)
 `journalEntryId` | string
 `createdAt` | Date

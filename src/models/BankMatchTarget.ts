@@ -24,7 +24,7 @@ export interface BankMatchTarget {
      */
     type: BankMatchTargetTypeEnum;
     /**
-     * Payment or journal entry ID. Omit for `adjustment`.
+     * Payment, expense or journal entry ID. Omit for `adjustment`.
      */
     id?: string;
     /**
@@ -44,6 +44,7 @@ export interface BankMatchTarget {
 export const BankMatchTargetTypeEnum = {
     ArPayment: 'ar_payment',
     ApPayment: 'ap_payment',
+    Expense: 'expense',
     JournalEntry: 'journal_entry',
     Adjustment: 'adjustment',
 } as const;

@@ -44,6 +44,7 @@ export interface BankMatch {
 export const BankMatchTypeEnum = {
     ArPayment: 'ar_payment',
     ApPayment: 'ap_payment',
+    Expense: 'expense',
     JournalEntry: 'journal_entry',
 } as const;
 export type BankMatchTypeEnum = typeof BankMatchTypeEnum[keyof typeof BankMatchTypeEnum];

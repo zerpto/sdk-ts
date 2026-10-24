@@ -17,6 +17,7 @@ export * from './CustomerPaymentApi';
 export * from './CustomersApi';
 export * from './DeliveriesApi';
 export * from './DepreciationApi';
+export * from './ExpensesApi';
 export * from './ForgotPasswordApi';
 export * from './GeneralLedgerApi';
 export * from './GoodsReceiptApi';
