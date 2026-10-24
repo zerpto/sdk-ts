@@ -33,6 +33,11 @@ import {
     ApPaymentResponseFromJSON,
     ApPaymentResponseToJSON,
 } from '../models/ApPaymentResponse';
+import {
+    type ApPaymentUpdate,
+    ApPaymentUpdateFromJSON,
+    ApPaymentUpdateToJSON,
+} from '../models/ApPaymentUpdate';
 
 export interface AllocateApPaymentRequest {
     /**
@@ -43,6 +48,17 @@ export interface AllocateApPaymentRequest {
      * 
      */
     allocationsInput: AllocationsInput;
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
+}
+
+export interface CancelApPaymentRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
     /**
      * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
      */
@@ -93,6 +109,10 @@ export interface ListApPaymentsRequest {
      */
     vendorId?: string;
     /**
+     * Filter by status.
+     */
+    status?: ListApPaymentsStatusEnum;
+    /**
      * Only payments made against this purchase order (down payments).
      */
     purchaseOrderId?: string;
@@ -100,6 +120,17 @@ export interface ListApPaymentsRequest {
      * True returns payments with an unallocated balance.
      */
     hasUnallocated?: boolean;
+}
+
+export interface PostApPaymentRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
 }
 
 export interface RemoveApPaymentAllocationRequest {
@@ -111,6 +142,28 @@ export interface RemoveApPaymentAllocationRequest {
      * Bill the allocation is on.
      */
     invoiceId: string;
+}
+
+export interface UpdateApPaymentRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * 
+     */
+    apPaymentUpdate: ApPaymentUpdate;
+}
+
+export interface VoidApPaymentRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
 }
 
 /**
@@ -176,7 +229,7 @@ export class PaymentApi extends runtime.BaseAPI {
     }
 
     /**
-     * Applies the unallocated balance of a payment to one or more posted bills of the same vendor, with a different amount for each. Use it for a down payment that was recorded without bills, or for any payment that has a balance left. The total cannot exceed the unallocated balance, and each amount cannot exceed the bill\'s `amount_due`. It posts debit AP and credit vendor advances for the applied amount, and fails with 422 if the period is closed. A repeated request with the same `Idempotency-Key` returns the first result.  The payment comes from [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments) or [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments), and its `unallocated_amount` shows what can be applied. The bills must be posted with [`POST /v1/ap/invoices/{id}/confirm`](#tag/invoice/POST/v1/ap/invoices/{id}/confirm); find them with [`GET /v1/ap/invoices`](#tag/invoice/GET/v1/ap/invoices). Undo one allocation with [`DELETE /v1/ap/payments/{id}/allocations/{invoice_id}`](#tag/payment/DELETE/v1/ap/payments/{id}/allocations/{invoice_id}). To reduce a bill with a credit note instead of a payment, use [`POST /v1/ap/credit-notes/{id}/allocations`](#tag/credit-notes/POST/v1/ap/credit-notes/{id}/allocations).  Error codes: `exceeds_unallocated`, `exceeds_amount_due`, `vendor_mismatch`, `invoice_not_posted`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Applies the unallocated balance of a posted payment to one or more posted bills of the same vendor, with a different amount for each. Use it for a down payment that was recorded without bills, or for any payment that has a balance left. The total cannot exceed the unallocated balance, and each amount cannot exceed the bill\'s `amount_due`. It posts debit AP and credit vendor advances for the applied amount, and fails with 422 if the period is closed. A repeated request with the same `Idempotency-Key` returns the first result.  The payment comes from [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments) or [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments), and must already be posted with [`POST /v1/ap/payments/{id}/confirm`](#tag/payment/POST/v1/ap/payments/{id}/confirm); its `unallocated_amount` shows what can be applied. The bills must be posted with [`POST /v1/ap/invoices/{id}/confirm`](#tag/invoice/POST/v1/ap/invoices/{id}/confirm); find them with [`GET /v1/ap/invoices`](#tag/invoice/GET/v1/ap/invoices). Undo one allocation with [`DELETE /v1/ap/payments/{id}/allocations/{invoice_id}`](#tag/payment/DELETE/v1/ap/payments/{id}/allocations/{invoice_id}). To reduce a bill with a credit note instead of a payment, use [`POST /v1/ap/credit-notes/{id}/allocations`](#tag/credit-notes/POST/v1/ap/credit-notes/{id}/allocations).  Error codes: `payment_not_posted`, `exceeds_unallocated`, `exceeds_amount_due`, `vendor_mismatch`, `invoice_not_posted`, `period_closed`.  **Response meta** - `meta` is empty. 
      * Apply payment to bills
      */
     async allocateApPaymentRaw(requestParameters: AllocateApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApPaymentResponse>> {
@@ -187,11 +240,78 @@ export class PaymentApi extends runtime.BaseAPI {
     }
 
     /**
-     * Applies the unallocated balance of a payment to one or more posted bills of the same vendor, with a different amount for each. Use it for a down payment that was recorded without bills, or for any payment that has a balance left. The total cannot exceed the unallocated balance, and each amount cannot exceed the bill\'s `amount_due`. It posts debit AP and credit vendor advances for the applied amount, and fails with 422 if the period is closed. A repeated request with the same `Idempotency-Key` returns the first result.  The payment comes from [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments) or [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments), and its `unallocated_amount` shows what can be applied. The bills must be posted with [`POST /v1/ap/invoices/{id}/confirm`](#tag/invoice/POST/v1/ap/invoices/{id}/confirm); find them with [`GET /v1/ap/invoices`](#tag/invoice/GET/v1/ap/invoices). Undo one allocation with [`DELETE /v1/ap/payments/{id}/allocations/{invoice_id}`](#tag/payment/DELETE/v1/ap/payments/{id}/allocations/{invoice_id}). To reduce a bill with a credit note instead of a payment, use [`POST /v1/ap/credit-notes/{id}/allocations`](#tag/credit-notes/POST/v1/ap/credit-notes/{id}/allocations).  Error codes: `exceeds_unallocated`, `exceeds_amount_due`, `vendor_mismatch`, `invoice_not_posted`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Applies the unallocated balance of a posted payment to one or more posted bills of the same vendor, with a different amount for each. Use it for a down payment that was recorded without bills, or for any payment that has a balance left. The total cannot exceed the unallocated balance, and each amount cannot exceed the bill\'s `amount_due`. It posts debit AP and credit vendor advances for the applied amount, and fails with 422 if the period is closed. A repeated request with the same `Idempotency-Key` returns the first result.  The payment comes from [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments) or [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments), and must already be posted with [`POST /v1/ap/payments/{id}/confirm`](#tag/payment/POST/v1/ap/payments/{id}/confirm); its `unallocated_amount` shows what can be applied. The bills must be posted with [`POST /v1/ap/invoices/{id}/confirm`](#tag/invoice/POST/v1/ap/invoices/{id}/confirm); find them with [`GET /v1/ap/invoices`](#tag/invoice/GET/v1/ap/invoices). Undo one allocation with [`DELETE /v1/ap/payments/{id}/allocations/{invoice_id}`](#tag/payment/DELETE/v1/ap/payments/{id}/allocations/{invoice_id}). To reduce a bill with a credit note instead of a payment, use [`POST /v1/ap/credit-notes/{id}/allocations`](#tag/credit-notes/POST/v1/ap/credit-notes/{id}/allocations).  Error codes: `payment_not_posted`, `exceeds_unallocated`, `exceeds_amount_due`, `vendor_mismatch`, `invoice_not_posted`, `period_closed`.  **Response meta** - `meta` is empty. 
      * Apply payment to bills
      */
     async allocateApPayment(requestParameters: AllocateApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApPaymentResponse> {
         const response = await this.allocateApPaymentRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for cancelApPayment without sending the request
+     */
+    async cancelApPaymentRequestOpts(requestParameters: CancelApPaymentRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling cancelApPayment().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/ap/payments/{id}/cancel`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Cancels a draft payment that you no longer want to record. The payment becomes `cancelled`, nothing posts to the GL and no bill is affected. Only drafts can be cancelled this way; to reverse a posted payment, use the void call instead. A repeated request with the same `Idempotency-Key` returns the first result.  Use it on a draft from [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments) or [`PATCH /v1/ap/payments/{id}`](#tag/payment/PATCH/v1/ap/payments/{id}). Once you have called [`POST /v1/ap/payments/{id}/confirm`](#tag/payment/POST/v1/ap/payments/{id}/confirm), the payment is posted and [`POST /v1/ap/payments/{id}/void`](#tag/payment/POST/v1/ap/payments/{id}/void) is the way to reverse it. A cancelled payment stays in [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments) with the status `cancelled`.  Error codes: `payment_not_cancellable`.  **Response meta** - `meta` is empty. 
+     * Cancel payment
+     */
+    async cancelApPaymentRaw(requestParameters: CancelApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApPaymentResponse>> {
+        const requestOptions = await this.cancelApPaymentRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ApPaymentResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Cancels a draft payment that you no longer want to record. The payment becomes `cancelled`, nothing posts to the GL and no bill is affected. Only drafts can be cancelled this way; to reverse a posted payment, use the void call instead. A repeated request with the same `Idempotency-Key` returns the first result.  Use it on a draft from [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments) or [`PATCH /v1/ap/payments/{id}`](#tag/payment/PATCH/v1/ap/payments/{id}). Once you have called [`POST /v1/ap/payments/{id}/confirm`](#tag/payment/POST/v1/ap/payments/{id}/confirm), the payment is posted and [`POST /v1/ap/payments/{id}/void`](#tag/payment/POST/v1/ap/payments/{id}/void) is the way to reverse it. A cancelled payment stays in [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments) with the status `cancelled`.  Error codes: `payment_not_cancellable`.  **Response meta** - `meta` is empty. 
+     * Cancel payment
+     */
+    async cancelApPayment(requestParameters: CancelApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApPaymentResponse> {
+        const response = await this.cancelApPaymentRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -245,7 +365,7 @@ export class PaymentApi extends runtime.BaseAPI {
     }
 
     /**
-     * Records a payment to a vendor. Send the `vendor_id`, the `payment_date`, the `currency`, the `amount` and the `bank_account_id` the money left from; the `method` and a `reference` are optional. List the bills it pays in `allocations`, each with its own amount, so one payment can settle several bills. The sum of the allocations cannot exceed the amount, and what is left stays as an unallocated balance. It posts to the GL immediately and reduces `amount_due` on the bills. A repeated request with the same `Idempotency-Key` returns the first result.  Take the vendor from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), the bills from [`GET /v1/ap/invoices`](#tag/invoice/GET/v1/ap/invoices) (they must be posted, with [`POST /v1/ap/invoices/{id}/confirm`](#tag/invoice/POST/v1/ap/invoices/{id}/confirm), and belong to the vendor), and the bank account from [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts). Allocations are optional: a payment with none, usually with a `purchase_order_id` from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}), is a down payment held as a vendor advance. Apply it later with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations), or set `apply_down_payments` on the bill.  Error codes: `unknown_vendor`, `unknown_bank_account`, `unknown_invoice`, `invoice_not_posted`, `vendor_mismatch`, `allocations_exceed_amount`, `exceeds_amount_due`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Records a payment to a vendor, as a draft. Send the `vendor_id`, the `payment_date`, the `currency`, the `amount` and the `bank_account_id` the money left from; the `method` and a `reference` are optional. List the bills it is meant to pay in `allocations`, each with its own amount, so one payment can settle several bills; the sum of the allocations cannot exceed the amount, and what is left stays as an unallocated balance. Nothing posts to the GL and no bill is affected until the draft is confirmed. A repeated request with the same `Idempotency-Key` returns the first result.  Take the vendor from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), the bills from [`GET /v1/ap/invoices`](#tag/invoice/GET/v1/ap/invoices), and the bank account from [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts). Allocations are optional: a payment with none, usually with a `purchase_order_id` from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}), is a down payment held as a vendor advance once confirmed. While still a draft, change it with [`PATCH /v1/ap/payments/{id}`](#tag/payment/PATCH/v1/ap/payments/{id}) or drop it with [`POST /v1/ap/payments/{id}/cancel`](#tag/payment/POST/v1/ap/payments/{id}/cancel); when it is ready, post it with [`POST /v1/ap/payments/{id}/confirm`](#tag/payment/POST/v1/ap/payments/{id}/confirm).  Error codes: `unknown_vendor`, `unknown_bank_account`, `vendor_mismatch` (the purchase order\'s vendor does not match).  **Response meta** - `meta` is empty. 
      * Record a payment
      */
     async createApPaymentRaw(requestParameters: CreateApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApPaymentResponse>> {
@@ -256,7 +376,7 @@ export class PaymentApi extends runtime.BaseAPI {
     }
 
     /**
-     * Records a payment to a vendor. Send the `vendor_id`, the `payment_date`, the `currency`, the `amount` and the `bank_account_id` the money left from; the `method` and a `reference` are optional. List the bills it pays in `allocations`, each with its own amount, so one payment can settle several bills. The sum of the allocations cannot exceed the amount, and what is left stays as an unallocated balance. It posts to the GL immediately and reduces `amount_due` on the bills. A repeated request with the same `Idempotency-Key` returns the first result.  Take the vendor from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), the bills from [`GET /v1/ap/invoices`](#tag/invoice/GET/v1/ap/invoices) (they must be posted, with [`POST /v1/ap/invoices/{id}/confirm`](#tag/invoice/POST/v1/ap/invoices/{id}/confirm), and belong to the vendor), and the bank account from [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts). Allocations are optional: a payment with none, usually with a `purchase_order_id` from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}), is a down payment held as a vendor advance. Apply it later with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations), or set `apply_down_payments` on the bill.  Error codes: `unknown_vendor`, `unknown_bank_account`, `unknown_invoice`, `invoice_not_posted`, `vendor_mismatch`, `allocations_exceed_amount`, `exceeds_amount_due`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Records a payment to a vendor, as a draft. Send the `vendor_id`, the `payment_date`, the `currency`, the `amount` and the `bank_account_id` the money left from; the `method` and a `reference` are optional. List the bills it is meant to pay in `allocations`, each with its own amount, so one payment can settle several bills; the sum of the allocations cannot exceed the amount, and what is left stays as an unallocated balance. Nothing posts to the GL and no bill is affected until the draft is confirmed. A repeated request with the same `Idempotency-Key` returns the first result.  Take the vendor from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), the bills from [`GET /v1/ap/invoices`](#tag/invoice/GET/v1/ap/invoices), and the bank account from [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts). Allocations are optional: a payment with none, usually with a `purchase_order_id` from [`GET /v1/purchasing/orders/{id}`](#tag/orders/GET/v1/purchasing/orders/{id}), is a down payment held as a vendor advance once confirmed. While still a draft, change it with [`PATCH /v1/ap/payments/{id}`](#tag/payment/PATCH/v1/ap/payments/{id}) or drop it with [`POST /v1/ap/payments/{id}/cancel`](#tag/payment/POST/v1/ap/payments/{id}/cancel); when it is ready, post it with [`POST /v1/ap/payments/{id}/confirm`](#tag/payment/POST/v1/ap/payments/{id}/confirm).  Error codes: `unknown_vendor`, `unknown_bank_account`, `vendor_mismatch` (the purchase order\'s vendor does not match).  **Response meta** - `meta` is empty. 
      * Record a payment
      */
     async createApPayment(requestParameters: CreateApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApPaymentResponse> {
@@ -308,7 +428,7 @@ export class PaymentApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns one vendor payment by its `id`, with the vendor, date, currency, amount, method, reference, bank account, purchase order for a down payment, every allocation, the unallocated amount and the journal entry. Use it to show a payment, to see which bills it paid, or to check how much of a down payment is still available.  Take the `id` from [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments) or from the response of [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments). An unallocated balance is applied to bills with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations), and one allocation is taken back with [`DELETE /v1/ap/payments/{id}/allocations/{invoice_id}`](#tag/payment/DELETE/v1/ap/payments/{id}/allocations/{invoice_id}). The bills named in `allocations` are read with [`GET /v1/ap/invoices/{id}`](#tag/invoice/GET/v1/ap/invoices/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns one vendor payment by its `id`, with the vendor, date, currency, amount, method, reference, bank account, purchase order for a down payment, status, every allocation, the unallocated amount and the journal entry. Use it to show a payment, to see whether it is still a draft, to see which bills it paid, or to check how much of a down payment is still available.  Take the `id` from [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments) or from the response of [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments). While it is a draft, change it with [`PATCH /v1/ap/payments/{id}`](#tag/payment/PATCH/v1/ap/payments/{id}) or drop it with [`POST /v1/ap/payments/{id}/cancel`](#tag/payment/POST/v1/ap/payments/{id}/cancel); post it with [`POST /v1/ap/payments/{id}/confirm`](#tag/payment/POST/v1/ap/payments/{id}/confirm). Once posted, an unallocated balance is applied to bills with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations), one allocation is taken back with [`DELETE /v1/ap/payments/{id}/allocations/{invoice_id}`](#tag/payment/DELETE/v1/ap/payments/{id}/allocations/{invoice_id}), and the whole payment is reversed with [`POST /v1/ap/payments/{id}/void`](#tag/payment/POST/v1/ap/payments/{id}/void). The bills named in `allocations` are read with [`GET /v1/ap/invoices/{id}`](#tag/invoice/GET/v1/ap/invoices/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get payment
      */
     async getApPaymentRaw(requestParameters: GetApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApPaymentResponse>> {
@@ -319,7 +439,7 @@ export class PaymentApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns one vendor payment by its `id`, with the vendor, date, currency, amount, method, reference, bank account, purchase order for a down payment, every allocation, the unallocated amount and the journal entry. Use it to show a payment, to see which bills it paid, or to check how much of a down payment is still available.  Take the `id` from [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments) or from the response of [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments). An unallocated balance is applied to bills with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations), and one allocation is taken back with [`DELETE /v1/ap/payments/{id}/allocations/{invoice_id}`](#tag/payment/DELETE/v1/ap/payments/{id}/allocations/{invoice_id}). The bills named in `allocations` are read with [`GET /v1/ap/invoices/{id}`](#tag/invoice/GET/v1/ap/invoices/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns one vendor payment by its `id`, with the vendor, date, currency, amount, method, reference, bank account, purchase order for a down payment, status, every allocation, the unallocated amount and the journal entry. Use it to show a payment, to see whether it is still a draft, to see which bills it paid, or to check how much of a down payment is still available.  Take the `id` from [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments) or from the response of [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments). While it is a draft, change it with [`PATCH /v1/ap/payments/{id}`](#tag/payment/PATCH/v1/ap/payments/{id}) or drop it with [`POST /v1/ap/payments/{id}/cancel`](#tag/payment/POST/v1/ap/payments/{id}/cancel); post it with [`POST /v1/ap/payments/{id}/confirm`](#tag/payment/POST/v1/ap/payments/{id}/confirm). Once posted, an unallocated balance is applied to bills with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations), one allocation is taken back with [`DELETE /v1/ap/payments/{id}/allocations/{invoice_id}`](#tag/payment/DELETE/v1/ap/payments/{id}/allocations/{invoice_id}), and the whole payment is reversed with [`POST /v1/ap/payments/{id}/void`](#tag/payment/POST/v1/ap/payments/{id}/void). The bills named in `allocations` are read with [`GET /v1/ap/invoices/{id}`](#tag/invoice/GET/v1/ap/invoices/{id}).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get payment
      */
     async getApPayment(requestParameters: GetApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApPaymentResponse> {
@@ -355,6 +475,10 @@ export class PaymentApi extends runtime.BaseAPI {
 
         if (requestParameters['vendorId'] != null) {
             queryParameters['vendor_id'] = requestParameters['vendorId'];
+        }
+
+        if (requestParameters['status'] != null) {
+            queryParameters['status'] = requestParameters['status'];
         }
 
         if (requestParameters['purchaseOrderId'] != null) {
@@ -395,7 +519,7 @@ export class PaymentApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists the payments you made to vendors, with the amount, date, method, reference, the bills each one was applied to, and the part not yet applied. Use it to review what you paid, to reconcile with the bank, or to find down payments that still hold a balance. Filter by `vendor_id`, by `purchase_order_id` for down payments, or by `has_unallocated=true` for payments with a balance left, and narrow by creation date.  Take a `vendor_id` for the filter from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors). New payments are recorded with [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments), and one payment is read with [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}). A payment with a balance left is applied to bills with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations). The bills it paid are read with [`GET /v1/ap/invoices/{id}`](#tag/invoice/GET/v1/ap/invoices/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the payments you made to vendors, with the amount, date, method, reference, the bills each one was applied to, and the part not yet applied. Use it to review what you paid, to reconcile with the bank, to find drafts not yet posted, or to find down payments that still hold a balance. Filter by `vendor_id`, `status`, by `purchase_order_id` for down payments, or by `has_unallocated=true` for payments with a balance left, and narrow by creation date.  Take a `vendor_id` for the filter from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors). New payments are recorded with [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments), and one payment is read with [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}). A payment with a balance left is applied to bills with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations). The bills it paid are read with [`GET /v1/ap/invoices/{id}`](#tag/invoice/GET/v1/ap/invoices/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List payments
      */
     async listApPaymentsRaw(requestParameters: ListApPaymentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApPaymentListResponse>> {
@@ -406,11 +530,78 @@ export class PaymentApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists the payments you made to vendors, with the amount, date, method, reference, the bills each one was applied to, and the part not yet applied. Use it to review what you paid, to reconcile with the bank, or to find down payments that still hold a balance. Filter by `vendor_id`, by `purchase_order_id` for down payments, or by `has_unallocated=true` for payments with a balance left, and narrow by creation date.  Take a `vendor_id` for the filter from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors). New payments are recorded with [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments), and one payment is read with [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}). A payment with a balance left is applied to bills with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations). The bills it paid are read with [`GET /v1/ap/invoices/{id}`](#tag/invoice/GET/v1/ap/invoices/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the payments you made to vendors, with the amount, date, method, reference, the bills each one was applied to, and the part not yet applied. Use it to review what you paid, to reconcile with the bank, to find drafts not yet posted, or to find down payments that still hold a balance. Filter by `vendor_id`, `status`, by `purchase_order_id` for down payments, or by `has_unallocated=true` for payments with a balance left, and narrow by creation date.  Take a `vendor_id` for the filter from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors). New payments are recorded with [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments), and one payment is read with [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}). A payment with a balance left is applied to bills with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations). The bills it paid are read with [`GET /v1/ap/invoices/{id}`](#tag/invoice/GET/v1/ap/invoices/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List payments
      */
     async listApPayments(requestParameters: ListApPaymentsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApPaymentListResponse> {
         const response = await this.listApPaymentsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for postApPayment without sending the request
+     */
+    async postApPaymentRequestOpts(requestParameters: PostApPaymentRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling postApPayment().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/ap/payments/{id}/confirm`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Posts a draft payment. It creates the journal entry, applies `allocations` to the named bills (reducing each `amount_due`), sets the status to `posted`, and locks the payment, so it can no longer be edited with `PATCH`. The call fails with 422 if the period is closed. A repeated request with the same `Idempotency-Key` returns the first result.  Create and fix the draft with [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments) and [`PATCH /v1/ap/payments/{id}`](#tag/payment/PATCH/v1/ap/payments/{id}) first; the bills in `allocations` must be posted, with [`POST /v1/ap/invoices/{id}/confirm`](#tag/invoice/POST/v1/ap/invoices/{id}/confirm), and belong to the vendor. After posting, apply any remaining unallocated balance with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations), or reverse the payment with [`POST /v1/ap/payments/{id}/void`](#tag/payment/POST/v1/ap/payments/{id}/void).  Error codes: `payment_not_draft`, `unknown_invoice`, `invoice_not_posted`, `vendor_mismatch`, `allocations_exceed_amount`, `exceeds_amount_due`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Post payment to the GL
+     */
+    async postApPaymentRaw(requestParameters: PostApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApPaymentResponse>> {
+        const requestOptions = await this.postApPaymentRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ApPaymentResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Posts a draft payment. It creates the journal entry, applies `allocations` to the named bills (reducing each `amount_due`), sets the status to `posted`, and locks the payment, so it can no longer be edited with `PATCH`. The call fails with 422 if the period is closed. A repeated request with the same `Idempotency-Key` returns the first result.  Create and fix the draft with [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments) and [`PATCH /v1/ap/payments/{id}`](#tag/payment/PATCH/v1/ap/payments/{id}) first; the bills in `allocations` must be posted, with [`POST /v1/ap/invoices/{id}/confirm`](#tag/invoice/POST/v1/ap/invoices/{id}/confirm), and belong to the vendor. After posting, apply any remaining unallocated balance with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations), or reverse the payment with [`POST /v1/ap/payments/{id}/void`](#tag/payment/POST/v1/ap/payments/{id}/void).  Error codes: `payment_not_draft`, `unknown_invoice`, `invoice_not_posted`, `vendor_mismatch`, `allocations_exceed_amount`, `exceeds_amount_due`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Post payment to the GL
+     */
+    async postApPayment(requestParameters: PostApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApPaymentResponse> {
+        const response = await this.postApPaymentRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -466,7 +657,7 @@ export class PaymentApi extends runtime.BaseAPI {
     }
 
     /**
-     * Takes back one allocation of a payment from a bill. The amount returns to the payment\'s unallocated balance and the bill\'s `amount_due` is restored, so the bill is open again. Use it when a payment was applied to the wrong bill. The call returns 204 with no body, and it fails with 422 if the period of the allocation is closed.  The `id` is the payment from [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}) and the `invoice_id` is the bill named in its `allocations`. After removing, apply the balance again with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations). If the whole bill was recorded by mistake, a bill that still has payments allocated cannot be voided with [`POST /v1/ap/invoices/{id}/void`](#tag/invoice/POST/v1/ap/invoices/{id}/void) until its allocations are removed.  Error codes: `allocation_not_found`, `period_closed`.  **Response meta** - No response body, so no meta. 
+     * Takes back one allocation of a payment from a bill. The amount returns to the payment\'s unallocated balance and the bill\'s `amount_due` is restored, so the bill is open again. Use it when a payment was applied to the wrong bill. The call returns 204 with no body, and it fails with 422 if the period of the allocation is closed.  The `id` is the payment from [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}) and the `invoice_id` is the bill named in its `allocations`. After removing, apply the balance again with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations), or void the whole payment with [`POST /v1/ap/payments/{id}/void`](#tag/payment/POST/v1/ap/payments/{id}/void). If the whole bill was recorded by mistake, a bill that still has payments allocated cannot be voided with [`POST /v1/ap/invoices/{id}/void`](#tag/invoice/POST/v1/ap/invoices/{id}/void) until its allocations are removed.  Error codes: `payment_not_posted`, `allocation_not_found`, `period_closed`.  **Response meta** - No response body, so no meta. 
      * Remove a payment allocation
      */
     async removeApPaymentAllocationRaw(requestParameters: RemoveApPaymentAllocationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -477,11 +668,161 @@ export class PaymentApi extends runtime.BaseAPI {
     }
 
     /**
-     * Takes back one allocation of a payment from a bill. The amount returns to the payment\'s unallocated balance and the bill\'s `amount_due` is restored, so the bill is open again. Use it when a payment was applied to the wrong bill. The call returns 204 with no body, and it fails with 422 if the period of the allocation is closed.  The `id` is the payment from [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}) and the `invoice_id` is the bill named in its `allocations`. After removing, apply the balance again with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations). If the whole bill was recorded by mistake, a bill that still has payments allocated cannot be voided with [`POST /v1/ap/invoices/{id}/void`](#tag/invoice/POST/v1/ap/invoices/{id}/void) until its allocations are removed.  Error codes: `allocation_not_found`, `period_closed`.  **Response meta** - No response body, so no meta. 
+     * Takes back one allocation of a payment from a bill. The amount returns to the payment\'s unallocated balance and the bill\'s `amount_due` is restored, so the bill is open again. Use it when a payment was applied to the wrong bill. The call returns 204 with no body, and it fails with 422 if the period of the allocation is closed.  The `id` is the payment from [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}) and the `invoice_id` is the bill named in its `allocations`. After removing, apply the balance again with [`POST /v1/ap/payments/{id}/allocations`](#tag/payment/POST/v1/ap/payments/{id}/allocations), or void the whole payment with [`POST /v1/ap/payments/{id}/void`](#tag/payment/POST/v1/ap/payments/{id}/void). If the whole bill was recorded by mistake, a bill that still has payments allocated cannot be voided with [`POST /v1/ap/invoices/{id}/void`](#tag/invoice/POST/v1/ap/invoices/{id}/void) until its allocations are removed.  Error codes: `payment_not_posted`, `allocation_not_found`, `period_closed`.  **Response meta** - No response body, so no meta. 
      * Remove a payment allocation
      */
     async removeApPaymentAllocation(requestParameters: RemoveApPaymentAllocationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.removeApPaymentAllocationRaw(requestParameters, initOverrides);
     }
 
+    /**
+     * Creates request options for updateApPayment without sending the request
+     */
+    async updateApPaymentRequestOpts(requestParameters: UpdateApPaymentRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling updateApPayment().'
+            );
+        }
+
+        if (requestParameters['apPaymentUpdate'] == null) {
+            throw new runtime.RequiredError(
+                'apPaymentUpdate',
+                'Required parameter "apPaymentUpdate" was null or undefined when calling updateApPayment().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/ap/payments/{id}`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ApPaymentUpdateToJSON(requestParameters['apPaymentUpdate']),
+        };
+    }
+
+    /**
+     * Changes a payment that is still a draft. Send only the fields you want to change. When you send `allocations`, the whole list replaces the old one, so include every allocation you want to keep. Once the payment is posted or void it can no longer be edited, and the call returns 409.  Read the current draft with [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}) first. When it is ready, post it with [`POST /v1/ap/payments/{id}/confirm`](#tag/payment/POST/v1/ap/payments/{id}/confirm). To drop it, call [`POST /v1/ap/payments/{id}/cancel`](#tag/payment/POST/v1/ap/payments/{id}/cancel).  Error codes: `payment_not_editable`, `unknown_vendor`, `unknown_bank_account`, `vendor_mismatch` (the purchase order\'s vendor does not match).  **Response meta** - `meta` is empty. 
+     * Update payment
+     */
+    async updateApPaymentRaw(requestParameters: UpdateApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApPaymentResponse>> {
+        const requestOptions = await this.updateApPaymentRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ApPaymentResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Changes a payment that is still a draft. Send only the fields you want to change. When you send `allocations`, the whole list replaces the old one, so include every allocation you want to keep. Once the payment is posted or void it can no longer be edited, and the call returns 409.  Read the current draft with [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}) first. When it is ready, post it with [`POST /v1/ap/payments/{id}/confirm`](#tag/payment/POST/v1/ap/payments/{id}/confirm). To drop it, call [`POST /v1/ap/payments/{id}/cancel`](#tag/payment/POST/v1/ap/payments/{id}/cancel).  Error codes: `payment_not_editable`, `unknown_vendor`, `unknown_bank_account`, `vendor_mismatch` (the purchase order\'s vendor does not match).  **Response meta** - `meta` is empty. 
+     * Update payment
+     */
+    async updateApPayment(requestParameters: UpdateApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApPaymentResponse> {
+        const response = await this.updateApPaymentRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for voidApPayment without sending the request
+     */
+    async voidApPaymentRequestOpts(requestParameters: VoidApPaymentRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling voidApPayment().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/ap/payments/{id}/void`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Voids a posted payment by reversing its journal entry. The status becomes `void`, every allocation it made is removed, and the `amount_due` of each bill it had paid is restored, so they are open again. Use it when a payment was recorded by mistake or has to be redone. A repeated request with the same `Idempotency-Key` returns the first result.  Read the payment first with [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}) to see which bills it paid. After voiding, record the right payment with [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments). A void payment stays in [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments) with the status `void`.  Error codes: `payment_not_voidable`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Void payment
+     */
+    async voidApPaymentRaw(requestParameters: VoidApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApPaymentResponse>> {
+        const requestOptions = await this.voidApPaymentRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ApPaymentResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Voids a posted payment by reversing its journal entry. The status becomes `void`, every allocation it made is removed, and the `amount_due` of each bill it had paid is restored, so they are open again. Use it when a payment was recorded by mistake or has to be redone. A repeated request with the same `Idempotency-Key` returns the first result.  Read the payment first with [`GET /v1/ap/payments/{id}`](#tag/payment/GET/v1/ap/payments/{id}) to see which bills it paid. After voiding, record the right payment with [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments). A void payment stays in [`GET /v1/ap/payments`](#tag/payment/GET/v1/ap/payments) with the status `void`.  Error codes: `payment_not_voidable`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Void payment
+     */
+    async voidApPayment(requestParameters: VoidApPaymentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApPaymentResponse> {
+        const response = await this.voidApPaymentRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
 }
+
+/**
+ * @export
+ */
+export const ListApPaymentsStatusEnum = {
+    Draft: 'draft',
+    Posted: 'posted',
+    Void: 'void',
+} as const;
+export type ListApPaymentsStatusEnum = typeof ListApPaymentsStatusEnum[keyof typeof ListApPaymentsStatusEnum];

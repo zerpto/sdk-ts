@@ -40,6 +40,10 @@ export interface ApPayment {
      */
     paymentDate: Date;
     /**
+     * `draft` and `cancelled` never reach the GL. `posted` has a journal entry; `void` reverses one.
+     */
+    status: ApPaymentStatusEnum;
+    /**
      * ISO 4217 currency code.
      */
     currency: string;
@@ -72,15 +76,26 @@ export interface ApPayment {
      */
     readonly unallocatedAmount?: string;
     /**
-     * 
+     * Set once posted.
      */
-    journalEntryId?: string;
+    journalEntryId?: string | null;
     /**
      * 
      */
     readonly createdAt?: Date;
 }
 
+
+/**
+ * @export
+ */
+export const ApPaymentStatusEnum = {
+    Draft: 'draft',
+    Posted: 'posted',
+    Cancelled: 'cancelled',
+    Void: 'void',
+} as const;
+export type ApPaymentStatusEnum = typeof ApPaymentStatusEnum[keyof typeof ApPaymentStatusEnum];
 
 /**
  * @export
@@ -101,6 +116,7 @@ export function instanceOfApPayment(value: object): value is ApPayment {
     if (!('id' in value) || value['id'] === undefined) return false;
     if ((!('vendorId' in (value as Record<string, any>)) && !('vendor_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['vendorId'] === undefined && (value as Record<string, any>)['vendor_id'] === undefined)) return false;
     if ((!('paymentDate' in (value as Record<string, any>)) && !('payment_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['paymentDate'] === undefined && (value as Record<string, any>)['payment_date'] === undefined)) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
     if (!('amount' in value) || value['amount'] === undefined) return false;
     if (!('allocations' in value) || value['allocations'] === undefined) return false;
@@ -120,6 +136,7 @@ export function ApPaymentFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'id': json['id'],
         'vendorId': json['vendor_id'],
         'paymentDate': (json['payment_date'] == null ? json['payment_date'] : parseDate(json['payment_date'])),
+        'status': json['status'],
         'currency': json['currency'],
         'amount': json['amount'],
         'method': json['method'] == null ? undefined : json['method'],
@@ -128,7 +145,7 @@ export function ApPaymentFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'allocations': ((json['allocations'] as Array<any>).map(PaymentAllocationFromJSON)),
         'purchaseOrderId': json['purchase_order_id'] === undefined ? undefined : json['purchase_order_id'] === null ? null : json['purchase_order_id'],
         'unallocatedAmount': json['unallocated_amount'] == null ? undefined : json['unallocated_amount'],
-        'journalEntryId': json['journal_entry_id'] == null ? undefined : json['journal_entry_id'],
+        'journalEntryId': json['journal_entry_id'] === undefined ? undefined : json['journal_entry_id'] === null ? null : json['journal_entry_id'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
     };
 }
@@ -146,6 +163,7 @@ export function ApPaymentToJSONTyped(value?: Omit<ApPayment, 'id'|'unallocatedAm
         
         'vendor_id': value['vendorId'],
         'payment_date': value['paymentDate'] == null ? value['paymentDate'] : serializeDate(value['paymentDate']),
+        'status': value['status'],
         'currency': value['currency'],
         'amount': value['amount'],
         'method': value['method'],

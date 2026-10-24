@@ -32,6 +32,7 @@ docs/ApPayment.md
 docs/ApPaymentInput.md
 docs/ApPaymentListResponse.md
 docs/ApPaymentResponse.md
+docs/ApPaymentUpdate.md
 docs/ApiKey.md
 docs/ApiKeyInput.md
 docs/ApiKeyListResponse.md
@@ -470,6 +471,7 @@ src/models/ApPayment.ts
 src/models/ApPaymentInput.ts
 src/models/ApPaymentListResponse.ts
 src/models/ApPaymentResponse.ts
+src/models/ApPaymentUpdate.ts
 src/models/ApiKey.ts
 src/models/ApiKeyInput.ts
 src/models/ApiKeyListResponse.ts

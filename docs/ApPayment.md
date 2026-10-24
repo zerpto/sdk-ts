@@ -9,6 +9,7 @@ Name | Type
 `id` | string
 `vendorId` | string
 `paymentDate` | Date
+`status` | string
 `currency` | string
 `amount` | string
 `method` | string
@@ -30,6 +31,7 @@ const example = {
   "id": null,
   "vendorId": null,
   "paymentDate": null,
+  "status": null,
   "currency": IDR,
   "amount": 1500000.00,
   "method": null,

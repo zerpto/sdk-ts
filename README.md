@@ -184,10 +184,14 @@ All URIs are relative to *https://api.zerpto.com*
 *OrdersApi* | [**submitPurchaseOrder**](docs/OrdersApi.md#submitpurchaseorder) | **POST** /v1/purchasing/orders/{id}/submit | Submit for approval
 *OrdersApi* | [**updatePurchaseOrder**](docs/OrdersApi.md#updatepurchaseorder) | **PATCH** /v1/purchasing/orders/{id} | Update purchase order
 *PaymentApi* | [**allocateApPayment**](docs/PaymentApi.md#allocateappayment) | **POST** /v1/ap/payments/{id}/allocations | Apply payment to bills
+*PaymentApi* | [**cancelApPayment**](docs/PaymentApi.md#cancelappayment) | **POST** /v1/ap/payments/{id}/cancel | Cancel payment
 *PaymentApi* | [**createApPayment**](docs/PaymentApi.md#createappayment) | **POST** /v1/ap/payments | Record a payment
 *PaymentApi* | [**getApPayment**](docs/PaymentApi.md#getappayment) | **GET** /v1/ap/payments/{id} | Get payment
 *PaymentApi* | [**listApPayments**](docs/PaymentApi.md#listappayments) | **GET** /v1/ap/payments | List payments
+*PaymentApi* | [**postApPayment**](docs/PaymentApi.md#postappayment) | **POST** /v1/ap/payments/{id}/confirm | Post payment to the GL
 *PaymentApi* | [**removeApPaymentAllocation**](docs/PaymentApi.md#removeappaymentallocation) | **DELETE** /v1/ap/payments/{id}/allocations/{invoice_id} | Remove a payment allocation
+*PaymentApi* | [**updateApPayment**](docs/PaymentApi.md#updateappayment) | **PATCH** /v1/ap/payments/{id} | Update payment
+*PaymentApi* | [**voidApPayment**](docs/PaymentApi.md#voidappayment) | **POST** /v1/ap/payments/{id}/void | Void payment
 *PlansApi* | [**listPlans**](docs/PlansApi.md#listplans) | **GET** /v1/plans | List plans and prices
 *PlatformApi* | [**getHealth**](docs/PlatformApi.md#gethealth) | **GET** /v1/health | Health check
 *ProductItemsApi* | [**archiveItem**](docs/ProductItemsApi.md#archiveitem) | **DELETE** /v1/items/{id} | Archive an item
@@ -324,6 +328,7 @@ All URIs are relative to *https://api.zerpto.com*
 - [ApPaymentInput](docs/ApPaymentInput.md)
 - [ApPaymentListResponse](docs/ApPaymentListResponse.md)
 - [ApPaymentResponse](docs/ApPaymentResponse.md)
+- [ApPaymentUpdate](docs/ApPaymentUpdate.md)
 - [ApiKey](docs/ApiKey.md)
 - [ApiKeyInput](docs/ApiKeyInput.md)
 - [ApiKeyListResponse](docs/ApiKeyListResponse.md)

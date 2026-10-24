@@ -28,6 +28,7 @@ export * from './ApPayment';
 export * from './ApPaymentInput';
 export * from './ApPaymentListResponse';
 export * from './ApPaymentResponse';
+export * from './ApPaymentUpdate';
 export * from './ApiKey';
 export * from './ApiKeyInput';
 export * from './ApiKeyListResponse';
