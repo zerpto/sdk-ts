@@ -8,7 +8,7 @@ Name | Type
 ------------ | -------------
 `date` | Date
 `amount` | string
-`bankAccountId` | string
+`cashAccountId` | string
 `reference` | string
 
 ## Example
@@ -20,7 +20,7 @@ import type { ApCreditNoteRefundInput } from '@zerpto/sdk'
 const example = {
   "date": null,
   "amount": 1500000.00,
-  "bankAccountId": null,
+  "cashAccountId": null,
   "reference": null,
 } satisfies ApCreditNoteRefundInput
 

@@ -52,9 +52,9 @@ export interface ArPaymentInput {
      */
     reference?: string | null;
     /**
-     * GL cash/bank account.
+     * Cash account money moved through.
      */
-    bankAccountId: string;
+    cashAccountId: string;
     /**
      * 
      */
@@ -82,7 +82,7 @@ export function instanceOfArPaymentInput(value: object): value is ArPaymentInput
     if ((!('paymentDate' in (value as Record<string, any>)) && !('payment_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['paymentDate'] === undefined && (value as Record<string, any>)['payment_date'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
     if (!('amount' in value) || value['amount'] === undefined) return false;
-    if ((!('bankAccountId' in (value as Record<string, any>)) && !('bank_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['bankAccountId'] === undefined && (value as Record<string, any>)['bank_account_id'] === undefined)) return false;
+    if ((!('cashAccountId' in (value as Record<string, any>)) && !('cash_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['cashAccountId'] === undefined && (value as Record<string, any>)['cash_account_id'] === undefined)) return false;
     if (!('allocations' in value) || value['allocations'] === undefined) return false;
     return true;
 }
@@ -103,7 +103,7 @@ export function ArPaymentInputFromJSONTyped(json: any, ignoreDiscriminator: bool
         'amount': json['amount'],
         'method': json['method'] == null ? undefined : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
-        'bankAccountId': json['bank_account_id'],
+        'cashAccountId': json['cash_account_id'],
         'allocations': ((json['allocations'] as Array<any>).map(PaymentAllocationFromJSON)),
     };
 }
@@ -125,7 +125,7 @@ export function ArPaymentInputToJSONTyped(value?: ArPaymentInput | null, ignoreD
         'amount': value['amount'],
         'method': value['method'],
         'reference': value['reference'],
-        'bank_account_id': value['bankAccountId'],
+        'cash_account_id': value['cashAccountId'],
         'allocations': ((value['allocations'] as Array<any>).map(PaymentAllocationToJSON)),
     };
 }

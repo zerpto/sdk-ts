@@ -12,7 +12,7 @@ Name | Type
 `payeeName` | string
 `expenseDate` | Date
 `currency` | string
-`bankAccountId` | string
+`cashAccountId` | string
 `method` | string
 `reference` | string
 `notes` | string
@@ -39,7 +39,7 @@ const example = {
   "payeeName": null,
   "expenseDate": null,
   "currency": IDR,
-  "bankAccountId": null,
+  "cashAccountId": null,
   "method": null,
   "reference": null,
   "notes": null,

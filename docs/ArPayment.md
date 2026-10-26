@@ -13,7 +13,7 @@ Name | Type
 `amount` | string
 `method` | string
 `reference` | string
-`bankAccountId` | string
+`cashAccountId` | string
 `allocations` | [Array&lt;PaymentAllocation&gt;](PaymentAllocation.md)
 `journalEntryId` | string
 `createdAt` | Date
@@ -32,7 +32,7 @@ const example = {
   "amount": 1500000.00,
   "method": null,
   "reference": null,
-  "bankAccountId": null,
+  "cashAccountId": null,
   "allocations": null,
   "journalEntryId": null,
   "createdAt": null,

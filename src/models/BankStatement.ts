@@ -26,7 +26,7 @@ export interface BankStatement {
     /**
      * 
      */
-    bankAccountId: string;
+    cashAccountId: string;
     /**
      * 
      */
@@ -81,7 +81,7 @@ export type BankStatementFormatEnum = typeof BankStatementFormatEnum[keyof typeo
  */
 export function instanceOfBankStatement(value: object): value is BankStatement {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if ((!('bankAccountId' in (value as Record<string, any>)) && !('bank_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['bankAccountId'] === undefined && (value as Record<string, any>)['bank_account_id'] === undefined)) return false;
+    if ((!('cashAccountId' in (value as Record<string, any>)) && !('cash_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['cashAccountId'] === undefined && (value as Record<string, any>)['cash_account_id'] === undefined)) return false;
     if (!('filename' in value) || value['filename'] === undefined) return false;
     if (!('format' in value) || value['format'] === undefined) return false;
     if ((!('periodStart' in (value as Record<string, any>)) && !('period_start' in (value as Record<string, any>))) || ((value as Record<string, any>)['periodStart'] === undefined && (value as Record<string, any>)['period_start'] === undefined)) return false;
@@ -104,7 +104,7 @@ export function BankStatementFromJSONTyped(json: any, ignoreDiscriminator: boole
     return {
         
         'id': json['id'],
-        'bankAccountId': json['bank_account_id'],
+        'cashAccountId': json['cash_account_id'],
         'filename': json['filename'],
         'format': json['format'],
         'periodStart': (json['period_start'] == null ? json['period_start'] : parseDate(json['period_start'])),
@@ -128,7 +128,7 @@ export function BankStatementToJSONTyped(value?: Omit<BankStatement, 'id'|'creat
 
     return {
         
-        'bank_account_id': value['bankAccountId'],
+        'cash_account_id': value['cashAccountId'],
         'filename': value['filename'],
         'format': value['format'],
         'period_start': value['periodStart'] == null ? value['periodStart'] : serializeDate(value['periodStart']),

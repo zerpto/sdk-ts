@@ -13,7 +13,7 @@ Name | Type
 `amount` | string
 `method` | string
 `reference` | string
-`bankAccountId` | string
+`cashAccountId` | string
 `purchaseOrderId` | string
 `allocations` | [Array&lt;PaymentAllocation&gt;](PaymentAllocation.md)
 
@@ -30,7 +30,7 @@ const example = {
   "amount": 1500000.00,
   "method": null,
   "reference": null,
-  "bankAccountId": null,
+  "cashAccountId": null,
   "purchaseOrderId": null,
   "allocations": null,
 } satisfies ApPaymentInput

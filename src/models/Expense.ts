@@ -59,9 +59,9 @@ export interface Expense {
      */
     currency: string;
     /**
-     * GL cash or bank account the money was paid from.
+     * Cash account the money was paid from.
      */
-    bankAccountId: string;
+    cashAccountId: string;
     /**
      * 
      */
@@ -144,7 +144,7 @@ export function instanceOfExpense(value: object): value is Expense {
     if (!('number' in value) || value['number'] === undefined) return false;
     if ((!('expenseDate' in (value as Record<string, any>)) && !('expense_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['expenseDate'] === undefined && (value as Record<string, any>)['expense_date'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
-    if ((!('bankAccountId' in (value as Record<string, any>)) && !('bank_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['bankAccountId'] === undefined && (value as Record<string, any>)['bank_account_id'] === undefined)) return false;
+    if ((!('cashAccountId' in (value as Record<string, any>)) && !('cash_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['cashAccountId'] === undefined && (value as Record<string, any>)['cash_account_id'] === undefined)) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     if (!('lines' in value) || value['lines'] === undefined) return false;
     if (!('subtotal' in value) || value['subtotal'] === undefined) return false;
@@ -170,7 +170,7 @@ export function ExpenseFromJSONTyped(json: any, ignoreDiscriminator: boolean): E
         'payeeName': json['payee_name'] === undefined ? undefined : json['payee_name'] === null ? null : json['payee_name'],
         'expenseDate': (json['expense_date'] == null ? json['expense_date'] : parseDate(json['expense_date'])),
         'currency': json['currency'],
-        'bankAccountId': json['bank_account_id'],
+        'cashAccountId': json['cash_account_id'],
         'method': json['method'] == null ? undefined : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
@@ -201,7 +201,7 @@ export function ExpenseToJSONTyped(value?: Omit<Expense, 'id'|'number'|'createdA
         'payee_name': value['payeeName'],
         'expense_date': value['expenseDate'] == null ? value['expenseDate'] : serializeDate(value['expenseDate']),
         'currency': value['currency'],
-        'bank_account_id': value['bankAccountId'],
+        'cash_account_id': value['cashAccountId'],
         'method': value['method'],
         'reference': value['reference'],
         'notes': value['notes'],

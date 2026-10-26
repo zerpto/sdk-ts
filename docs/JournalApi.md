@@ -214,7 +214,7 @@ async function example() {
     dateFrom: 2013-10-20,
     // Date | Entry date on or before. (optional)
     dateTo: 2013-10-20,
-    // 'manual' | 'ar_invoice' | 'ar_payment' | 'ap_invoice' | 'ap_payment' | 'goods_receipt' | 'delivery' | 'stock_adjustment' | 'bank_adjustment' | 'purchase_return' | 'ap_credit_note' | 'ap_credit_note_refund' | 'asset_depreciation' | 'asset_disposal' | 'tax_withholding' | Filter by originating document type. (optional)
+    // 'manual' | 'ar_invoice' | 'ar_payment' | 'ap_invoice' | 'ap_payment' | 'goods_receipt' | 'delivery' | 'stock_adjustment' | 'bank_adjustment' | 'cash_transfer' | 'purchase_return' | 'ap_credit_note' | 'ap_credit_note_refund' | 'asset_depreciation' | 'asset_disposal' | 'tax_withholding' | Filter by originating document type. (optional)
     source: source_example,
   } satisfies ListJournalEntriesRequest;
 
@@ -244,7 +244,7 @@ example().catch(console.error);
 | **periodId** | `string` | Filter by period. | [Optional] [Defaults to `undefined`] |
 | **dateFrom** | `Date` | Entry date on or after. | [Optional] [Defaults to `undefined`] |
 | **dateTo** | `Date` | Entry date on or before. | [Optional] [Defaults to `undefined`] |
-| **source** | `manual`, `ar_invoice`, `ar_payment`, `ap_invoice`, `ap_payment`, `goods_receipt`, `delivery`, `stock_adjustment`, `bank_adjustment`, `purchase_return`, `ap_credit_note`, `ap_credit_note_refund`, `asset_depreciation`, `asset_disposal`, `tax_withholding` | Filter by originating document type. | [Optional] [Defaults to `undefined`] [Enum: manual, ar_invoice, ar_payment, ap_invoice, ap_payment, goods_receipt, delivery, stock_adjustment, bank_adjustment, purchase_return, ap_credit_note, ap_credit_note_refund, asset_depreciation, asset_disposal, tax_withholding] |
+| **source** | `manual`, `ar_invoice`, `ar_payment`, `ap_invoice`, `ap_payment`, `goods_receipt`, `delivery`, `stock_adjustment`, `bank_adjustment`, `cash_transfer`, `purchase_return`, `ap_credit_note`, `ap_credit_note_refund`, `asset_depreciation`, `asset_disposal`, `tax_withholding` | Filter by originating document type. | [Optional] [Defaults to `undefined`] [Enum: manual, ar_invoice, ar_payment, ap_invoice, ap_payment, goods_receipt, delivery, stock_adjustment, bank_adjustment, cash_transfer, purchase_return, ap_credit_note, ap_credit_note_refund, asset_depreciation, asset_disposal, tax_withholding] |
 
 ### Return type
 

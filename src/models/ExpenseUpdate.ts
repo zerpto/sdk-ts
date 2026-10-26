@@ -44,9 +44,9 @@ export interface ExpenseUpdate {
      */
     currency?: string;
     /**
-     * GL cash or bank account the money was paid from.
+     * Cash account the money was paid from.
      */
-    bankAccountId?: string;
+    cashAccountId?: string;
     /**
      * 
      */
@@ -99,7 +99,7 @@ export function ExpenseUpdateFromJSONTyped(json: any, ignoreDiscriminator: boole
         'payeeName': json['payee_name'] === undefined ? undefined : json['payee_name'] === null ? null : json['payee_name'],
         'expenseDate': json['expense_date'] == null ? undefined : (parseDate(json['expense_date'])),
         'currency': json['currency'] == null ? undefined : json['currency'],
-        'bankAccountId': json['bank_account_id'] == null ? undefined : json['bank_account_id'],
+        'cashAccountId': json['cash_account_id'] == null ? undefined : json['cash_account_id'],
         'method': json['method'] == null ? undefined : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
@@ -122,7 +122,7 @@ export function ExpenseUpdateToJSONTyped(value?: ExpenseUpdate | null, ignoreDis
         'payee_name': value['payeeName'],
         'expense_date': value['expenseDate'] == null ? value['expenseDate'] : serializeDate(value['expenseDate']),
         'currency': value['currency'],
-        'bank_account_id': value['bankAccountId'],
+        'cash_account_id': value['cashAccountId'],
         'method': value['method'],
         'reference': value['reference'],
         'notes': value['notes'],

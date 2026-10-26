@@ -56,9 +56,9 @@ export interface ArPayment {
      */
     reference?: string | null;
     /**
-     * GL cash/bank account.
+     * Cash account money moved through.
      */
-    bankAccountId?: string;
+    cashAccountId?: string;
     /**
      * 
      */
@@ -116,7 +116,7 @@ export function ArPaymentFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'amount': json['amount'],
         'method': json['method'] == null ? undefined : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
-        'bankAccountId': json['bank_account_id'] == null ? undefined : json['bank_account_id'],
+        'cashAccountId': json['cash_account_id'] == null ? undefined : json['cash_account_id'],
         'allocations': ((json['allocations'] as Array<any>).map(PaymentAllocationFromJSON)),
         'journalEntryId': json['journal_entry_id'] == null ? undefined : json['journal_entry_id'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
@@ -140,7 +140,7 @@ export function ArPaymentToJSONTyped(value?: Omit<ArPayment, 'id'|'createdAt'> |
         'amount': value['amount'],
         'method': value['method'],
         'reference': value['reference'],
-        'bank_account_id': value['bankAccountId'],
+        'cash_account_id': value['cashAccountId'],
         'allocations': ((value['allocations'] as Array<any>).map(PaymentAllocationToJSON)),
         'journal_entry_id': value['journalEntryId'],
     };

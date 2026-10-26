@@ -99,10 +99,6 @@ All URIs are relative to *https://api.zerpto.com*
 *AuthenticationApi* | [**refreshToken**](docs/AuthenticationApi.md#refreshtoken) | **POST** /v1/auth/refresh | Refresh the access token
 *AuthenticationApi* | [**register**](docs/AuthenticationApi.md#register) | **POST** /v1/auth/sign-up | Register a new account
 *AuthenticationApi* | [**verifyEmail**](docs/AuthenticationApi.md#verifyemail) | **POST** /v1/auth/verify-email | Confirm an email address
-*BankAccountApi* | [**createBankAccount**](docs/BankAccountApi.md#createbankaccount) | **POST** /v1/bank/accounts | Create bank account
-*BankAccountApi* | [**getBankAccount**](docs/BankAccountApi.md#getbankaccount) | **GET** /v1/bank/accounts/{id} | Get bank account
-*BankAccountApi* | [**listBankAccounts**](docs/BankAccountApi.md#listbankaccounts) | **GET** /v1/bank/accounts | List bank accounts
-*BankAccountApi* | [**updateBankAccount**](docs/BankAccountApi.md#updatebankaccount) | **PATCH** /v1/bank/accounts/{id} | Update bank account
 *BankReconciliationApi* | [**completeBankReconciliation**](docs/BankReconciliationApi.md#completebankreconciliation) | **POST** /v1/bank/reconciliations/{id}/complete | Complete a reconciliation
 *BankReconciliationApi* | [**createBankReconciliation**](docs/BankReconciliationApi.md#createbankreconciliation) | **POST** /v1/bank/reconciliations | Start a reconciliation
 *BankReconciliationApi* | [**listBankReconciliations**](docs/BankReconciliationApi.md#listbankreconciliations) | **GET** /v1/bank/reconciliations | List reconciliations
@@ -117,6 +113,14 @@ All URIs are relative to *https://api.zerpto.com*
 *BillingApi* | [**listPaymentMethods**](docs/BillingApi.md#listpaymentmethods) | **GET** /v1/billing/payment-methods | List saved payment methods
 *BillingApi* | [**receiveXenditWebhook**](docs/BillingApi.md#receivexenditwebhook) | **POST** /v1/billing/webhooks/xendit | Receive Xendit payment events
 *BillingApi* | [**updateSubscription**](docs/BillingApi.md#updatesubscription) | **PATCH** /v1/billing/subscription | Change plan, seats or add-on
+*CashAccountApi* | [**createCashAccount**](docs/CashAccountApi.md#createcashaccount) | **POST** /v1/cash/accounts | Create cash account
+*CashAccountApi* | [**getCashAccount**](docs/CashAccountApi.md#getcashaccount) | **GET** /v1/cash/accounts/{id} | Get cash account
+*CashAccountApi* | [**listCashAccounts**](docs/CashAccountApi.md#listcashaccounts) | **GET** /v1/cash/accounts | List cash accounts
+*CashAccountApi* | [**updateCashAccount**](docs/CashAccountApi.md#updatecashaccount) | **PATCH** /v1/cash/accounts/{id} | Update cash account
+*CashTransferApi* | [**createCashTransfer**](docs/CashTransferApi.md#createcashtransfer) | **POST** /v1/cash/transfers | Post a cash transfer
+*CashTransferApi* | [**getCashTransfer**](docs/CashTransferApi.md#getcashtransfer) | **GET** /v1/cash/transfers/{id} | Get cash transfer
+*CashTransferApi* | [**listCashTransfers**](docs/CashTransferApi.md#listcashtransfers) | **GET** /v1/cash/transfers | List cash transfers
+*CashTransferApi* | [**voidCashTransfer**](docs/CashTransferApi.md#voidcashtransfer) | **POST** /v1/cash/transfers/{id}/void | Void a cash transfer
 *CategoriesApi* | [**createAssetCategory**](docs/CategoriesApi.md#createassetcategory) | **POST** /v1/assets/categories | Create asset category
 *CategoriesApi* | [**getAssetCategory**](docs/CategoriesApi.md#getassetcategory) | **GET** /v1/assets/categories/{id} | Get asset category
 *CategoriesApi* | [**listAssetCategories**](docs/CategoriesApi.md#listassetcategories) | **GET** /v1/assets/categories | List asset categories
@@ -257,7 +261,7 @@ All URIs are relative to *https://api.zerpto.com*
 *StatementsApi* | [**listBankStatementLines**](docs/StatementsApi.md#listbankstatementlines) | **GET** /v1/bank/statements/{id}/lines | List statement lines
 *StatementsApi* | [**matchBankStatementLine**](docs/StatementsApi.md#matchbankstatementline) | **POST** /v1/bank/statement-lines/{id}/match | Match a line
 *StatementsApi* | [**unmatchBankStatementLine**](docs/StatementsApi.md#unmatchbankstatementline) | **POST** /v1/bank/statement-lines/{id}/unmatch | Remove a match
-*StatementsApi* | [**uploadBankStatement**](docs/StatementsApi.md#uploadbankstatement) | **POST** /v1/bank/accounts/{id}/statements | Upload a statement file
+*StatementsApi* | [**uploadBankStatement**](docs/StatementsApi.md#uploadbankstatement) | **POST** /v1/cash/accounts/{id}/statements | Upload a statement file
 *TaxApi* | [**createTaxExport**](docs/TaxApi.md#createtaxexport) | **POST** /v1/tax/exports | Generate a tax export file
 *TaxApi* | [**createTaxWithholding**](docs/TaxApi.md#createtaxwithholding) | **POST** /v1/tax/withholdings | Record PPh 23 withholding
 *TaxApi* | [**getTaxExport**](docs/TaxApi.md#gettaxexport) | **GET** /v1/tax/exports/{id} | Get tax export status
@@ -387,11 +391,6 @@ All URIs are relative to *https://api.zerpto.com*
 - [AuthUser](docs/AuthUser.md)
 - [BalanceSheet](docs/BalanceSheet.md)
 - [BalanceSheetResponse](docs/BalanceSheetResponse.md)
-- [BankAccount](docs/BankAccount.md)
-- [BankAccountInput](docs/BankAccountInput.md)
-- [BankAccountListResponse](docs/BankAccountListResponse.md)
-- [BankAccountResponse](docs/BankAccountResponse.md)
-- [BankAccountUpdate](docs/BankAccountUpdate.md)
 - [BankMatch](docs/BankMatch.md)
 - [BankMatchInput](docs/BankMatchInput.md)
 - [BankMatchTarget](docs/BankMatchTarget.md)
@@ -417,6 +416,15 @@ All URIs are relative to *https://api.zerpto.com*
 - [BillingPayment](docs/BillingPayment.md)
 - [BillingPaymentListResponse](docs/BillingPaymentListResponse.md)
 - [BusinessPartner](docs/BusinessPartner.md)
+- [CashAccount](docs/CashAccount.md)
+- [CashAccountInput](docs/CashAccountInput.md)
+- [CashAccountListResponse](docs/CashAccountListResponse.md)
+- [CashAccountResponse](docs/CashAccountResponse.md)
+- [CashAccountUpdate](docs/CashAccountUpdate.md)
+- [CashTransfer](docs/CashTransfer.md)
+- [CashTransferInput](docs/CashTransferInput.md)
+- [CashTransferListResponse](docs/CashTransferListResponse.md)
+- [CashTransferResponse](docs/CashTransferResponse.md)
 - [ChangePasswordInput](docs/ChangePasswordInput.md)
 - [Checkout](docs/Checkout.md)
 - [CheckoutInput](docs/CheckoutInput.md)

@@ -415,6 +415,7 @@ export const ListJournalEntriesSourceEnum = {
     Delivery: 'delivery',
     StockAdjustment: 'stock_adjustment',
     BankAdjustment: 'bank_adjustment',
+    CashTransfer: 'cash_transfer',
     PurchaseReturn: 'purchase_return',
     ApCreditNote: 'ap_credit_note',
     ApCreditNoteRefund: 'ap_credit_note_refund',

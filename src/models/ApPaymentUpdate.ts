@@ -52,9 +52,9 @@ export interface ApPaymentUpdate {
      */
     reference?: string | null;
     /**
-     * GL cash/bank account.
+     * Cash account money moved through.
      */
-    bankAccountId?: string;
+    cashAccountId?: string;
     /**
      * Marks the payment as a down payment against this purchase order. Its vendor must match.
      */
@@ -101,7 +101,7 @@ export function ApPaymentUpdateFromJSONTyped(json: any, ignoreDiscriminator: boo
         'amount': json['amount'] == null ? undefined : json['amount'],
         'method': json['method'] == null ? undefined : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
-        'bankAccountId': json['bank_account_id'] == null ? undefined : json['bank_account_id'],
+        'cashAccountId': json['cash_account_id'] == null ? undefined : json['cash_account_id'],
         'purchaseOrderId': json['purchase_order_id'] === undefined ? undefined : json['purchase_order_id'] === null ? null : json['purchase_order_id'],
         'allocations': json['allocations'] == null ? undefined : ((json['allocations'] as Array<any>).map(PaymentAllocationFromJSON)),
     };
@@ -124,7 +124,7 @@ export function ApPaymentUpdateToJSONTyped(value?: ApPaymentUpdate | null, ignor
         'amount': value['amount'],
         'method': value['method'],
         'reference': value['reference'],
-        'bank_account_id': value['bankAccountId'],
+        'cash_account_id': value['cashAccountId'],
         'purchase_order_id': value['purchaseOrderId'],
         'allocations': value['allocations'] == null ? undefined : ((value['allocations'] as Array<any>).map(PaymentAllocationToJSON)),
     };

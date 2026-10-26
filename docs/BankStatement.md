@@ -7,7 +7,7 @@
 Name | Type
 ------------ | -------------
 `id` | string
-`bankAccountId` | string
+`cashAccountId` | string
 `filename` | string
 `format` | string
 `periodStart` | Date
@@ -26,7 +26,7 @@ import type { BankStatement } from '@zerpto/sdk'
 // TODO: Update the object below with actual values
 const example = {
   "id": null,
-  "bankAccountId": null,
+  "cashAccountId": null,
   "filename": null,
   "format": null,
   "periodStart": null,

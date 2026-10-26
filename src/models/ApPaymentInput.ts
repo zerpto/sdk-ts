@@ -55,9 +55,9 @@ export interface ApPaymentInput {
      */
     reference?: string | null;
     /**
-     * GL cash/bank account.
+     * Cash account money moved through.
      */
-    bankAccountId: string;
+    cashAccountId: string;
     /**
      * Marks the payment as a down payment against this purchase order. Its vendor must match.
      */
@@ -89,7 +89,7 @@ export function instanceOfApPaymentInput(value: object): value is ApPaymentInput
     if ((!('paymentDate' in (value as Record<string, any>)) && !('payment_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['paymentDate'] === undefined && (value as Record<string, any>)['payment_date'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
     if (!('amount' in value) || value['amount'] === undefined) return false;
-    if ((!('bankAccountId' in (value as Record<string, any>)) && !('bank_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['bankAccountId'] === undefined && (value as Record<string, any>)['bank_account_id'] === undefined)) return false;
+    if ((!('cashAccountId' in (value as Record<string, any>)) && !('cash_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['cashAccountId'] === undefined && (value as Record<string, any>)['cash_account_id'] === undefined)) return false;
     return true;
 }
 
@@ -109,7 +109,7 @@ export function ApPaymentInputFromJSONTyped(json: any, ignoreDiscriminator: bool
         'amount': json['amount'],
         'method': json['method'] == null ? undefined : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
-        'bankAccountId': json['bank_account_id'],
+        'cashAccountId': json['cash_account_id'],
         'purchaseOrderId': json['purchase_order_id'] === undefined ? undefined : json['purchase_order_id'] === null ? null : json['purchase_order_id'],
         'allocations': json['allocations'] == null ? undefined : ((json['allocations'] as Array<any>).map(PaymentAllocationFromJSON)),
     };
@@ -132,7 +132,7 @@ export function ApPaymentInputToJSONTyped(value?: ApPaymentInput | null, ignoreD
         'amount': value['amount'],
         'method': value['method'],
         'reference': value['reference'],
-        'bank_account_id': value['bankAccountId'],
+        'cash_account_id': value['cashAccountId'],
         'purchase_order_id': value['purchaseOrderId'],
         'allocations': value['allocations'] == null ? undefined : ((value['allocations'] as Array<any>).map(PaymentAllocationToJSON)),
     };

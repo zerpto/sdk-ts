@@ -7,7 +7,7 @@
 Name | Type
 ------------ | -------------
 `id` | string
-`bankAccountId` | string
+`cashAccountId` | string
 `periodStart` | Date
 `periodEnd` | Date
 `statementBalance` | string
@@ -25,7 +25,7 @@ import type { BankReconciliation } from '@zerpto/sdk'
 // TODO: Update the object below with actual values
 const example = {
   "id": null,
-  "bankAccountId": null,
+  "cashAccountId": null,
   "periodStart": null,
   "periodEnd": null,
   "statementBalance": 1500000.00,

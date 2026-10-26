@@ -60,9 +60,9 @@ export interface ApPayment {
      */
     reference?: string | null;
     /**
-     * GL cash/bank account.
+     * Cash account money moved through.
      */
-    bankAccountId?: string;
+    cashAccountId?: string;
     /**
      * 
      */
@@ -141,7 +141,7 @@ export function ApPaymentFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'amount': json['amount'],
         'method': json['method'] == null ? undefined : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
-        'bankAccountId': json['bank_account_id'] == null ? undefined : json['bank_account_id'],
+        'cashAccountId': json['cash_account_id'] == null ? undefined : json['cash_account_id'],
         'allocations': ((json['allocations'] as Array<any>).map(PaymentAllocationFromJSON)),
         'purchaseOrderId': json['purchase_order_id'] === undefined ? undefined : json['purchase_order_id'] === null ? null : json['purchase_order_id'],
         'unallocatedAmount': json['unallocated_amount'] == null ? undefined : json['unallocated_amount'],
@@ -168,7 +168,7 @@ export function ApPaymentToJSONTyped(value?: Omit<ApPayment, 'id'|'unallocatedAm
         'amount': value['amount'],
         'method': value['method'],
         'reference': value['reference'],
-        'bank_account_id': value['bankAccountId'],
+        'cash_account_id': value['cashAccountId'],
         'allocations': ((value['allocations'] as Array<any>).map(PaymentAllocationToJSON)),
         'purchase_order_id': value['purchaseOrderId'],
         'journal_entry_id': value['journalEntryId'],

@@ -22,7 +22,7 @@ export interface BankReconciliationInput {
     /**
      * 
      */
-    bankAccountId: string;
+    cashAccountId: string;
     /**
      * 
      */
@@ -41,7 +41,7 @@ export interface BankReconciliationInput {
  * Check if a given object implements the BankReconciliationInput interface.
  */
 export function instanceOfBankReconciliationInput(value: object): value is BankReconciliationInput {
-    if ((!('bankAccountId' in (value as Record<string, any>)) && !('bank_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['bankAccountId'] === undefined && (value as Record<string, any>)['bank_account_id'] === undefined)) return false;
+    if ((!('cashAccountId' in (value as Record<string, any>)) && !('cash_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['cashAccountId'] === undefined && (value as Record<string, any>)['cash_account_id'] === undefined)) return false;
     if ((!('periodStart' in (value as Record<string, any>)) && !('period_start' in (value as Record<string, any>))) || ((value as Record<string, any>)['periodStart'] === undefined && (value as Record<string, any>)['period_start'] === undefined)) return false;
     if ((!('periodEnd' in (value as Record<string, any>)) && !('period_end' in (value as Record<string, any>))) || ((value as Record<string, any>)['periodEnd'] === undefined && (value as Record<string, any>)['period_end'] === undefined)) return false;
     return true;
@@ -57,7 +57,7 @@ export function BankReconciliationInputFromJSONTyped(json: any, ignoreDiscrimina
     }
     return {
         
-        'bankAccountId': json['bank_account_id'],
+        'cashAccountId': json['cash_account_id'],
         'periodStart': (json['period_start'] == null ? json['period_start'] : parseDate(json['period_start'])),
         'periodEnd': (json['period_end'] == null ? json['period_end'] : parseDate(json['period_end'])),
         'statementId': json['statement_id'] == null ? undefined : json['statement_id'],
@@ -75,7 +75,7 @@ export function BankReconciliationInputToJSONTyped(value?: BankReconciliationInp
 
     return {
         
-        'bank_account_id': value['bankAccountId'],
+        'cash_account_id': value['cashAccountId'],
         'period_start': value['periodStart'] == null ? value['periodStart'] : serializeDate(value['periodStart']),
         'period_end': value['periodEnd'] == null ? value['periodEnd'] : serializeDate(value['periodEnd']),
         'statement_id': value['statementId'],

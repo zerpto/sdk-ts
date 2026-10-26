@@ -9,7 +9,7 @@ Name | Type
 `id` | string
 `date` | Date
 `amount` | string
-`bankAccountId` | string
+`cashAccountId` | string
 `reference` | string
 `journalEntryId` | string
 `createdAt` | Date
@@ -24,7 +24,7 @@ const example = {
   "id": null,
   "date": null,
   "amount": 1500000.00,
-  "bankAccountId": null,
+  "cashAccountId": null,
   "reference": null,
   "journalEntryId": null,
   "createdAt": null,

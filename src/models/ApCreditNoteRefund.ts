@@ -32,9 +32,9 @@ export interface ApCreditNoteRefund {
      */
     amount: string;
     /**
-     * GL cash/bank account that received the money.
+     * Cash account that received the money.
      */
-    bankAccountId: string;
+    cashAccountId: string;
     /**
      * 
      */
@@ -56,7 +56,7 @@ export function instanceOfApCreditNoteRefund(value: object): value is ApCreditNo
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('date' in value) || value['date'] === undefined) return false;
     if (!('amount' in value) || value['amount'] === undefined) return false;
-    if ((!('bankAccountId' in (value as Record<string, any>)) && !('bank_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['bankAccountId'] === undefined && (value as Record<string, any>)['bank_account_id'] === undefined)) return false;
+    if ((!('cashAccountId' in (value as Record<string, any>)) && !('cash_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['cashAccountId'] === undefined && (value as Record<string, any>)['cash_account_id'] === undefined)) return false;
     return true;
 }
 
@@ -73,7 +73,7 @@ export function ApCreditNoteRefundFromJSONTyped(json: any, ignoreDiscriminator: 
         'id': json['id'],
         'date': (json['date'] == null ? json['date'] : parseDate(json['date'])),
         'amount': json['amount'],
-        'bankAccountId': json['bank_account_id'],
+        'cashAccountId': json['cash_account_id'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
         'journalEntryId': json['journal_entry_id'] == null ? undefined : json['journal_entry_id'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
@@ -93,7 +93,7 @@ export function ApCreditNoteRefundToJSONTyped(value?: Omit<ApCreditNoteRefund, '
         
         'date': value['date'] == null ? value['date'] : serializeDate(value['date']),
         'amount': value['amount'],
-        'bank_account_id': value['bankAccountId'],
+        'cash_account_id': value['cashAccountId'],
         'reference': value['reference'],
         'journal_entry_id': value['journalEntryId'],
     };
