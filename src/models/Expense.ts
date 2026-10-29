@@ -13,6 +13,13 @@
  */
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
+import type { ReceiptLine } from './ReceiptLine';
+import {
+    ReceiptLineFromJSON,
+    ReceiptLineFromJSONTyped,
+    ReceiptLineToJSON,
+    ReceiptLineToJSONTyped,
+} from './ReceiptLine';
 import type { FileAttachment } from './FileAttachment';
 import {
     FileAttachmentFromJSON,
@@ -20,13 +27,6 @@ import {
     FileAttachmentToJSON,
     FileAttachmentToJSONTyped,
 } from './FileAttachment';
-import type { ExpenseLine } from './ExpenseLine';
-import {
-    ExpenseLineFromJSON,
-    ExpenseLineFromJSONTyped,
-    ExpenseLineToJSON,
-    ExpenseLineToJSONTyped,
-} from './ExpenseLine';
 
 /**
  * 
@@ -81,7 +81,7 @@ export interface Expense {
     /**
      * 
      */
-    lines: Array<ExpenseLine>;
+    lines: Array<ReceiptLine>;
     /**
      * Sum of `line_subtotal`, tax excluded.
      */
@@ -175,7 +175,7 @@ export function ExpenseFromJSONTyped(json: any, ignoreDiscriminator: boolean): E
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
         'status': json['status'],
-        'lines': ((json['lines'] as Array<any>).map(ExpenseLineFromJSON)),
+        'lines': ((json['lines'] as Array<any>).map(ReceiptLineFromJSON)),
         'subtotal': json['subtotal'],
         'taxTotal': json['tax_total'],
         'total': json['total'],
@@ -206,7 +206,7 @@ export function ExpenseToJSONTyped(value?: Omit<Expense, 'id'|'number'|'createdA
         'reference': value['reference'],
         'notes': value['notes'],
         'status': value['status'],
-        'lines': ((value['lines'] as Array<any>).map(ExpenseLineToJSON)),
+        'lines': ((value['lines'] as Array<any>).map(ReceiptLineToJSON)),
         'subtotal': value['subtotal'],
         'tax_total': value['taxTotal'],
         'total': value['total'],

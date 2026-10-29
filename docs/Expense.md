@@ -17,7 +17,7 @@ Name | Type
 `reference` | string
 `notes` | string
 `status` | string
-`lines` | [Array&lt;ExpenseLine&gt;](ExpenseLine.md)
+`lines` | [Array&lt;ReceiptLine&gt;](ReceiptLine.md)
 `subtotal` | string
 `taxTotal` | string
 `total` | string

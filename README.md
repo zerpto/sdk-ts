@@ -175,6 +175,15 @@ All URIs are relative to *https://api.zerpto.com*
 *GoodsReceiptApi* | [**updateGoodsReceipt**](docs/GoodsReceiptApi.md#updategoodsreceipt) | **PATCH** /v1/purchasing/receipts/{id} | Update goods receipt
 *GoodsReceiptApi* | [**uploadGoodsReceiptDeliveryNote**](docs/GoodsReceiptApi.md#uploadgoodsreceiptdeliverynote) | **POST** /v1/purchasing/receipts/{id}/delivery-note | Upload delivery note
 *GoodsReceiptApi* | [**uploadGoodsReceiptEvidences**](docs/GoodsReceiptApi.md#uploadgoodsreceiptevidences) | **POST** /v1/purchasing/receipts/{id}/evidences | Add goods receipt evidences
+*IncomeApi* | [**cancelIncome**](docs/IncomeApi.md#cancelincome) | **POST** /v1/income/{id}/cancel | Cancel income
+*IncomeApi* | [**createIncome**](docs/IncomeApi.md#createincome) | **POST** /v1/income | Record income
+*IncomeApi* | [**deleteIncomeAttachment**](docs/IncomeApi.md#deleteincomeattachment) | **DELETE** /v1/income/{id}/attachments/{attachment_id} | Remove income attachment
+*IncomeApi* | [**getIncome**](docs/IncomeApi.md#getincome) | **GET** /v1/income/{id} | Get income
+*IncomeApi* | [**listIncomes**](docs/IncomeApi.md#listincomes) | **GET** /v1/income | List income
+*IncomeApi* | [**postIncome**](docs/IncomeApi.md#postincome) | **POST** /v1/income/{id}/confirm | Post income to the GL
+*IncomeApi* | [**updateIncome**](docs/IncomeApi.md#updateincome) | **PATCH** /v1/income/{id} | Update income
+*IncomeApi* | [**uploadIncomeAttachments**](docs/IncomeApi.md#uploadincomeattachments) | **POST** /v1/income/{id}/attachments | Upload income proof files
+*IncomeApi* | [**voidIncome**](docs/IncomeApi.md#voidincome) | **POST** /v1/income/{id}/void | Void income
 *InventoryApi* | [**listStock**](docs/InventoryApi.md#liststock) | **GET** /v1/inventory/stock | Stock on hand
 *InventoryApi* | [**listStockMovements**](docs/InventoryApi.md#liststockmovements) | **GET** /v1/inventory/movements | Stock movement ledger
 *InvoiceApi* | [**createApInvoice**](docs/InvoiceApi.md#createapinvoice) | **POST** /v1/ap/invoices | Create invoice
@@ -453,8 +462,6 @@ All URIs are relative to *https://api.zerpto.com*
 - [ErrorError](docs/ErrorError.md)
 - [Expense](docs/Expense.md)
 - [ExpenseInput](docs/ExpenseInput.md)
-- [ExpenseLine](docs/ExpenseLine.md)
-- [ExpenseLineInput](docs/ExpenseLineInput.md)
 - [ExpenseListResponse](docs/ExpenseListResponse.md)
 - [ExpenseResponse](docs/ExpenseResponse.md)
 - [ExpenseUpdate](docs/ExpenseUpdate.md)
@@ -470,6 +477,11 @@ All URIs are relative to *https://api.zerpto.com*
 - [GoodsReceiptUpdate](docs/GoodsReceiptUpdate.md)
 - [Health](docs/Health.md)
 - [HealthResponse](docs/HealthResponse.md)
+- [Income](docs/Income.md)
+- [IncomeInput](docs/IncomeInput.md)
+- [IncomeListResponse](docs/IncomeListResponse.md)
+- [IncomeResponse](docs/IncomeResponse.md)
+- [IncomeUpdate](docs/IncomeUpdate.md)
 - [InventoryValuation](docs/InventoryValuation.md)
 - [InventoryValuationLine](docs/InventoryValuationLine.md)
 - [InventoryValuationResponse](docs/InventoryValuationResponse.md)
@@ -540,6 +552,8 @@ All URIs are relative to *https://api.zerpto.com*
 - [QuotationListResponse](docs/QuotationListResponse.md)
 - [QuotationResponse](docs/QuotationResponse.md)
 - [QuotationUpdate](docs/QuotationUpdate.md)
+- [ReceiptLine](docs/ReceiptLine.md)
+- [ReceiptLineInput](docs/ReceiptLineInput.md)
 - [RefreshInput](docs/RefreshInput.md)
 - [Region](docs/Region.md)
 - [RegionListResponse](docs/RegionListResponse.md)

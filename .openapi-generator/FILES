@@ -158,8 +158,6 @@ docs/DepreciationScheduleResponse.md
 docs/ErrorError.md
 docs/Expense.md
 docs/ExpenseInput.md
-docs/ExpenseLine.md
-docs/ExpenseLineInput.md
 docs/ExpenseListResponse.md
 docs/ExpenseResponse.md
 docs/ExpenseUpdate.md
@@ -179,6 +177,12 @@ docs/GoodsReceiptResponse.md
 docs/GoodsReceiptUpdate.md
 docs/Health.md
 docs/HealthResponse.md
+docs/Income.md
+docs/IncomeApi.md
+docs/IncomeInput.md
+docs/IncomeListResponse.md
+docs/IncomeResponse.md
+docs/IncomeUpdate.md
 docs/InventoryApi.md
 docs/InventoryValuation.md
 docs/InventoryValuationLine.md
@@ -261,6 +265,8 @@ docs/QuotationListResponse.md
 docs/QuotationResponse.md
 docs/QuotationUpdate.md
 docs/QuotationsApi.md
+docs/ReceiptLine.md
+docs/ReceiptLineInput.md
 docs/RefreshInput.md
 docs/Region.md
 docs/RegionListResponse.md
@@ -428,6 +434,7 @@ src/apis/ExpensesApi.ts
 src/apis/ForgotPasswordApi.ts
 src/apis/GeneralLedgerApi.ts
 src/apis/GoodsReceiptApi.ts
+src/apis/IncomeApi.ts
 src/apis/InventoryApi.ts
 src/apis/InvoiceApi.ts
 src/apis/JournalApi.ts
@@ -598,8 +605,6 @@ src/models/DepreciationScheduleResponse.ts
 src/models/ErrorError.ts
 src/models/Expense.ts
 src/models/ExpenseInput.ts
-src/models/ExpenseLine.ts
-src/models/ExpenseLineInput.ts
 src/models/ExpenseListResponse.ts
 src/models/ExpenseResponse.ts
 src/models/ExpenseUpdate.ts
@@ -615,6 +620,11 @@ src/models/GoodsReceiptResponse.ts
 src/models/GoodsReceiptUpdate.ts
 src/models/Health.ts
 src/models/HealthResponse.ts
+src/models/Income.ts
+src/models/IncomeInput.ts
+src/models/IncomeListResponse.ts
+src/models/IncomeResponse.ts
+src/models/IncomeUpdate.ts
 src/models/InventoryValuation.ts
 src/models/InventoryValuationLine.ts
 src/models/InventoryValuationResponse.ts
@@ -685,6 +695,8 @@ src/models/QuotationInput.ts
 src/models/QuotationListResponse.ts
 src/models/QuotationResponse.ts
 src/models/QuotationUpdate.ts
+src/models/ReceiptLine.ts
+src/models/ReceiptLineInput.ts
 src/models/RefreshInput.ts
 src/models/Region.ts
 src/models/RegionListResponse.ts

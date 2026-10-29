@@ -13,13 +13,13 @@
  */
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
-import type { ExpenseLineInput } from './ExpenseLineInput';
+import type { ReceiptLineInput } from './ReceiptLineInput';
 import {
-    ExpenseLineInputFromJSON,
-    ExpenseLineInputFromJSONTyped,
-    ExpenseLineInputToJSON,
-    ExpenseLineInputToJSONTyped,
-} from './ExpenseLineInput';
+    ReceiptLineInputFromJSON,
+    ReceiptLineInputFromJSONTyped,
+    ReceiptLineInputToJSON,
+    ReceiptLineInputToJSONTyped,
+} from './ReceiptLineInput';
 
 /**
  * All fields optional; only those sent are changed.
@@ -62,7 +62,7 @@ export interface ExpenseUpdate {
     /**
      * Replaces the whole list.
      */
-    lines?: Array<ExpenseLineInput>;
+    lines?: Array<ReceiptLineInput>;
 }
 
 
@@ -103,7 +103,7 @@ export function ExpenseUpdateFromJSONTyped(json: any, ignoreDiscriminator: boole
         'method': json['method'] == null ? undefined : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
-        'lines': json['lines'] == null ? undefined : ((json['lines'] as Array<any>).map(ExpenseLineInputFromJSON)),
+        'lines': json['lines'] == null ? undefined : ((json['lines'] as Array<any>).map(ReceiptLineInputFromJSON)),
     };
 }
 
@@ -126,7 +126,7 @@ export function ExpenseUpdateToJSONTyped(value?: ExpenseUpdate | null, ignoreDis
         'method': value['method'],
         'reference': value['reference'],
         'notes': value['notes'],
-        'lines': value['lines'] == null ? undefined : ((value['lines'] as Array<any>).map(ExpenseLineInputToJSON)),
+        'lines': value['lines'] == null ? undefined : ((value['lines'] as Array<any>).map(ReceiptLineInputToJSON)),
     };
 }
 

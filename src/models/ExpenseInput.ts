@@ -13,13 +13,13 @@
  */
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
-import type { ExpenseLineInput } from './ExpenseLineInput';
+import type { ReceiptLineInput } from './ReceiptLineInput';
 import {
-    ExpenseLineInputFromJSON,
-    ExpenseLineInputFromJSONTyped,
-    ExpenseLineInputToJSON,
-    ExpenseLineInputToJSONTyped,
-} from './ExpenseLineInput';
+    ReceiptLineInputFromJSON,
+    ReceiptLineInputFromJSONTyped,
+    ReceiptLineInputToJSON,
+    ReceiptLineInputToJSONTyped,
+} from './ReceiptLineInput';
 
 /**
  * Send `vendor_id`, `payee_name` or both.
@@ -62,7 +62,7 @@ export interface ExpenseInput {
     /**
      * 
      */
-    lines: Array<ExpenseLineInput>;
+    lines: Array<ReceiptLineInput>;
 }
 
 
@@ -107,7 +107,7 @@ export function ExpenseInputFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'method': json['method'] == null ? undefined : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
-        'lines': ((json['lines'] as Array<any>).map(ExpenseLineInputFromJSON)),
+        'lines': ((json['lines'] as Array<any>).map(ReceiptLineInputFromJSON)),
     };
 }
 
@@ -130,7 +130,7 @@ export function ExpenseInputToJSONTyped(value?: ExpenseInput | null, ignoreDiscr
         'method': value['method'],
         'reference': value['reference'],
         'notes': value['notes'],
-        'lines': ((value['lines'] as Array<any>).map(ExpenseLineInputToJSON)),
+        'lines': ((value['lines'] as Array<any>).map(ReceiptLineInputToJSON)),
     };
 }
 

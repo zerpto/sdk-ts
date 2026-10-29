@@ -22,6 +22,7 @@ export * from './ExpensesApi';
 export * from './ForgotPasswordApi';
 export * from './GeneralLedgerApi';
 export * from './GoodsReceiptApi';
+export * from './IncomeApi';
 export * from './InventoryApi';
 export * from './InvoiceApi';
 export * from './JournalApi';

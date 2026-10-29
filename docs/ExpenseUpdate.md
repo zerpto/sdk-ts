@@ -15,7 +15,7 @@ Name | Type
 `method` | string
 `reference` | string
 `notes` | string
-`lines` | [Array&lt;ExpenseLineInput&gt;](ExpenseLineInput.md)
+`lines` | [Array&lt;ReceiptLineInput&gt;](ReceiptLineInput.md)
 
 ## Example
 
