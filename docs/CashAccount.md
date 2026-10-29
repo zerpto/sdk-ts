@@ -14,6 +14,7 @@ Name | Type
 `currency` | string
 `glAccountId` | string
 `status` | string
+`balance` | string
 `createdAt` | Date
 
 ## Example
@@ -31,6 +32,7 @@ const example = {
   "currency": IDR,
   "glAccountId": null,
   "status": null,
+  "balance": 1500000.00,
   "createdAt": null,
 } satisfies CashAccount
 

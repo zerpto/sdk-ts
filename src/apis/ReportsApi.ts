@@ -34,6 +34,11 @@ import {
     BankReconciliationReportResponseToJSON,
 } from '../models/BankReconciliationReportResponse';
 import {
+    type CashBalancesResponse,
+    CashBalancesResponseFromJSON,
+    CashBalancesResponseToJSON,
+} from '../models/CashBalancesResponse';
+import {
     type InventoryValuationResponse,
     InventoryValuationResponseFromJSON,
     InventoryValuationResponseToJSON,
@@ -101,6 +106,17 @@ export interface GetBankReconciliationReportRequest {
      * Reconciliation to report on.
      */
     reconciliationId: string;
+}
+
+export interface GetCashBalancesRequest {
+    /**
+     * Report date. Defaults to today.
+     */
+    asOf?: Date;
+    /**
+     * Return only this cash account's balance.
+     */
+    cashAccountId?: string;
 }
 
 export interface GetInventoryValuationRequest {
@@ -485,6 +501,69 @@ export class ReportsApi extends runtime.BaseAPI {
      */
     async getBankReconciliationReport(requestParameters: GetBankReconciliationReportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BankReconciliationReportResponse> {
         const response = await this.getBankReconciliationReportRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for getCashBalances without sending the request
+     */
+    async getCashBalancesRequestOpts(requestParameters: GetCashBalancesRequest): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        if (requestParameters['asOf'] != null) {
+            queryParameters['as_of'] = runtime.serializeDate(requestParameters['asOf'] as any);
+        }
+
+        if (requestParameters['cashAccountId'] != null) {
+            queryParameters['cash_account_id'] = requestParameters['cashAccountId'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/reports/cash-balances`;
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Returns the balance of your cash accounts (bank, e-wallet and physical cash) as of a date, each row with its `cash_account_id`, `kind`, name, currency and `balance`. Use it to show a cash position overview as of today or a past date, or, with `cash_account_id`, to look up one account\'s balance on a specific date instead of only its current one.  List the accounts to choose from with [`GET /v1/cash/accounts`](#tag/cash-account/GET/v1/cash/accounts), which also carries each account\'s balance as of now. This report is for the same balances as of any date, together or one at a time; it is built the same way as [`GET /v1/reports/trial-balance`](#tag/reports/GET/v1/reports/trial-balance), filtered to cash accounts.  Error codes: `unknown_cash_account`.  **Response meta** - `meta` is empty. 
+     * Cash account balances
+     */
+    async getCashBalancesRaw(requestParameters: GetCashBalancesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CashBalancesResponse>> {
+        const requestOptions = await this.getCashBalancesRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CashBalancesResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns the balance of your cash accounts (bank, e-wallet and physical cash) as of a date, each row with its `cash_account_id`, `kind`, name, currency and `balance`. Use it to show a cash position overview as of today or a past date, or, with `cash_account_id`, to look up one account\'s balance on a specific date instead of only its current one.  List the accounts to choose from with [`GET /v1/cash/accounts`](#tag/cash-account/GET/v1/cash/accounts), which also carries each account\'s balance as of now. This report is for the same balances as of any date, together or one at a time; it is built the same way as [`GET /v1/reports/trial-balance`](#tag/reports/GET/v1/reports/trial-balance), filtered to cash accounts.  Error codes: `unknown_cash_account`.  **Response meta** - `meta` is empty. 
+     * Cash account balances
+     */
+    async getCashBalances(requestParameters: GetCashBalancesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CashBalancesResponse> {
+        const response = await this.getCashBalancesRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

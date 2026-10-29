@@ -9,6 +9,7 @@ All URIs are relative to *https://api.zerpto.com*
 | [**getAssetRegister**](ReportsApi.md#getassetregister) | **GET** /v1/reports/asset-register | Asset register report |
 | [**getBalanceSheet**](ReportsApi.md#getbalancesheet) | **GET** /v1/reports/balance-sheet | Balance sheet |
 | [**getBankReconciliationReport**](ReportsApi.md#getbankreconciliationreport) | **GET** /v1/reports/bank-reconciliation | Bank reconciliation report |
+| [**getCashBalances**](ReportsApi.md#getcashbalances) | **GET** /v1/reports/cash-balances | Cash account balances |
 | [**getInventoryValuation**](ReportsApi.md#getinventoryvaluation) | **GET** /v1/reports/inventory-valuation | Inventory valuation |
 | [**getPphWithholdingReport**](ReportsApi.md#getpphwithholdingreport) | **GET** /v1/reports/pph-withholding | Withholding report per period |
 | [**getPpnReport**](ReportsApi.md#getppnreport) | **GET** /v1/reports/ppn | PPN input vs output report |
@@ -397,6 +398,85 @@ example().catch(console.error);
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
 | **404** | Resource not found in this tenant. |  -  |
+| **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## getCashBalances
+
+> CashBalancesResponse getCashBalances(asOf, cashAccountId)
+
+Cash account balances
+
+Returns the balance of your cash accounts (bank, e-wallet and physical cash) as of a date, each row with its &#x60;cash_account_id&#x60;, &#x60;kind&#x60;, name, currency and &#x60;balance&#x60;. Use it to show a cash position overview as of today or a past date, or, with &#x60;cash_account_id&#x60;, to look up one account\&#39;s balance on a specific date instead of only its current one.  List the accounts to choose from with [&#x60;GET /v1/cash/accounts&#x60;](#tag/cash-account/GET/v1/cash/accounts), which also carries each account\&#39;s balance as of now. This report is for the same balances as of any date, together or one at a time; it is built the same way as [&#x60;GET /v1/reports/trial-balance&#x60;](#tag/reports/GET/v1/reports/trial-balance), filtered to cash accounts.  Error codes: &#x60;unknown_cash_account&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  ReportsApi,
+} from '@zerpto/sdk';
+import type { GetCashBalancesRequest } from '@zerpto/sdk';
+
+async function example() {
+  console.log("🚀 Testing @zerpto/sdk SDK...");
+  const config = new Configuration({ 
+    // Configure HTTP bearer authorization: ApiKeyAuth
+    accessToken: "YOUR BEARER TOKEN",
+    // Configure HTTP bearer authorization: UserJWT
+    accessToken: "YOUR BEARER TOKEN",
+  });
+  const api = new ReportsApi(config);
+
+  const body = {
+    // Date | Report date. Defaults to today. (optional)
+    asOf: 2013-10-20,
+    // string | Return only this cash account\'s balance. (optional)
+    cashAccountId: cashAccountId_example,
+  } satisfies GetCashBalancesRequest;
+
+  try {
+    const data = await api.getCashBalances(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **asOf** | `Date` | Report date. Defaults to today. | [Optional] [Defaults to `undefined`] |
+| **cashAccountId** | `string` | Return only this cash account\&#39;s balance. | [Optional] [Defaults to `undefined`] |
+
+### Return type
+
+[**CashBalancesResponse**](CashBalancesResponse.md)
+
+### Authorization
+
+[ApiKeyAuth](../README.md#ApiKeyAuth), [UserJWT](../README.md#UserJWT)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Success |  -  |
+| **400** | Malformed request or invalid parameter. |  -  |
+| **401** | Missing, invalid or revoked API key. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

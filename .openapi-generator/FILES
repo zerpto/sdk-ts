@@ -118,6 +118,9 @@ docs/CashAccountInput.md
 docs/CashAccountListResponse.md
 docs/CashAccountResponse.md
 docs/CashAccountUpdate.md
+docs/CashBalances.md
+docs/CashBalancesResponse.md
+docs/CashBalancesRowsInner.md
 docs/CashTransfer.md
 docs/CashTransferApi.md
 docs/CashTransferInput.md
@@ -573,6 +576,9 @@ src/models/CashAccountInput.ts
 src/models/CashAccountListResponse.ts
 src/models/CashAccountResponse.ts
 src/models/CashAccountUpdate.ts
+src/models/CashBalances.ts
+src/models/CashBalancesResponse.ts
+src/models/CashBalancesRowsInner.ts
 src/models/CashTransfer.ts
 src/models/CashTransferInput.ts
 src/models/CashTransferListResponse.ts

@@ -52,6 +52,10 @@ export interface CashAccount {
      */
     status: CashAccountStatusEnum;
     /**
+     * Current balance of the linked GL account, summed from the beginning of the ledger to now. For a balance as of a past date, use [`GET /v1/reports/cash-balances`](#tag/reports/GET/v1/reports/cash-balances).
+     */
+    readonly balance: string;
+    /**
      * 
      */
     readonly createdAt?: Date;
@@ -88,6 +92,7 @@ export function instanceOfCashAccount(value: object): value is CashAccount {
     if (!('currency' in value) || value['currency'] === undefined) return false;
     if ((!('glAccountId' in (value as Record<string, any>)) && !('gl_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['glAccountId'] === undefined && (value as Record<string, any>)['gl_account_id'] === undefined)) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
+    if (!('balance' in value) || value['balance'] === undefined) return false;
     return true;
 }
 
@@ -109,6 +114,7 @@ export function CashAccountFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'currency': json['currency'],
         'glAccountId': json['gl_account_id'],
         'status': json['status'],
+        'balance': json['balance'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
     };
 }
@@ -117,7 +123,7 @@ export function CashAccountToJSON(json: any): CashAccount {
     return CashAccountToJSONTyped(json, false);
 }
 
-export function CashAccountToJSONTyped(value?: Omit<CashAccount, 'id'|'createdAt'> | null, ignoreDiscriminator: boolean = false): any {
+export function CashAccountToJSONTyped(value?: Omit<CashAccount, 'id'|'balance'|'createdAt'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

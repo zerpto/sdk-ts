@@ -239,6 +239,7 @@ All URIs are relative to *https://api.zerpto.com*
 *ReportsApi* | [**getAssetRegister**](docs/ReportsApi.md#getassetregister) | **GET** /v1/reports/asset-register | Asset register report
 *ReportsApi* | [**getBalanceSheet**](docs/ReportsApi.md#getbalancesheet) | **GET** /v1/reports/balance-sheet | Balance sheet
 *ReportsApi* | [**getBankReconciliationReport**](docs/ReportsApi.md#getbankreconciliationreport) | **GET** /v1/reports/bank-reconciliation | Bank reconciliation report
+*ReportsApi* | [**getCashBalances**](docs/ReportsApi.md#getcashbalances) | **GET** /v1/reports/cash-balances | Cash account balances
 *ReportsApi* | [**getInventoryValuation**](docs/ReportsApi.md#getinventoryvaluation) | **GET** /v1/reports/inventory-valuation | Inventory valuation
 *ReportsApi* | [**getPphWithholdingReport**](docs/ReportsApi.md#getpphwithholdingreport) | **GET** /v1/reports/pph-withholding | Withholding report per period
 *ReportsApi* | [**getPpnReport**](docs/ReportsApi.md#getppnreport) | **GET** /v1/reports/ppn | PPN input vs output report
@@ -430,6 +431,9 @@ All URIs are relative to *https://api.zerpto.com*
 - [CashAccountListResponse](docs/CashAccountListResponse.md)
 - [CashAccountResponse](docs/CashAccountResponse.md)
 - [CashAccountUpdate](docs/CashAccountUpdate.md)
+- [CashBalances](docs/CashBalances.md)
+- [CashBalancesResponse](docs/CashBalancesResponse.md)
+- [CashBalancesRowsInner](docs/CashBalancesRowsInner.md)
 - [CashTransfer](docs/CashTransfer.md)
 - [CashTransferInput](docs/CashTransferInput.md)
 - [CashTransferListResponse](docs/CashTransferListResponse.md)
