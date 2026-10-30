@@ -20,7 +20,7 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface FileAttachment {
     /**
-     * Prefixed resource ID: `grdn-` on a goods receipt delivery note, followed by a UUID.
+     * Prefixed resource ID: `grdn-` on a goods receipt delivery note or `trfa-` on a cash transfer attachment, followed by a UUID.
      */
     readonly id: string;
     /**

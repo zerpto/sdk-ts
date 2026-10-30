@@ -19,6 +19,7 @@ Name | Type
 `feeBorneBy` | string
 `status` | string
 `journalEntryId` | string
+`attachment` | [FileAttachment](FileAttachment.md)
 `createdAt` | Date
 
 ## Example
@@ -41,6 +42,7 @@ const example = {
   "feeBorneBy": null,
   "status": null,
   "journalEntryId": null,
+  "attachment": null,
   "createdAt": null,
 } satisfies CashTransfer
 

@@ -13,6 +13,14 @@
  */
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
+import type { FileAttachment } from './FileAttachment';
+import {
+    FileAttachmentFromJSON,
+    FileAttachmentFromJSONTyped,
+    FileAttachmentToJSON,
+    FileAttachmentToJSONTyped,
+} from './FileAttachment';
+
 /**
  * 
  * @export
@@ -72,6 +80,10 @@ export interface CashTransfer {
      */
     journalEntryId: string;
     /**
+     * Transfer proof, such as a bank transfer receipt or an e-wallet screenshot. Set by [`POST /v1/cash/transfers/{id}/attachment`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/attachment), one file at a time. Null until uploaded.
+     */
+    attachment: FileAttachment | null;
+    /**
      * 
      */
     readonly createdAt?: Date;
@@ -109,6 +121,7 @@ export function instanceOfCashTransfer(value: object): value is CashTransfer {
     if ((!('transferDate' in (value as Record<string, any>)) && !('transfer_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['transferDate'] === undefined && (value as Record<string, any>)['transfer_date'] === undefined)) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     if ((!('journalEntryId' in (value as Record<string, any>)) && !('journal_entry_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['journalEntryId'] === undefined && (value as Record<string, any>)['journal_entry_id'] === undefined)) return false;
+    if (!('attachment' in value) || value['attachment'] === undefined) return false;
     return true;
 }
 
@@ -135,6 +148,7 @@ export function CashTransferFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'feeBorneBy': json['fee_borne_by'] === undefined ? undefined : json['fee_borne_by'] === null ? null : json['fee_borne_by'],
         'status': json['status'],
         'journalEntryId': json['journal_entry_id'],
+        'attachment': FileAttachmentFromJSON(json['attachment']),
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
     };
 }
@@ -162,6 +176,7 @@ export function CashTransferToJSONTyped(value?: Omit<CashTransfer, 'id'|'created
         'fee_borne_by': value['feeBorneBy'],
         'status': value['status'],
         'journal_entry_id': value['journalEntryId'],
+        'attachment': FileAttachmentToJSON(value['attachment']),
     };
 }
 

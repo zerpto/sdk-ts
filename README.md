@@ -121,6 +121,7 @@ All URIs are relative to *https://api.zerpto.com*
 *CashTransferApi* | [**createCashTransfer**](docs/CashTransferApi.md#createcashtransfer) | **POST** /v1/cash/transfers | Post a cash transfer
 *CashTransferApi* | [**getCashTransfer**](docs/CashTransferApi.md#getcashtransfer) | **GET** /v1/cash/transfers/{id} | Get cash transfer
 *CashTransferApi* | [**listCashTransfers**](docs/CashTransferApi.md#listcashtransfers) | **GET** /v1/cash/transfers | List cash transfers
+*CashTransferApi* | [**uploadCashTransferAttachment**](docs/CashTransferApi.md#uploadcashtransferattachment) | **POST** /v1/cash/transfers/{id}/attachment | Upload transfer proof
 *CashTransferApi* | [**voidCashTransfer**](docs/CashTransferApi.md#voidcashtransfer) | **POST** /v1/cash/transfers/{id}/void | Void a cash transfer
 *CategoriesApi* | [**createAssetCategory**](docs/CategoriesApi.md#createassetcategory) | **POST** /v1/assets/categories | Create asset category
 *CategoriesApi* | [**getAssetCategory**](docs/CategoriesApi.md#getassetcategory) | **GET** /v1/assets/categories/{id} | Get asset category
