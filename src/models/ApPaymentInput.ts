@@ -13,6 +13,13 @@
  */
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
+import type { PaymentSource } from './PaymentSource';
+import {
+    PaymentSourceFromJSON,
+    PaymentSourceFromJSONTyped,
+    PaymentSourceToJSON,
+    PaymentSourceToJSONTyped,
+} from './PaymentSource';
 import type { PaymentAllocation } from './PaymentAllocation';
 import {
     PaymentAllocationFromJSON,
@@ -47,17 +54,17 @@ export interface ApPaymentInput {
      */
     amount: string;
     /**
-     * 
+     * How the cash moved. Set only when `paid_via.cash_account_id` is used; leave out when charged to a credit card.
      */
-    method?: ApPaymentInputMethodEnum;
+    method?: ApPaymentInputMethodEnum | null;
     /**
      * 
      */
     reference?: string | null;
     /**
-     * Cash account money moved through.
+     * 
      */
-    cashAccountId: string;
+    paidVia: PaymentSource;
     /**
      * Marks the payment as a down payment against this purchase order. Its vendor must match.
      */
@@ -75,7 +82,6 @@ export interface ApPaymentInput {
 export const ApPaymentInputMethodEnum = {
     BankTransfer: 'bank_transfer',
     Cash: 'cash',
-    Card: 'card',
     Other: 'other',
 } as const;
 export type ApPaymentInputMethodEnum = typeof ApPaymentInputMethodEnum[keyof typeof ApPaymentInputMethodEnum];
@@ -89,7 +95,7 @@ export function instanceOfApPaymentInput(value: object): value is ApPaymentInput
     if ((!('paymentDate' in (value as Record<string, any>)) && !('payment_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['paymentDate'] === undefined && (value as Record<string, any>)['payment_date'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
     if (!('amount' in value) || value['amount'] === undefined) return false;
-    if ((!('cashAccountId' in (value as Record<string, any>)) && !('cash_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['cashAccountId'] === undefined && (value as Record<string, any>)['cash_account_id'] === undefined)) return false;
+    if ((!('paidVia' in (value as Record<string, any>)) && !('paid_via' in (value as Record<string, any>))) || ((value as Record<string, any>)['paidVia'] === undefined && (value as Record<string, any>)['paid_via'] === undefined)) return false;
     return true;
 }
 
@@ -107,9 +113,9 @@ export function ApPaymentInputFromJSONTyped(json: any, ignoreDiscriminator: bool
         'paymentDate': (json['payment_date'] == null ? json['payment_date'] : parseDate(json['payment_date'])),
         'currency': json['currency'],
         'amount': json['amount'],
-        'method': json['method'] == null ? undefined : json['method'],
+        'method': json['method'] === undefined ? undefined : json['method'] === null ? null : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
-        'cashAccountId': json['cash_account_id'],
+        'paidVia': PaymentSourceFromJSON(json['paid_via']),
         'purchaseOrderId': json['purchase_order_id'] === undefined ? undefined : json['purchase_order_id'] === null ? null : json['purchase_order_id'],
         'allocations': json['allocations'] == null ? undefined : ((json['allocations'] as Array<any>).map(PaymentAllocationFromJSON)),
     };
@@ -132,7 +138,7 @@ export function ApPaymentInputToJSONTyped(value?: ApPaymentInput | null, ignoreD
         'amount': value['amount'],
         'method': value['method'],
         'reference': value['reference'],
-        'cash_account_id': value['cashAccountId'],
+        'paid_via': PaymentSourceToJSON(value['paidVia']),
         'purchase_order_id': value['purchaseOrderId'],
         'allocations': value['allocations'] == null ? undefined : ((value['allocations'] as Array<any>).map(PaymentAllocationToJSON)),
     };

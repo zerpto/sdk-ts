@@ -28,11 +28,15 @@ export interface ReceiptLine {
      */
     description: string;
     /**
-     * Non-stocked item this line is for, when there is one.
+     * Item this line is for, when there is one. Stocked and non-stocked items are both allowed.
      */
     itemId?: string | null;
     /**
-     * Expense or income account the line is booked to, depending on the document.
+     * Warehouse stock moved in or out of, when `item_id` is a stocked item. Null for a non-stocked item or when `item_id` is empty.
+     */
+    warehouseId?: string | null;
+    /**
+     * Expense or income account the line is booked to, depending on the document. For a stocked item this is the tenant's inventory account, from `GET /v1/inventory/settings`.
      */
     accountId: string;
     /**
@@ -89,6 +93,7 @@ export function ReceiptLineFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'id': json['id'],
         'description': json['description'],
         'itemId': json['item_id'] === undefined ? undefined : json['item_id'] === null ? null : json['item_id'],
+        'warehouseId': json['warehouse_id'] === undefined ? undefined : json['warehouse_id'] === null ? null : json['warehouse_id'],
         'accountId': json['account_id'],
         'quantity': json['quantity'],
         'unitPrice': json['unit_price'],
@@ -112,6 +117,7 @@ export function ReceiptLineToJSONTyped(value?: Omit<ReceiptLine, 'id'> | null, i
         
         'description': value['description'],
         'item_id': value['itemId'],
+        'warehouse_id': value['warehouseId'],
         'account_id': value['accountId'],
         'quantity': value['quantity'],
         'unit_price': value['unitPrice'],

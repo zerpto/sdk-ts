@@ -10,6 +10,7 @@ Name | Type
 `id` | string
 `description` | string
 `itemId` | string
+`warehouseId` | string
 `accountId` | string
 `quantity` | string
 `unitPrice` | string
@@ -28,6 +29,7 @@ const example = {
   "id": null,
   "description": null,
   "itemId": null,
+  "warehouseId": null,
   "accountId": null,
   "quantity": 1500000.00,
   "unitPrice": 1500000.00,

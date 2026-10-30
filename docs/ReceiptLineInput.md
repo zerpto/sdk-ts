@@ -9,6 +9,7 @@ Name | Type
 ------------ | -------------
 `description` | string
 `itemId` | string
+`warehouseId` | string
 `accountId` | string
 `quantity` | string
 `unitPrice` | string
@@ -23,6 +24,7 @@ import type { ReceiptLineInput } from '@zerpto/sdk'
 const example = {
   "description": null,
   "itemId": null,
+  "warehouseId": null,
   "accountId": null,
   "quantity": 1500000.00,
   "unitPrice": 1500000.00,

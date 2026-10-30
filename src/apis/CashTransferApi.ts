@@ -28,6 +28,22 @@ import {
     CashTransferResponseFromJSON,
     CashTransferResponseToJSON,
 } from '../models/CashTransferResponse';
+import {
+    type CashTransferUpdate,
+    CashTransferUpdateFromJSON,
+    CashTransferUpdateToJSON,
+} from '../models/CashTransferUpdate';
+
+export interface CancelCashTransferRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
+}
 
 export interface CreateCashTransferRequest {
     /**
@@ -62,6 +78,28 @@ export interface ListCashTransfersRequest {
     cashAccountId?: string;
 }
 
+export interface PostCashTransferRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
+}
+
+export interface UpdateCashTransferRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * 
+     */
+    cashTransferUpdate: CashTransferUpdate;
+}
+
 export interface UploadCashTransferAttachmentRequest {
     /**
      * Resource ID.
@@ -92,6 +130,73 @@ export interface VoidCashTransferRequest {
  * 
  */
 export class CashTransferApi extends runtime.BaseAPI {
+
+    /**
+     * Creates request options for cancelCashTransfer without sending the request
+     */
+    async cancelCashTransferRequestOpts(requestParameters: CancelCashTransferRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling cancelCashTransfer().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/cash/transfers/{id}/cancel`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Cancels a draft cash transfer that you no longer want to record. The transfer becomes `cancelled` and nothing posts to the GL. Only drafts can be cancelled; to reverse a posted transfer, use the void call instead. A repeated request with the same `Idempotency-Key` returns the first result.  Use it on a draft from [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers) or [`PATCH /v1/cash/transfers/{id}`](#tag/cash-transfer/PATCH/v1/cash/transfers/{id}). Once you have called [`POST /v1/cash/transfers/{id}/confirm`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/confirm), reverse the transfer with [`POST /v1/cash/transfers/{id}/void`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/void) instead. A cancelled transfer stays in [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers) with the status `cancelled`.  Error codes: `transfer_not_cancellable`.  **Response meta** - `meta` is empty. 
+     * Cancel cash transfer
+     */
+    async cancelCashTransferRaw(requestParameters: CancelCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CashTransferResponse>> {
+        const requestOptions = await this.cancelCashTransferRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CashTransferResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Cancels a draft cash transfer that you no longer want to record. The transfer becomes `cancelled` and nothing posts to the GL. Only drafts can be cancelled; to reverse a posted transfer, use the void call instead. A repeated request with the same `Idempotency-Key` returns the first result.  Use it on a draft from [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers) or [`PATCH /v1/cash/transfers/{id}`](#tag/cash-transfer/PATCH/v1/cash/transfers/{id}). Once you have called [`POST /v1/cash/transfers/{id}/confirm`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/confirm), reverse the transfer with [`POST /v1/cash/transfers/{id}/void`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/void) instead. A cancelled transfer stays in [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers) with the status `cancelled`.  Error codes: `transfer_not_cancellable`.  **Response meta** - `meta` is empty. 
+     * Cancel cash transfer
+     */
+    async cancelCashTransfer(requestParameters: CancelCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CashTransferResponse> {
+        const response = await this.cancelCashTransferRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Creates request options for createCashTransfer without sending the request
@@ -143,8 +248,8 @@ export class CashTransferApi extends runtime.BaseAPI {
     }
 
     /**
-     * Moves money from one cash account to another, such as a bank withdrawal into a wallet, or settling a wallet\'s takings into a bank account. Send the `from_cash_account_id`, the `to_cash_account_id`, the `amount`, the `currency`, the `transfer_date` and an optional `reference` or `notes`. It posts straight away: a journal entry debits the destination\'s linked ledger account and credits the source\'s. A repeated request with the same `Idempotency-Key` returns the first result.  When the transfer carries a cost, such as a bank transfer fee or an e-wallet top-up cut, send `fee_amount` with `fee_account_id` and `fee_borne_by`. The journal entry then gets a third line booking `fee_amount` to `fee_account_id`, and the fee is taken out of whichever side `fee_borne_by` names: `source` debits `from_cash_account_id` for `amount` plus the fee so `to_cash_account_id` still receives the full `amount`; `destination` debits `from_cash_account_id` for exactly `amount` and credits `to_cash_account_id` for `amount` minus the fee. Leave all three out for a transfer with no cost.  Take both account ids from [`GET /v1/cash/accounts`](#tag/cash-account/GET/v1/cash/accounts); they must be different accounts in the same currency. The result is a `CashTransfer` whose `journal_entry_id` can be read with [`GET /v1/gl/journal-entries/{id}`](#tag/journal/GET/v1/gl/journal-entries/{id}). Attach proof of the transfer with [`POST /v1/cash/transfers/{id}/attachment`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/attachment). A transfer posted by mistake is corrected with [`POST /v1/cash/transfers/{id}/void`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/void).  Error codes: `unknown_cash_account`, `same_cash_account`, `currency_mismatch`, `period_closed`, `fee_details_required`.  **Response meta** - `meta` is empty. 
-     * Post a cash transfer
+     * Records a transfer between cash accounts as a draft, such as a bank withdrawal into a wallet, or settling a wallet\'s takings into a bank account. Send the `from_cash_account_id`, the `to_cash_account_id`, the `amount`, the `currency`, the `transfer_date` and an optional `reference` or `notes`. Nothing posts to the GL until the draft is confirmed. A repeated request with the same `Idempotency-Key` returns the first result.  When the transfer carries a cost, such as a bank transfer fee or an e-wallet top-up cut, send `fee_amount` with `fee_account_id` and `fee_borne_by`. Once posted, the journal entry gets a third line booking `fee_amount` to `fee_account_id`, and the fee is taken out of whichever side `fee_borne_by` names: `source` debits `from_cash_account_id` for `amount` plus the fee so `to_cash_account_id` still receives the full `amount`; `destination` debits `from_cash_account_id` for exactly `amount` and credits `to_cash_account_id` for `amount` minus the fee. Leave all three out for a transfer with no cost.  Take both account ids from [`GET /v1/cash/accounts`](#tag/cash-account/GET/v1/cash/accounts); they must be different accounts in the same currency. Attach proof of the transfer with [`POST /v1/cash/transfers/{id}/attachment`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/attachment), fix the draft with [`PATCH /v1/cash/transfers/{id}`](#tag/cash-transfer/PATCH/v1/cash/transfers/{id}) or drop it with [`POST /v1/cash/transfers/{id}/cancel`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/cancel), and post it with [`POST /v1/cash/transfers/{id}/confirm`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/confirm).  Error codes: `unknown_cash_account`, `same_cash_account`, `currency_mismatch`, `fee_details_required`.  **Response meta** - `meta` is empty. 
+     * Record a cash transfer
      */
     async createCashTransferRaw(requestParameters: CreateCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CashTransferResponse>> {
         const requestOptions = await this.createCashTransferRequestOpts(requestParameters);
@@ -154,8 +259,8 @@ export class CashTransferApi extends runtime.BaseAPI {
     }
 
     /**
-     * Moves money from one cash account to another, such as a bank withdrawal into a wallet, or settling a wallet\'s takings into a bank account. Send the `from_cash_account_id`, the `to_cash_account_id`, the `amount`, the `currency`, the `transfer_date` and an optional `reference` or `notes`. It posts straight away: a journal entry debits the destination\'s linked ledger account and credits the source\'s. A repeated request with the same `Idempotency-Key` returns the first result.  When the transfer carries a cost, such as a bank transfer fee or an e-wallet top-up cut, send `fee_amount` with `fee_account_id` and `fee_borne_by`. The journal entry then gets a third line booking `fee_amount` to `fee_account_id`, and the fee is taken out of whichever side `fee_borne_by` names: `source` debits `from_cash_account_id` for `amount` plus the fee so `to_cash_account_id` still receives the full `amount`; `destination` debits `from_cash_account_id` for exactly `amount` and credits `to_cash_account_id` for `amount` minus the fee. Leave all three out for a transfer with no cost.  Take both account ids from [`GET /v1/cash/accounts`](#tag/cash-account/GET/v1/cash/accounts); they must be different accounts in the same currency. The result is a `CashTransfer` whose `journal_entry_id` can be read with [`GET /v1/gl/journal-entries/{id}`](#tag/journal/GET/v1/gl/journal-entries/{id}). Attach proof of the transfer with [`POST /v1/cash/transfers/{id}/attachment`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/attachment). A transfer posted by mistake is corrected with [`POST /v1/cash/transfers/{id}/void`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/void).  Error codes: `unknown_cash_account`, `same_cash_account`, `currency_mismatch`, `period_closed`, `fee_details_required`.  **Response meta** - `meta` is empty. 
-     * Post a cash transfer
+     * Records a transfer between cash accounts as a draft, such as a bank withdrawal into a wallet, or settling a wallet\'s takings into a bank account. Send the `from_cash_account_id`, the `to_cash_account_id`, the `amount`, the `currency`, the `transfer_date` and an optional `reference` or `notes`. Nothing posts to the GL until the draft is confirmed. A repeated request with the same `Idempotency-Key` returns the first result.  When the transfer carries a cost, such as a bank transfer fee or an e-wallet top-up cut, send `fee_amount` with `fee_account_id` and `fee_borne_by`. Once posted, the journal entry gets a third line booking `fee_amount` to `fee_account_id`, and the fee is taken out of whichever side `fee_borne_by` names: `source` debits `from_cash_account_id` for `amount` plus the fee so `to_cash_account_id` still receives the full `amount`; `destination` debits `from_cash_account_id` for exactly `amount` and credits `to_cash_account_id` for `amount` minus the fee. Leave all three out for a transfer with no cost.  Take both account ids from [`GET /v1/cash/accounts`](#tag/cash-account/GET/v1/cash/accounts); they must be different accounts in the same currency. Attach proof of the transfer with [`POST /v1/cash/transfers/{id}/attachment`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/attachment), fix the draft with [`PATCH /v1/cash/transfers/{id}`](#tag/cash-transfer/PATCH/v1/cash/transfers/{id}) or drop it with [`POST /v1/cash/transfers/{id}/cancel`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/cancel), and post it with [`POST /v1/cash/transfers/{id}/confirm`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/confirm).  Error codes: `unknown_cash_account`, `same_cash_account`, `currency_mismatch`, `fee_details_required`.  **Response meta** - `meta` is empty. 
+     * Record a cash transfer
      */
     async createCashTransfer(requestParameters: CreateCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CashTransferResponse> {
         const response = await this.createCashTransferRaw(requestParameters, initOverrides);
@@ -206,7 +311,7 @@ export class CashTransferApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns one cash transfer by its `id`, with the source and destination account, the amount, the date, the status, the `journal_entry_id` it posted and its `attachment`, if any. Use it to show the transfer, or to check whether it has been voided.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers) or from the response of [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers). Void it with [`POST /v1/cash/transfers/{id}/void`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/void).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns one cash transfer by its `id`, with the source and destination account, the amount, the date, the status, the `journal_entry_id` once posted and its `attachment`, if any. Use it to review a draft before posting, to prefill an edit form, or to check whether it has been voided.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers) or from the response of [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers). While it is a draft, change it with [`PATCH /v1/cash/transfers/{id}`](#tag/cash-transfer/PATCH/v1/cash/transfers/{id}) or drop it with [`POST /v1/cash/transfers/{id}/cancel`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/cancel); post it with [`POST /v1/cash/transfers/{id}/confirm`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/confirm), and reverse a posted one with [`POST /v1/cash/transfers/{id}/void`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/void).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get cash transfer
      */
     async getCashTransferRaw(requestParameters: GetCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CashTransferResponse>> {
@@ -217,7 +322,7 @@ export class CashTransferApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns one cash transfer by its `id`, with the source and destination account, the amount, the date, the status, the `journal_entry_id` it posted and its `attachment`, if any. Use it to show the transfer, or to check whether it has been voided.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers) or from the response of [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers). Void it with [`POST /v1/cash/transfers/{id}/void`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/void).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns one cash transfer by its `id`, with the source and destination account, the amount, the date, the status, the `journal_entry_id` once posted and its `attachment`, if any. Use it to review a draft before posting, to prefill an edit form, or to check whether it has been voided.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers) or from the response of [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers). While it is a draft, change it with [`PATCH /v1/cash/transfers/{id}`](#tag/cash-transfer/PATCH/v1/cash/transfers/{id}) or drop it with [`POST /v1/cash/transfers/{id}/cancel`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/cancel); post it with [`POST /v1/cash/transfers/{id}/confirm`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/confirm), and reverse a posted one with [`POST /v1/cash/transfers/{id}/void`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/void).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get cash transfer
      */
     async getCashTransfer(requestParameters: GetCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CashTransferResponse> {
@@ -273,7 +378,7 @@ export class CashTransferApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists the transfers you have posted between cash accounts, each with the source and destination account, the amount, the date and the status. Use it to show a cash account\'s transfer history, or to find one to void. Filter by `cash_account_id` to see every transfer that touched one account, either as source or destination.  Get a `cash_account_id` for the filter from [`GET /v1/cash/accounts`](#tag/cash-account/GET/v1/cash/accounts). A new transfer is posted with [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers) and read with [`GET /v1/cash/transfers/{id}`](#tag/cash-transfer/GET/v1/cash/transfers/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the transfers between cash accounts, each with the source and destination account, the amount, the date and the status. Use it to show a cash account\'s transfer history, to find a draft to finish or drop, or to find a posted one to void. Filter by `cash_account_id` to see every transfer that touched one account, either as source or destination.  Get a `cash_account_id` for the filter from [`GET /v1/cash/accounts`](#tag/cash-account/GET/v1/cash/accounts). A new transfer is recorded with [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers) and read with [`GET /v1/cash/transfers/{id}`](#tag/cash-transfer/GET/v1/cash/transfers/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List cash transfers
      */
     async listCashTransfersRaw(requestParameters: ListCashTransfersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CashTransferListResponse>> {
@@ -284,11 +389,151 @@ export class CashTransferApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists the transfers you have posted between cash accounts, each with the source and destination account, the amount, the date and the status. Use it to show a cash account\'s transfer history, or to find one to void. Filter by `cash_account_id` to see every transfer that touched one account, either as source or destination.  Get a `cash_account_id` for the filter from [`GET /v1/cash/accounts`](#tag/cash-account/GET/v1/cash/accounts). A new transfer is posted with [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers) and read with [`GET /v1/cash/transfers/{id}`](#tag/cash-transfer/GET/v1/cash/transfers/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the transfers between cash accounts, each with the source and destination account, the amount, the date and the status. Use it to show a cash account\'s transfer history, to find a draft to finish or drop, or to find a posted one to void. Filter by `cash_account_id` to see every transfer that touched one account, either as source or destination.  Get a `cash_account_id` for the filter from [`GET /v1/cash/accounts`](#tag/cash-account/GET/v1/cash/accounts). A new transfer is recorded with [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers) and read with [`GET /v1/cash/transfers/{id}`](#tag/cash-transfer/GET/v1/cash/transfers/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List cash transfers
      */
     async listCashTransfers(requestParameters: ListCashTransfersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CashTransferListResponse> {
         const response = await this.listCashTransfersRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for postCashTransfer without sending the request
+     */
+    async postCashTransferRequestOpts(requestParameters: PostCashTransferRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling postCashTransfer().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/cash/transfers/{id}/confirm`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Posts a draft cash transfer. It creates the journal entry debiting the destination\'s linked ledger account and crediting the source\'s, plus a fee line when `fee_amount` is set. The status becomes `posted` and the transfer is locked. The call fails with 422 if the period is closed. A repeated request with the same `Idempotency-Key` returns the first result.  Create and fix the draft with [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers) and [`PATCH /v1/cash/transfers/{id}`](#tag/cash-transfer/PATCH/v1/cash/transfers/{id}) first. After posting, the entry shows in [`GET /v1/gl/journal-entries/{id}`](#tag/journal/GET/v1/gl/journal-entries/{id}). If it was posted by mistake, reverse it with [`POST /v1/cash/transfers/{id}/void`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/void).  Error codes: `transfer_not_draft`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Post cash transfer to the GL
+     */
+    async postCashTransferRaw(requestParameters: PostCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CashTransferResponse>> {
+        const requestOptions = await this.postCashTransferRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CashTransferResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Posts a draft cash transfer. It creates the journal entry debiting the destination\'s linked ledger account and crediting the source\'s, plus a fee line when `fee_amount` is set. The status becomes `posted` and the transfer is locked. The call fails with 422 if the period is closed. A repeated request with the same `Idempotency-Key` returns the first result.  Create and fix the draft with [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers) and [`PATCH /v1/cash/transfers/{id}`](#tag/cash-transfer/PATCH/v1/cash/transfers/{id}) first. After posting, the entry shows in [`GET /v1/gl/journal-entries/{id}`](#tag/journal/GET/v1/gl/journal-entries/{id}). If it was posted by mistake, reverse it with [`POST /v1/cash/transfers/{id}/void`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/void).  Error codes: `transfer_not_draft`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Post cash transfer to the GL
+     */
+    async postCashTransfer(requestParameters: PostCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CashTransferResponse> {
+        const response = await this.postCashTransferRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for updateCashTransfer without sending the request
+     */
+    async updateCashTransferRequestOpts(requestParameters: UpdateCashTransferRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling updateCashTransfer().'
+            );
+        }
+
+        if (requestParameters['cashTransferUpdate'] == null) {
+            throw new runtime.RequiredError(
+                'cashTransferUpdate',
+                'Required parameter "cashTransferUpdate" was null or undefined when calling updateCashTransfer().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/cash/transfers/{id}`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: CashTransferUpdateToJSON(requestParameters['cashTransferUpdate']),
+        };
+    }
+
+    /**
+     * Changes a cash transfer that is still a draft. Send only the fields you want to change. The same rules as on creation apply. Once the transfer is posted, cancelled or void it can no longer be edited, and the call returns 409.  Read the current draft with [`GET /v1/cash/transfers/{id}`](#tag/cash-transfer/GET/v1/cash/transfers/{id}) first. When it is right, post it with [`POST /v1/cash/transfers/{id}/confirm`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/confirm). To drop it, call [`POST /v1/cash/transfers/{id}/cancel`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/cancel).  Error codes: `transfer_not_editable`, `unknown_cash_account`, `same_cash_account`, `currency_mismatch`, `fee_details_required`.  **Response meta** - `meta` is empty. 
+     * Update cash transfer
+     */
+    async updateCashTransferRaw(requestParameters: UpdateCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CashTransferResponse>> {
+        const requestOptions = await this.updateCashTransferRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CashTransferResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Changes a cash transfer that is still a draft. Send only the fields you want to change. The same rules as on creation apply. Once the transfer is posted, cancelled or void it can no longer be edited, and the call returns 409.  Read the current draft with [`GET /v1/cash/transfers/{id}`](#tag/cash-transfer/GET/v1/cash/transfers/{id}) first. When it is right, post it with [`POST /v1/cash/transfers/{id}/confirm`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/confirm). To drop it, call [`POST /v1/cash/transfers/{id}/cancel`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/cancel).  Error codes: `transfer_not_editable`, `unknown_cash_account`, `same_cash_account`, `currency_mismatch`, `fee_details_required`.  **Response meta** - `meta` is empty. 
+     * Update cash transfer
+     */
+    async updateCashTransfer(requestParameters: UpdateCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CashTransferResponse> {
+        const response = await this.updateCashTransferRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -368,7 +613,7 @@ export class CashTransferApi extends runtime.BaseAPI {
     }
 
     /**
-     * Attaches the proof of this transfer, such as a bank transfer receipt or an e-wallet screenshot. Send exactly one file; a repeated call replaces the transfer\'s attachment with the new file rather than adding another. Can be called whether the transfer is posted or void.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers) or from the response of [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers). The uploaded file is read back with [`GET /v1/cash/transfers/{id}`](#tag/cash-transfer/GET/v1/cash/transfers/{id}) as `attachment`.  Error codes: `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
+     * Attaches the proof of this transfer, such as a bank transfer receipt or an e-wallet screenshot. Send exactly one file; a repeated call replaces the transfer\'s attachment with the new file rather than adding another. Can be called whether the transfer is a draft, posted or void.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers) or from the response of [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers). The uploaded file is read back with [`GET /v1/cash/transfers/{id}`](#tag/cash-transfer/GET/v1/cash/transfers/{id}) as `attachment`.  Error codes: `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
      * Upload transfer proof
      */
     async uploadCashTransferAttachmentRaw(requestParameters: UploadCashTransferAttachmentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CashTransferResponse>> {
@@ -379,7 +624,7 @@ export class CashTransferApi extends runtime.BaseAPI {
     }
 
     /**
-     * Attaches the proof of this transfer, such as a bank transfer receipt or an e-wallet screenshot. Send exactly one file; a repeated call replaces the transfer\'s attachment with the new file rather than adding another. Can be called whether the transfer is posted or void.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers) or from the response of [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers). The uploaded file is read back with [`GET /v1/cash/transfers/{id}`](#tag/cash-transfer/GET/v1/cash/transfers/{id}) as `attachment`.  Error codes: `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
+     * Attaches the proof of this transfer, such as a bank transfer receipt or an e-wallet screenshot. Send exactly one file; a repeated call replaces the transfer\'s attachment with the new file rather than adding another. Can be called whether the transfer is a draft, posted or void.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers) or from the response of [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers). The uploaded file is read back with [`GET /v1/cash/transfers/{id}`](#tag/cash-transfer/GET/v1/cash/transfers/{id}) as `attachment`.  Error codes: `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
      * Upload transfer proof
      */
     async uploadCashTransferAttachment(requestParameters: UploadCashTransferAttachmentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CashTransferResponse> {
@@ -435,7 +680,7 @@ export class CashTransferApi extends runtime.BaseAPI {
     }
 
     /**
-     * Voids a posted cash transfer, reversing its journal entry. Transfers are immutable once posted, so a wrong transfer is corrected this way, then posted again correctly as a new transfer. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers). Post the corrected transfer with [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers).  Error codes: `transfer_already_void`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Voids a posted cash transfer, reversing its journal entry. Transfers are immutable once posted, so a wrong transfer is corrected this way, then recorded again correctly as a new transfer. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers). Record the corrected transfer with [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers).  Error codes: `transfer_not_voidable`, `period_closed`.  **Response meta** - `meta` is empty. 
      * Void a cash transfer
      */
     async voidCashTransferRaw(requestParameters: VoidCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CashTransferResponse>> {
@@ -446,7 +691,7 @@ export class CashTransferApi extends runtime.BaseAPI {
     }
 
     /**
-     * Voids a posted cash transfer, reversing its journal entry. Transfers are immutable once posted, so a wrong transfer is corrected this way, then posted again correctly as a new transfer. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers). Post the corrected transfer with [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers).  Error codes: `transfer_already_void`, `period_closed`.  **Response meta** - `meta` is empty. 
+     * Voids a posted cash transfer, reversing its journal entry. Transfers are immutable once posted, so a wrong transfer is corrected this way, then recorded again correctly as a new transfer. A repeated request with the same `Idempotency-Key` returns the first result.  Take the `id` from [`GET /v1/cash/transfers`](#tag/cash-transfer/GET/v1/cash/transfers). Record the corrected transfer with [`POST /v1/cash/transfers`](#tag/cash-transfer/POST/v1/cash/transfers).  Error codes: `transfer_not_voidable`, `period_closed`.  **Response meta** - `meta` is empty. 
      * Void a cash transfer
      */
     async voidCashTransfer(requestParameters: VoidCashTransferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CashTransferResponse> {

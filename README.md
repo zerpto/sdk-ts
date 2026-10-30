@@ -118,15 +118,29 @@ All URIs are relative to *https://api.zerpto.com*
 *CashAccountApi* | [**getCashAccount**](docs/CashAccountApi.md#getcashaccount) | **GET** /v1/cash/accounts/{id} | Get cash account
 *CashAccountApi* | [**listCashAccounts**](docs/CashAccountApi.md#listcashaccounts) | **GET** /v1/cash/accounts | List cash accounts
 *CashAccountApi* | [**updateCashAccount**](docs/CashAccountApi.md#updatecashaccount) | **PATCH** /v1/cash/accounts/{id} | Update cash account
-*CashTransferApi* | [**createCashTransfer**](docs/CashTransferApi.md#createcashtransfer) | **POST** /v1/cash/transfers | Post a cash transfer
+*CashTransferApi* | [**cancelCashTransfer**](docs/CashTransferApi.md#cancelcashtransfer) | **POST** /v1/cash/transfers/{id}/cancel | Cancel cash transfer
+*CashTransferApi* | [**createCashTransfer**](docs/CashTransferApi.md#createcashtransfer) | **POST** /v1/cash/transfers | Record a cash transfer
 *CashTransferApi* | [**getCashTransfer**](docs/CashTransferApi.md#getcashtransfer) | **GET** /v1/cash/transfers/{id} | Get cash transfer
 *CashTransferApi* | [**listCashTransfers**](docs/CashTransferApi.md#listcashtransfers) | **GET** /v1/cash/transfers | List cash transfers
+*CashTransferApi* | [**postCashTransfer**](docs/CashTransferApi.md#postcashtransfer) | **POST** /v1/cash/transfers/{id}/confirm | Post cash transfer to the GL
+*CashTransferApi* | [**updateCashTransfer**](docs/CashTransferApi.md#updatecashtransfer) | **PATCH** /v1/cash/transfers/{id} | Update cash transfer
 *CashTransferApi* | [**uploadCashTransferAttachment**](docs/CashTransferApi.md#uploadcashtransferattachment) | **POST** /v1/cash/transfers/{id}/attachment | Upload transfer proof
 *CashTransferApi* | [**voidCashTransfer**](docs/CashTransferApi.md#voidcashtransfer) | **POST** /v1/cash/transfers/{id}/void | Void a cash transfer
 *CategoriesApi* | [**createAssetCategory**](docs/CategoriesApi.md#createassetcategory) | **POST** /v1/assets/categories | Create asset category
 *CategoriesApi* | [**getAssetCategory**](docs/CategoriesApi.md#getassetcategory) | **GET** /v1/assets/categories/{id} | Get asset category
 *CategoriesApi* | [**listAssetCategories**](docs/CategoriesApi.md#listassetcategories) | **GET** /v1/assets/categories | List asset categories
 *CategoriesApi* | [**updateAssetCategory**](docs/CategoriesApi.md#updateassetcategory) | **PATCH** /v1/assets/categories/{id} | Update asset category
+*CreditCardApi* | [**createCreditCard**](docs/CreditCardApi.md#createcreditcard) | **POST** /v1/credit-cards | Register credit card
+*CreditCardApi* | [**getCreditCard**](docs/CreditCardApi.md#getcreditcard) | **GET** /v1/credit-cards/{id} | Get credit card
+*CreditCardApi* | [**listCreditCards**](docs/CreditCardApi.md#listcreditcards) | **GET** /v1/credit-cards | List credit cards
+*CreditCardApi* | [**updateCreditCard**](docs/CreditCardApi.md#updatecreditcard) | **PATCH** /v1/credit-cards/{id} | Update credit card
+*CreditCardPaymentApi* | [**cancelCreditCardPayment**](docs/CreditCardPaymentApi.md#cancelcreditcardpayment) | **POST** /v1/credit-cards/payments/{id}/cancel | Cancel card payment
+*CreditCardPaymentApi* | [**createCreditCardPayment**](docs/CreditCardPaymentApi.md#createcreditcardpayment) | **POST** /v1/credit-cards/payments | Record a card payment
+*CreditCardPaymentApi* | [**getCreditCardPayment**](docs/CreditCardPaymentApi.md#getcreditcardpayment) | **GET** /v1/credit-cards/payments/{id} | Get credit card payment
+*CreditCardPaymentApi* | [**listCreditCardPayments**](docs/CreditCardPaymentApi.md#listcreditcardpayments) | **GET** /v1/credit-cards/payments | List credit card payments
+*CreditCardPaymentApi* | [**postCreditCardPayment**](docs/CreditCardPaymentApi.md#postcreditcardpayment) | **POST** /v1/credit-cards/payments/{id}/confirm | Post card payment to the GL
+*CreditCardPaymentApi* | [**updateCreditCardPayment**](docs/CreditCardPaymentApi.md#updatecreditcardpayment) | **PATCH** /v1/credit-cards/payments/{id} | Update credit card payment
+*CreditCardPaymentApi* | [**voidCreditCardPayment**](docs/CreditCardPaymentApi.md#voidcreditcardpayment) | **POST** /v1/credit-cards/payments/{id}/void | Void card payment
 *CreditNotesApi* | [**allocateApCreditNote**](docs/CreditNotesApi.md#allocateapcreditnote) | **POST** /v1/ap/credit-notes/{id}/allocations | Apply a credit note to bills
 *CreditNotesApi* | [**createApCreditNote**](docs/CreditNotesApi.md#createapcreditnote) | **POST** /v1/ap/credit-notes | Create credit note
 *CreditNotesApi* | [**getApCreditNote**](docs/CreditNotesApi.md#getapcreditnote) | **GET** /v1/ap/credit-notes/{id} | Get credit note
@@ -186,8 +200,10 @@ All URIs are relative to *https://api.zerpto.com*
 *IncomeApi* | [**updateIncome**](docs/IncomeApi.md#updateincome) | **PATCH** /v1/income/{id} | Update income
 *IncomeApi* | [**uploadIncomeAttachments**](docs/IncomeApi.md#uploadincomeattachments) | **POST** /v1/income/{id}/attachments | Upload income files
 *IncomeApi* | [**voidIncome**](docs/IncomeApi.md#voidincome) | **POST** /v1/income/{id}/void | Void income
+*InventoryApi* | [**getInventorySettings**](docs/InventoryApi.md#getinventorysettings) | **GET** /v1/inventory/settings | Get inventory settings
 *InventoryApi* | [**listStock**](docs/InventoryApi.md#liststock) | **GET** /v1/inventory/stock | Stock on hand
 *InventoryApi* | [**listStockMovements**](docs/InventoryApi.md#liststockmovements) | **GET** /v1/inventory/movements | Stock movement ledger
+*InventoryApi* | [**updateInventorySettings**](docs/InventoryApi.md#updateinventorysettings) | **PATCH** /v1/inventory/settings | Update inventory settings
 *InvoiceApi* | [**createApInvoice**](docs/InvoiceApi.md#createapinvoice) | **POST** /v1/ap/invoices | Create invoice
 *InvoiceApi* | [**getApInvoice**](docs/InvoiceApi.md#getapinvoice) | **GET** /v1/ap/invoices/{id} | Get ApInvoice
 *InvoiceApi* | [**listApInvoices**](docs/InvoiceApi.md#listapinvoices) | **GET** /v1/ap/invoices | List invoices
@@ -440,10 +456,21 @@ All URIs are relative to *https://api.zerpto.com*
 - [CashTransferInput](docs/CashTransferInput.md)
 - [CashTransferListResponse](docs/CashTransferListResponse.md)
 - [CashTransferResponse](docs/CashTransferResponse.md)
+- [CashTransferUpdate](docs/CashTransferUpdate.md)
 - [ChangePasswordInput](docs/ChangePasswordInput.md)
 - [Checkout](docs/Checkout.md)
 - [CheckoutInput](docs/CheckoutInput.md)
 - [CheckoutResponse](docs/CheckoutResponse.md)
+- [CreditCard](docs/CreditCard.md)
+- [CreditCardInput](docs/CreditCardInput.md)
+- [CreditCardListResponse](docs/CreditCardListResponse.md)
+- [CreditCardPayment](docs/CreditCardPayment.md)
+- [CreditCardPaymentInput](docs/CreditCardPaymentInput.md)
+- [CreditCardPaymentListResponse](docs/CreditCardPaymentListResponse.md)
+- [CreditCardPaymentResponse](docs/CreditCardPaymentResponse.md)
+- [CreditCardPaymentUpdate](docs/CreditCardPaymentUpdate.md)
+- [CreditCardResponse](docs/CreditCardResponse.md)
+- [CreditCardUpdate](docs/CreditCardUpdate.md)
 - [Currency](docs/Currency.md)
 - [CurrencyListResponse](docs/CurrencyListResponse.md)
 - [CursorListMeta](docs/CursorListMeta.md)
@@ -489,6 +516,9 @@ All URIs are relative to *https://api.zerpto.com*
 - [IncomeListResponse](docs/IncomeListResponse.md)
 - [IncomeResponse](docs/IncomeResponse.md)
 - [IncomeUpdate](docs/IncomeUpdate.md)
+- [InventorySettings](docs/InventorySettings.md)
+- [InventorySettingsResponse](docs/InventorySettingsResponse.md)
+- [InventorySettingsUpdate](docs/InventorySettingsUpdate.md)
 - [InventoryValuation](docs/InventoryValuation.md)
 - [InventoryValuationLine](docs/InventoryValuationLine.md)
 - [InventoryValuationResponse](docs/InventoryValuationResponse.md)
@@ -525,6 +555,7 @@ All URIs are relative to *https://api.zerpto.com*
 - [PaymentAllocation](docs/PaymentAllocation.md)
 - [PaymentMethod](docs/PaymentMethod.md)
 - [PaymentMethodListResponse](docs/PaymentMethodListResponse.md)
+- [PaymentSource](docs/PaymentSource.md)
 - [Period](docs/Period.md)
 - [PeriodListResponse](docs/PeriodListResponse.md)
 - [PeriodResponse](docs/PeriodResponse.md)

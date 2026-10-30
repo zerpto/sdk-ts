@@ -20,6 +20,13 @@ import {
     ReceiptLineInputToJSON,
     ReceiptLineInputToJSONTyped,
 } from './ReceiptLineInput';
+import type { PaymentSource } from './PaymentSource';
+import {
+    PaymentSourceFromJSON,
+    PaymentSourceFromJSONTyped,
+    PaymentSourceToJSON,
+    PaymentSourceToJSONTyped,
+} from './PaymentSource';
 
 /**
  * All fields optional; only those sent are changed.
@@ -44,13 +51,13 @@ export interface ExpenseUpdate {
      */
     currency?: string;
     /**
-     * Cash account the money was paid from.
-     */
-    cashAccountId?: string;
-    /**
      * 
      */
-    method?: ExpenseUpdateMethodEnum;
+    paidVia?: PaymentSource;
+    /**
+     * How the cash moved. Set only when `paid_via.cash_account_id` is used; leave out when paid by credit card.
+     */
+    method?: ExpenseUpdateMethodEnum | null;
     /**
      * Receipt or transfer number.
      */
@@ -72,7 +79,6 @@ export interface ExpenseUpdate {
 export const ExpenseUpdateMethodEnum = {
     BankTransfer: 'bank_transfer',
     Cash: 'cash',
-    Card: 'card',
     Other: 'other',
 } as const;
 export type ExpenseUpdateMethodEnum = typeof ExpenseUpdateMethodEnum[keyof typeof ExpenseUpdateMethodEnum];
@@ -99,8 +105,8 @@ export function ExpenseUpdateFromJSONTyped(json: any, ignoreDiscriminator: boole
         'payeeName': json['payee_name'] === undefined ? undefined : json['payee_name'] === null ? null : json['payee_name'],
         'expenseDate': json['expense_date'] == null ? undefined : (parseDate(json['expense_date'])),
         'currency': json['currency'] == null ? undefined : json['currency'],
-        'cashAccountId': json['cash_account_id'] == null ? undefined : json['cash_account_id'],
-        'method': json['method'] == null ? undefined : json['method'],
+        'paidVia': json['paid_via'] == null ? undefined : PaymentSourceFromJSON(json['paid_via']),
+        'method': json['method'] === undefined ? undefined : json['method'] === null ? null : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
         'lines': json['lines'] == null ? undefined : ((json['lines'] as Array<any>).map(ReceiptLineInputFromJSON)),
@@ -122,7 +128,7 @@ export function ExpenseUpdateToJSONTyped(value?: ExpenseUpdate | null, ignoreDis
         'payee_name': value['payeeName'],
         'expense_date': value['expenseDate'] == null ? value['expenseDate'] : serializeDate(value['expenseDate']),
         'currency': value['currency'],
-        'cash_account_id': value['cashAccountId'],
+        'paid_via': PaymentSourceToJSON(value['paidVia']),
         'method': value['method'],
         'reference': value['reference'],
         'notes': value['notes'],

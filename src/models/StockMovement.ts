@@ -86,6 +86,8 @@ export const StockMovementSourceTypeEnum = {
     Delivery: 'delivery',
     StockAdjustment: 'stock_adjustment',
     StockTransfer: 'stock_transfer',
+    Expense: 'expense',
+    Income: 'income',
 } as const;
 export type StockMovementSourceTypeEnum = typeof StockMovementSourceTypeEnum[keyof typeof StockMovementSourceTypeEnum];
 

@@ -14,6 +14,16 @@
 
 import * as runtime from '../runtime';
 import {
+    type InventorySettingsResponse,
+    InventorySettingsResponseFromJSON,
+    InventorySettingsResponseToJSON,
+} from '../models/InventorySettingsResponse';
+import {
+    type InventorySettingsUpdate,
+    InventorySettingsUpdateFromJSON,
+    InventorySettingsUpdateToJSON,
+} from '../models/InventorySettingsUpdate';
+import {
     type StockLevelListResponse,
     StockLevelListResponseFromJSON,
     StockLevelListResponseToJSON,
@@ -74,10 +84,72 @@ export interface ListStockMovementsRequest {
     dateTo?: Date;
 }
 
+export interface UpdateInventorySettingsRequest {
+    /**
+     * 
+     */
+    inventorySettingsUpdate: InventorySettingsUpdate;
+}
+
 /**
  * 
  */
 export class InventoryApi extends runtime.BaseAPI {
+
+    /**
+     * Creates request options for getInventorySettings without sending the request
+     */
+    async getInventorySettingsRequestOpts(): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/inventory/settings`;
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Returns the inventory settings of the tenant: the GL accounts used for stock on hand, cost of goods sold and stock-count differences. Use it to show a settings screen, or to find the inventory account a stocked item\'s lines on [`POST /v1/expenses`](#tag/expenses/POST/v1/expenses) or [`POST /v1/income`](#tag/income/POST/v1/income) book to.  Change the values with [`PATCH /v1/inventory/settings`](#tag/inventory/PATCH/v1/inventory/settings). `inventory_account_id` is debited by [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) and by a stocked expense line, and credited by a delivery, a stocked income line, or a negative [`POST /v1/inventory/adjustments/{id}/confirm`](#tag/adjustments/POST/v1/inventory/adjustments/{id}/confirm). `cogs_account_id` is debited when a stocked income line sells stock. `adjustment_account_id` is the default for `StockAdjustmentInput.adjustment_account_id` when a line omits it.  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Get inventory settings
+     */
+    async getInventorySettingsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InventorySettingsResponse>> {
+        const requestOptions = await this.getInventorySettingsRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => InventorySettingsResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns the inventory settings of the tenant: the GL accounts used for stock on hand, cost of goods sold and stock-count differences. Use it to show a settings screen, or to find the inventory account a stocked item\'s lines on [`POST /v1/expenses`](#tag/expenses/POST/v1/expenses) or [`POST /v1/income`](#tag/income/POST/v1/income) book to.  Change the values with [`PATCH /v1/inventory/settings`](#tag/inventory/PATCH/v1/inventory/settings). `inventory_account_id` is debited by [`POST /v1/purchasing/receipts/{id}/confirm`](#tag/goods-receipt/POST/v1/purchasing/receipts/{id}/confirm) and by a stocked expense line, and credited by a delivery, a stocked income line, or a negative [`POST /v1/inventory/adjustments/{id}/confirm`](#tag/adjustments/POST/v1/inventory/adjustments/{id}/confirm). `cogs_account_id` is debited when a stocked income line sells stock. `adjustment_account_id` is the default for `StockAdjustmentInput.adjustment_account_id` when a line omits it.  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Get inventory settings
+     */
+    async getInventorySettings(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InventorySettingsResponse> {
+        const response = await this.getInventorySettingsRaw(initOverrides);
+        return await response.value();
+    }
 
     /**
      * Creates request options for listStock without sending the request
@@ -214,7 +286,7 @@ export class InventoryApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns the ledger of every change to your stock, one row per item and warehouse, with the signed quantity, the cost, the value and the running quantity after the movement. It is read-only and only grows: every movement comes from a posted document, such as a goods receipt, a delivery, an adjustment or a transfer. Use it to explain a quantity, to audit one item, or to export movements. Filter by `item_id`, `warehouse_id`, `type` or a date range.  Take an `item_id` from [`GET /v1/items`](#tag/product-items/GET/v1/items) and a `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). The current totals are in [`GET /v1/inventory/stock`](#tag/inventory/GET/v1/inventory/stock). A row names its document in `source_type` and `source_id`, for example the one posted by [`POST /v1/sales/deliveries/{id}/confirm`](#tag/deliveries/POST/v1/sales/deliveries/{id}/confirm), [`POST /v1/inventory/adjustments/{id}/confirm`](#tag/adjustments/POST/v1/inventory/adjustments/{id}/confirm) or [`POST /v1/inventory/transfers/{id}/confirm`](#tag/transfers/POST/v1/inventory/transfers/{id}/confirm). This list pages with a cursor: pass the `next_cursor` of one response as `cursor` in the next call.  Error codes: none specific.  **Response meta** - `pagination`: `next_cursor`, `has_more`, `limit`, and the paging URLs `self`, `next` (`next` is null on the last page). Use `?cursor=` and `?limit=`. 
+     * Returns the ledger of every change to your stock, one row per item and warehouse, with the signed quantity, the cost, the value and the running quantity after the movement. It is read-only and only grows: every movement comes from a posted document, such as a goods receipt, a delivery, an adjustment or a transfer. Use it to explain a quantity, to audit one item, or to export movements. Filter by `item_id`, `warehouse_id`, `type` or a date range.  Take an `item_id` from [`GET /v1/items`](#tag/product-items/GET/v1/items) and a `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). The current totals are in [`GET /v1/inventory/stock`](#tag/inventory/GET/v1/inventory/stock). A row names its document in `source_type` and `source_id`, for example the one posted by [`POST /v1/sales/deliveries/{id}/confirm`](#tag/deliveries/POST/v1/sales/deliveries/{id}/confirm), [`POST /v1/inventory/adjustments/{id}/confirm`](#tag/adjustments/POST/v1/inventory/adjustments/{id}/confirm), [`POST /v1/inventory/transfers/{id}/confirm`](#tag/transfers/POST/v1/inventory/transfers/{id}/confirm), or a stocked line on a posted [`POST /v1/expenses/{id}/confirm`](#tag/expenses/POST/v1/expenses/{id}/confirm) or [`POST /v1/income/{id}/confirm`](#tag/income/POST/v1/income/{id}/confirm). This list pages with a cursor: pass the `next_cursor` of one response as `cursor` in the next call.  Error codes: none specific.  **Response meta** - `pagination`: `next_cursor`, `has_more`, `limit`, and the paging URLs `self`, `next` (`next` is null on the last page). Use `?cursor=` and `?limit=`. 
      * Stock movement ledger
      */
     async listStockMovementsRaw(requestParameters: ListStockMovementsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockMovementListResponse>> {
@@ -225,11 +297,76 @@ export class InventoryApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns the ledger of every change to your stock, one row per item and warehouse, with the signed quantity, the cost, the value and the running quantity after the movement. It is read-only and only grows: every movement comes from a posted document, such as a goods receipt, a delivery, an adjustment or a transfer. Use it to explain a quantity, to audit one item, or to export movements. Filter by `item_id`, `warehouse_id`, `type` or a date range.  Take an `item_id` from [`GET /v1/items`](#tag/product-items/GET/v1/items) and a `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). The current totals are in [`GET /v1/inventory/stock`](#tag/inventory/GET/v1/inventory/stock). A row names its document in `source_type` and `source_id`, for example the one posted by [`POST /v1/sales/deliveries/{id}/confirm`](#tag/deliveries/POST/v1/sales/deliveries/{id}/confirm), [`POST /v1/inventory/adjustments/{id}/confirm`](#tag/adjustments/POST/v1/inventory/adjustments/{id}/confirm) or [`POST /v1/inventory/transfers/{id}/confirm`](#tag/transfers/POST/v1/inventory/transfers/{id}/confirm). This list pages with a cursor: pass the `next_cursor` of one response as `cursor` in the next call.  Error codes: none specific.  **Response meta** - `pagination`: `next_cursor`, `has_more`, `limit`, and the paging URLs `self`, `next` (`next` is null on the last page). Use `?cursor=` and `?limit=`. 
+     * Returns the ledger of every change to your stock, one row per item and warehouse, with the signed quantity, the cost, the value and the running quantity after the movement. It is read-only and only grows: every movement comes from a posted document, such as a goods receipt, a delivery, an adjustment or a transfer. Use it to explain a quantity, to audit one item, or to export movements. Filter by `item_id`, `warehouse_id`, `type` or a date range.  Take an `item_id` from [`GET /v1/items`](#tag/product-items/GET/v1/items) and a `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). The current totals are in [`GET /v1/inventory/stock`](#tag/inventory/GET/v1/inventory/stock). A row names its document in `source_type` and `source_id`, for example the one posted by [`POST /v1/sales/deliveries/{id}/confirm`](#tag/deliveries/POST/v1/sales/deliveries/{id}/confirm), [`POST /v1/inventory/adjustments/{id}/confirm`](#tag/adjustments/POST/v1/inventory/adjustments/{id}/confirm), [`POST /v1/inventory/transfers/{id}/confirm`](#tag/transfers/POST/v1/inventory/transfers/{id}/confirm), or a stocked line on a posted [`POST /v1/expenses/{id}/confirm`](#tag/expenses/POST/v1/expenses/{id}/confirm) or [`POST /v1/income/{id}/confirm`](#tag/income/POST/v1/income/{id}/confirm). This list pages with a cursor: pass the `next_cursor` of one response as `cursor` in the next call.  Error codes: none specific.  **Response meta** - `pagination`: `next_cursor`, `has_more`, `limit`, and the paging URLs `self`, `next` (`next` is null on the last page). Use `?cursor=` and `?limit=`. 
      * Stock movement ledger
      */
     async listStockMovements(requestParameters: ListStockMovementsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockMovementListResponse> {
         const response = await this.listStockMovementsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for updateInventorySettings without sending the request
+     */
+    async updateInventorySettingsRequestOpts(requestParameters: UpdateInventorySettingsRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['inventorySettingsUpdate'] == null) {
+            throw new runtime.RequiredError(
+                'inventorySettingsUpdate',
+                'Required parameter "inventorySettingsUpdate" was null or undefined when calling updateInventorySettings().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/inventory/settings`;
+
+        return {
+            path: urlPath,
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: InventorySettingsUpdateToJSON(requestParameters['inventorySettingsUpdate']),
+        };
+    }
+
+    /**
+     * Changes the inventory settings. Send only the fields you want to change; the others stay as they are. Set an account to `null` to clear it. The new values apply to stock moved afterwards; postings already made are not recalculated.  Read the current values first with [`GET /v1/inventory/settings`](#tag/inventory/GET/v1/inventory/settings), and take account ids from [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts); only accounts that accept postings can be used.  Error codes: `unknown_account`, `account_not_postable`.  **Response meta** - `meta` is empty. 
+     * Update inventory settings
+     */
+    async updateInventorySettingsRaw(requestParameters: UpdateInventorySettingsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InventorySettingsResponse>> {
+        const requestOptions = await this.updateInventorySettingsRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => InventorySettingsResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Changes the inventory settings. Send only the fields you want to change; the others stay as they are. Set an account to `null` to clear it. The new values apply to stock moved afterwards; postings already made are not recalculated.  Read the current values first with [`GET /v1/inventory/settings`](#tag/inventory/GET/v1/inventory/settings), and take account ids from [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts); only accounts that accept postings can be used.  Error codes: `unknown_account`, `account_not_postable`.  **Response meta** - `meta` is empty. 
+     * Update inventory settings
+     */
+    async updateInventorySettings(requestParameters: UpdateInventorySettingsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InventorySettingsResponse> {
+        const response = await this.updateInventorySettingsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

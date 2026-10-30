@@ -12,6 +12,8 @@ export * from './BillingApi';
 export * from './CashAccountApi';
 export * from './CashTransferApi';
 export * from './CategoriesApi';
+export * from './CreditCardApi';
+export * from './CreditCardPaymentApi';
 export * from './CreditNotesApi';
 export * from './CustomerInvoiceApi';
 export * from './CustomerPaymentApi';

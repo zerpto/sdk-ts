@@ -20,6 +20,13 @@ import {
     ReceiptLineToJSON,
     ReceiptLineToJSONTyped,
 } from './ReceiptLine';
+import type { PaymentSource } from './PaymentSource';
+import {
+    PaymentSourceFromJSON,
+    PaymentSourceFromJSONTyped,
+    PaymentSourceToJSON,
+    PaymentSourceToJSONTyped,
+} from './PaymentSource';
 import type { ReceiptAttachment } from './ReceiptAttachment';
 import {
     ReceiptAttachmentFromJSON,
@@ -59,13 +66,13 @@ export interface Expense {
      */
     currency: string;
     /**
-     * Cash account the money was paid from.
-     */
-    cashAccountId: string;
-    /**
      * 
      */
-    method?: ExpenseMethodEnum;
+    paidVia: PaymentSource;
+    /**
+     * How the cash moved. Set only when `paid_via.cash_account_id` is used; null when paid by credit card.
+     */
+    method?: ExpenseMethodEnum | null;
     /**
      * Receipt or transfer number.
      */
@@ -91,7 +98,7 @@ export interface Expense {
      */
     taxTotal: string;
     /**
-     * Sum of `line_total`, the amount that left the cash or bank account.
+     * Sum of `line_total`, the amount paid via `paid_via`.
      */
     total: string;
     /**
@@ -119,7 +126,6 @@ export interface Expense {
 export const ExpenseMethodEnum = {
     BankTransfer: 'bank_transfer',
     Cash: 'cash',
-    Card: 'card',
     Other: 'other',
 } as const;
 export type ExpenseMethodEnum = typeof ExpenseMethodEnum[keyof typeof ExpenseMethodEnum];
@@ -144,7 +150,7 @@ export function instanceOfExpense(value: object): value is Expense {
     if (!('number' in value) || value['number'] === undefined) return false;
     if ((!('expenseDate' in (value as Record<string, any>)) && !('expense_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['expenseDate'] === undefined && (value as Record<string, any>)['expense_date'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
-    if ((!('cashAccountId' in (value as Record<string, any>)) && !('cash_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['cashAccountId'] === undefined && (value as Record<string, any>)['cash_account_id'] === undefined)) return false;
+    if ((!('paidVia' in (value as Record<string, any>)) && !('paid_via' in (value as Record<string, any>))) || ((value as Record<string, any>)['paidVia'] === undefined && (value as Record<string, any>)['paid_via'] === undefined)) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     if (!('lines' in value) || value['lines'] === undefined) return false;
     if (!('subtotal' in value) || value['subtotal'] === undefined) return false;
@@ -170,8 +176,8 @@ export function ExpenseFromJSONTyped(json: any, ignoreDiscriminator: boolean): E
         'payeeName': json['payee_name'] === undefined ? undefined : json['payee_name'] === null ? null : json['payee_name'],
         'expenseDate': (json['expense_date'] == null ? json['expense_date'] : parseDate(json['expense_date'])),
         'currency': json['currency'],
-        'cashAccountId': json['cash_account_id'],
-        'method': json['method'] == null ? undefined : json['method'],
+        'paidVia': PaymentSourceFromJSON(json['paid_via']),
+        'method': json['method'] === undefined ? undefined : json['method'] === null ? null : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
         'status': json['status'],
@@ -201,7 +207,7 @@ export function ExpenseToJSONTyped(value?: Omit<Expense, 'id'|'number'|'createdA
         'payee_name': value['payeeName'],
         'expense_date': value['expenseDate'] == null ? value['expenseDate'] : serializeDate(value['expenseDate']),
         'currency': value['currency'],
-        'cash_account_id': value['cashAccountId'],
+        'paid_via': PaymentSourceToJSON(value['paidVia']),
         'method': value['method'],
         'reference': value['reference'],
         'notes': value['notes'],

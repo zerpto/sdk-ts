@@ -24,11 +24,15 @@ export interface ReceiptLineInput {
      */
     description: string;
     /**
-     * Optional non-stocked item. Its default account is the default for `account_id`. Stocked goods go through a purchase order and goods receipt, or a sales order and delivery, instead.
+     * Optional item. A non-stocked item's default account is the default for `account_id`. A stocked item moves `warehouse_id`'s stock when the document posts, and its default account is the tenant's inventory account instead.
      */
     itemId?: string | null;
     /**
-     * Expense or income account, depending on the document. Required unless `item_id` has a default account.
+     * Warehouse stock moves in or out of, for a stocked `item_id`. Defaults to the item's `default_warehouse_id`; required if the item is stocked and has none. Leave out for a non-stocked item.
+     */
+    warehouseId?: string | null;
+    /**
+     * Expense or income account, depending on the document. Required unless `item_id` has a default account. For a stocked item, this must be the tenant's inventory account from `GET /v1/inventory/settings`.
      */
     accountId?: string;
     /**
@@ -67,6 +71,7 @@ export function ReceiptLineInputFromJSONTyped(json: any, ignoreDiscriminator: bo
         
         'description': json['description'],
         'itemId': json['item_id'] === undefined ? undefined : json['item_id'] === null ? null : json['item_id'],
+        'warehouseId': json['warehouse_id'] === undefined ? undefined : json['warehouse_id'] === null ? null : json['warehouse_id'],
         'accountId': json['account_id'] == null ? undefined : json['account_id'],
         'quantity': json['quantity'],
         'unitPrice': json['unit_price'],
@@ -87,6 +92,7 @@ export function ReceiptLineInputToJSONTyped(value?: ReceiptLineInput | null, ign
         
         'description': value['description'],
         'item_id': value['itemId'],
+        'warehouse_id': value['warehouseId'],
         'account_id': value['accountId'],
         'quantity': value['quantity'],
         'unit_price': value['unitPrice'],

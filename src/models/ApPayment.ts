@@ -13,6 +13,13 @@
  */
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
+import type { PaymentSource } from './PaymentSource';
+import {
+    PaymentSourceFromJSON,
+    PaymentSourceFromJSONTyped,
+    PaymentSourceToJSON,
+    PaymentSourceToJSONTyped,
+} from './PaymentSource';
 import type { PaymentAllocation } from './PaymentAllocation';
 import {
     PaymentAllocationFromJSON,
@@ -52,17 +59,17 @@ export interface ApPayment {
      */
     amount: string;
     /**
-     * 
+     * How the cash moved. Set only when `paid_via.cash_account_id` is used; null when charged to a credit card.
      */
-    method?: ApPaymentMethodEnum;
+    method?: ApPaymentMethodEnum | null;
     /**
      * 
      */
     reference?: string | null;
     /**
-     * Cash account money moved through.
+     * 
      */
-    cashAccountId?: string;
+    paidVia: PaymentSource;
     /**
      * 
      */
@@ -103,7 +110,6 @@ export type ApPaymentStatusEnum = typeof ApPaymentStatusEnum[keyof typeof ApPaym
 export const ApPaymentMethodEnum = {
     BankTransfer: 'bank_transfer',
     Cash: 'cash',
-    Card: 'card',
     Other: 'other',
 } as const;
 export type ApPaymentMethodEnum = typeof ApPaymentMethodEnum[keyof typeof ApPaymentMethodEnum];
@@ -119,6 +125,7 @@ export function instanceOfApPayment(value: object): value is ApPayment {
     if (!('status' in value) || value['status'] === undefined) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
     if (!('amount' in value) || value['amount'] === undefined) return false;
+    if ((!('paidVia' in (value as Record<string, any>)) && !('paid_via' in (value as Record<string, any>))) || ((value as Record<string, any>)['paidVia'] === undefined && (value as Record<string, any>)['paid_via'] === undefined)) return false;
     if (!('allocations' in value) || value['allocations'] === undefined) return false;
     return true;
 }
@@ -139,9 +146,9 @@ export function ApPaymentFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'status': json['status'],
         'currency': json['currency'],
         'amount': json['amount'],
-        'method': json['method'] == null ? undefined : json['method'],
+        'method': json['method'] === undefined ? undefined : json['method'] === null ? null : json['method'],
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
-        'cashAccountId': json['cash_account_id'] == null ? undefined : json['cash_account_id'],
+        'paidVia': PaymentSourceFromJSON(json['paid_via']),
         'allocations': ((json['allocations'] as Array<any>).map(PaymentAllocationFromJSON)),
         'purchaseOrderId': json['purchase_order_id'] === undefined ? undefined : json['purchase_order_id'] === null ? null : json['purchase_order_id'],
         'unallocatedAmount': json['unallocated_amount'] == null ? undefined : json['unallocated_amount'],
@@ -168,7 +175,7 @@ export function ApPaymentToJSONTyped(value?: Omit<ApPayment, 'id'|'unallocatedAm
         'amount': value['amount'],
         'method': value['method'],
         'reference': value['reference'],
-        'cash_account_id': value['cashAccountId'],
+        'paid_via': PaymentSourceToJSON(value['paidVia']),
         'allocations': ((value['allocations'] as Array<any>).map(PaymentAllocationToJSON)),
         'purchase_order_id': value['purchaseOrderId'],
         'journal_entry_id': value['journalEntryId'],

@@ -76,9 +76,9 @@ export interface CashTransfer {
      */
     status: CashTransferStatusEnum;
     /**
-     * 
+     * Set once posted with [`POST /v1/cash/transfers/{id}/confirm`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/confirm). Null while a draft or cancelled.
      */
-    journalEntryId: string;
+    journalEntryId: string | null;
     /**
      * Transfer proof, such as a bank transfer receipt or an e-wallet screenshot. Set by [`POST /v1/cash/transfers/{id}/attachment`](#tag/cash-transfer/POST/v1/cash/transfers/{id}/attachment), one file at a time. Null until uploaded.
      */
@@ -103,7 +103,9 @@ export type CashTransferFeeBorneByEnum = typeof CashTransferFeeBorneByEnum[keyof
  * @export
  */
 export const CashTransferStatusEnum = {
+    Draft: 'draft',
     Posted: 'posted',
+    Cancelled: 'cancelled',
     Void: 'void',
 } as const;
 export type CashTransferStatusEnum = typeof CashTransferStatusEnum[keyof typeof CashTransferStatusEnum];
