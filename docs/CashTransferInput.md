@@ -13,6 +13,9 @@ Name | Type
 `transferDate` | Date
 `reference` | string
 `notes` | string
+`feeAmount` | string
+`feeAccountId` | string
+`feeBorneBy` | string
 
 ## Example
 
@@ -28,6 +31,9 @@ const example = {
   "transferDate": null,
   "reference": null,
   "notes": null,
+  "feeAmount": 1500000.00,
+  "feeAccountId": null,
+  "feeBorneBy": null,
 } satisfies CashTransferInput
 
 console.log(example)

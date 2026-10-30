@@ -47,7 +47,30 @@ export interface CashTransferInput {
      * 
      */
     notes?: string | null;
+    /**
+     * Transfer or admin fee charged on this transfer. Leave out when there is none.
+     */
+    feeAmount?: string | null;
+    /**
+     * Expense account the fee is booked to. Required when `fee_amount` is set.
+     */
+    feeAccountId?: string | null;
+    /**
+     * `source`: `from_cash_account_id` is debited `amount` plus the fee, `to_cash_account_id` receives the full `amount`. `destination`: `from_cash_account_id` is debited exactly `amount`, `to_cash_account_id` receives `amount` minus the fee. Required when `fee_amount` is set.
+     */
+    feeBorneBy?: CashTransferInputFeeBorneByEnum | null;
 }
+
+
+/**
+ * @export
+ */
+export const CashTransferInputFeeBorneByEnum = {
+    Source: 'source',
+    Destination: 'destination',
+} as const;
+export type CashTransferInputFeeBorneByEnum = typeof CashTransferInputFeeBorneByEnum[keyof typeof CashTransferInputFeeBorneByEnum];
+
 
 /**
  * Check if a given object implements the CashTransferInput interface.
@@ -78,6 +101,9 @@ export function CashTransferInputFromJSONTyped(json: any, ignoreDiscriminator: b
         'transferDate': (json['transfer_date'] == null ? json['transfer_date'] : parseDate(json['transfer_date'])),
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
+        'feeAmount': json['fee_amount'] === undefined ? undefined : json['fee_amount'] === null ? null : json['fee_amount'],
+        'feeAccountId': json['fee_account_id'] === undefined ? undefined : json['fee_account_id'] === null ? null : json['fee_account_id'],
+        'feeBorneBy': json['fee_borne_by'] === undefined ? undefined : json['fee_borne_by'] === null ? null : json['fee_borne_by'],
     };
 }
 
@@ -99,6 +125,9 @@ export function CashTransferInputToJSONTyped(value?: CashTransferInput | null, i
         'transfer_date': value['transferDate'] == null ? value['transferDate'] : serializeDate(value['transferDate']),
         'reference': value['reference'],
         'notes': value['notes'],
+        'fee_amount': value['feeAmount'],
+        'fee_account_id': value['feeAccountId'],
+        'fee_borne_by': value['feeBorneBy'],
     };
 }
 

@@ -55,7 +55,22 @@ export interface TenantInput {
      * 
      */
     fiscalYearStartMonth?: number;
+    /**
+     * Defaults to `complex`.
+     */
+    completeness?: TenantInputCompletenessEnum;
 }
+
+
+/**
+ * @export
+ */
+export const TenantInputCompletenessEnum = {
+    Simple: 'simple',
+    Complex: 'complex',
+} as const;
+export type TenantInputCompletenessEnum = typeof TenantInputCompletenessEnum[keyof typeof TenantInputCompletenessEnum];
+
 
 /**
  * Check if a given object implements the TenantInput interface.
@@ -82,6 +97,7 @@ export function TenantInputFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'baseCurrency': json['base_currency'] == null ? undefined : json['base_currency'],
         'timezone': json['timezone'] == null ? undefined : json['timezone'],
         'fiscalYearStartMonth': json['fiscal_year_start_month'] == null ? undefined : json['fiscal_year_start_month'],
+        'completeness': json['completeness'] == null ? undefined : json['completeness'],
     };
 }
 
@@ -103,6 +119,7 @@ export function TenantInputToJSONTyped(value?: TenantInput | null, ignoreDiscrim
         'base_currency': value['baseCurrency'],
         'timezone': value['timezone'],
         'fiscal_year_start_month': value['fiscalYearStartMonth'],
+        'completeness': value['completeness'],
     };
 }
 

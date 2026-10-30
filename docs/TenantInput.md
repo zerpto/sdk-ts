@@ -13,6 +13,7 @@ Name | Type
 `baseCurrency` | string
 `timezone` | string
 `fiscalYearStartMonth` | number
+`completeness` | string
 
 ## Example
 
@@ -28,6 +29,7 @@ const example = {
   "baseCurrency": IDR,
   "timezone": Asia/Jakarta,
   "fiscalYearStartMonth": null,
+  "completeness": null,
 } satisfies TenantInput
 
 console.log(example)

@@ -52,6 +52,18 @@ export interface CashTransfer {
      */
     notes?: string | null;
     /**
+     * Transfer or admin fee charged on this transfer. Null when there is none.
+     */
+    feeAmount?: string | null;
+    /**
+     * Expense account the fee is booked to. Required when `fee_amount` is set.
+     */
+    feeAccountId?: string | null;
+    /**
+     * `source`: `from_cash_account_id` is debited `amount` plus the fee, `to_cash_account_id` receives the full `amount` (typical bank transfer fee). `destination`: `from_cash_account_id` is debited exactly `amount`, `to_cash_account_id` receives `amount` minus the fee (typical e-wallet top-up cut). Required when `fee_amount` is set.
+     */
+    feeBorneBy?: CashTransferFeeBorneByEnum | null;
+    /**
      * 
      */
     status: CashTransferStatusEnum;
@@ -65,6 +77,15 @@ export interface CashTransfer {
     readonly createdAt?: Date;
 }
 
+
+/**
+ * @export
+ */
+export const CashTransferFeeBorneByEnum = {
+    Source: 'source',
+    Destination: 'destination',
+} as const;
+export type CashTransferFeeBorneByEnum = typeof CashTransferFeeBorneByEnum[keyof typeof CashTransferFeeBorneByEnum];
 
 /**
  * @export
@@ -109,6 +130,9 @@ export function CashTransferFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'transferDate': (json['transfer_date'] == null ? json['transfer_date'] : parseDate(json['transfer_date'])),
         'reference': json['reference'] === undefined ? undefined : json['reference'] === null ? null : json['reference'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
+        'feeAmount': json['fee_amount'] === undefined ? undefined : json['fee_amount'] === null ? null : json['fee_amount'],
+        'feeAccountId': json['fee_account_id'] === undefined ? undefined : json['fee_account_id'] === null ? null : json['fee_account_id'],
+        'feeBorneBy': json['fee_borne_by'] === undefined ? undefined : json['fee_borne_by'] === null ? null : json['fee_borne_by'],
         'status': json['status'],
         'journalEntryId': json['journal_entry_id'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
@@ -133,6 +157,9 @@ export function CashTransferToJSONTyped(value?: Omit<CashTransfer, 'id'|'created
         'transfer_date': value['transferDate'] == null ? value['transferDate'] : serializeDate(value['transferDate']),
         'reference': value['reference'],
         'notes': value['notes'],
+        'fee_amount': value['feeAmount'],
+        'fee_account_id': value['feeAccountId'],
+        'fee_borne_by': value['feeBorneBy'],
         'status': value['status'],
         'journal_entry_id': value['journalEntryId'],
     };

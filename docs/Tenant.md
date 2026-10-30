@@ -14,6 +14,7 @@ Name | Type
 `baseCurrency` | string
 `timezone` | string
 `fiscalYearStartMonth` | number
+`completeness` | string
 `createdAt` | Date
 
 ## Example
@@ -31,6 +32,7 @@ const example = {
   "baseCurrency": IDR,
   "timezone": Asia/Jakarta,
   "fiscalYearStartMonth": null,
+  "completeness": null,
   "createdAt": null,
 } satisfies Tenant
 

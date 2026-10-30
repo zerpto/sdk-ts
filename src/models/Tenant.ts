@@ -60,10 +60,25 @@ export interface Tenant {
      */
     fiscalYearStartMonth?: number;
     /**
+     * `simple` is for a small organization that only records income and expense. `complex` is for a company that also needs invoicing, payments, approvals, billing and goods receipt. This does not restrict what the API accepts; the web app uses it to decide which modules to show.
+     */
+    completeness: TenantCompletenessEnum;
+    /**
      * 
      */
     readonly createdAt?: Date;
 }
+
+
+/**
+ * @export
+ */
+export const TenantCompletenessEnum = {
+    Simple: 'simple',
+    Complex: 'complex',
+} as const;
+export type TenantCompletenessEnum = typeof TenantCompletenessEnum[keyof typeof TenantCompletenessEnum];
+
 
 /**
  * Check if a given object implements the Tenant interface.
@@ -73,6 +88,7 @@ export function instanceOfTenant(value: object): value is Tenant {
     if (!('name' in value) || value['name'] === undefined) return false;
     if ((!('baseCurrency' in (value as Record<string, any>)) && !('base_currency' in (value as Record<string, any>))) || ((value as Record<string, any>)['baseCurrency'] === undefined && (value as Record<string, any>)['base_currency'] === undefined)) return false;
     if (!('timezone' in value) || value['timezone'] === undefined) return false;
+    if (!('completeness' in value) || value['completeness'] === undefined) return false;
     return true;
 }
 
@@ -94,6 +110,7 @@ export function TenantFromJSONTyped(json: any, ignoreDiscriminator: boolean): Te
         'baseCurrency': json['base_currency'],
         'timezone': json['timezone'],
         'fiscalYearStartMonth': json['fiscal_year_start_month'] == null ? undefined : json['fiscal_year_start_month'],
+        'completeness': json['completeness'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
     };
 }
@@ -116,6 +133,7 @@ export function TenantToJSONTyped(value?: Omit<Tenant, 'id'|'createdAt'> | null,
         'base_currency': value['baseCurrency'],
         'timezone': value['timezone'],
         'fiscal_year_start_month': value['fiscalYearStartMonth'],
+        'completeness': value['completeness'],
     };
 }
 

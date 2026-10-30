@@ -51,7 +51,22 @@ export interface TenantUpdate {
      * 
      */
     fiscalYearStartMonth?: number;
+    /**
+     * 
+     */
+    completeness?: TenantUpdateCompletenessEnum;
 }
+
+
+/**
+ * @export
+ */
+export const TenantUpdateCompletenessEnum = {
+    Simple: 'simple',
+    Complex: 'complex',
+} as const;
+export type TenantUpdateCompletenessEnum = typeof TenantUpdateCompletenessEnum[keyof typeof TenantUpdateCompletenessEnum];
+
 
 /**
  * Check if a given object implements the TenantUpdate interface.
@@ -76,6 +91,7 @@ export function TenantUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'address': json['address'] == null ? undefined : AddressFromJSON(json['address']),
         'timezone': json['timezone'] == null ? undefined : json['timezone'],
         'fiscalYearStartMonth': json['fiscal_year_start_month'] == null ? undefined : json['fiscal_year_start_month'],
+        'completeness': json['completeness'] == null ? undefined : json['completeness'],
     };
 }
 
@@ -96,6 +112,7 @@ export function TenantUpdateToJSONTyped(value?: TenantUpdate | null, ignoreDiscr
         'address': AddressToJSON(value['address']),
         'timezone': value['timezone'],
         'fiscal_year_start_month': value['fiscalYearStartMonth'],
+        'completeness': value['completeness'],
     };
 }
 

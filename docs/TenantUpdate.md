@@ -13,6 +13,7 @@ Name | Type
 `address` | [Address](Address.md)
 `timezone` | string
 `fiscalYearStartMonth` | number
+`completeness` | string
 
 ## Example
 
@@ -27,6 +28,7 @@ const example = {
   "address": null,
   "timezone": Asia/Jakarta,
   "fiscalYearStartMonth": null,
+  "completeness": null,
 } satisfies TenantUpdate
 
 console.log(example)
