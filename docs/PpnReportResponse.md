@@ -1,6 +1,7 @@
 
 # PpnReportResponse
 
+One record in `data`.
 
 ## Properties
 

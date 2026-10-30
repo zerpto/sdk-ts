@@ -21,7 +21,7 @@ Name | Type
 `subtotal` | string
 `taxTotal` | string
 `total` | string
-`attachments` | [Array&lt;FileAttachment&gt;](FileAttachment.md)
+`attachments` | [Array&lt;ReceiptAttachment&gt;](ReceiptAttachment.md)
 `journalEntryId` | string
 `createdAt` | Date
 `updatedAt` | Date

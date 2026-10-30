@@ -14,13 +14,13 @@
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
 /**
- * A file uploaded to one document, such as the delivery note of a goods receipt or a receipt photo on an expense.
+ * A file uploaded to one document, such as the delivery note of a goods receipt.
  * @export
  * @interface FileAttachment
  */
 export interface FileAttachment {
     /**
-     * Starts with `grdn-` on a goods receipt delivery note and `exa-` on an expense attachment, followed by the UUID.
+     * Prefixed resource ID: `grdn-` on a goods receipt delivery note, followed by a UUID.
      */
     readonly id: string;
     /**

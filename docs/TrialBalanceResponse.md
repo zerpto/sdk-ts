@@ -1,6 +1,7 @@
 
 # TrialBalanceResponse
 
+One record in `data`.
 
 ## Properties
 

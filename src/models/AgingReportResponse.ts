@@ -22,7 +22,7 @@ import {
 } from './AgingReport';
 
 /**
- * 
+ * One record in `data`.
  * @export
  * @interface AgingReportResponse
  */

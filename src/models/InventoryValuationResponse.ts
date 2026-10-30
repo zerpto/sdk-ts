@@ -22,7 +22,7 @@ import {
 } from './InventoryValuation';
 
 /**
- * 
+ * One record in `data`.
  * @export
  * @interface InventoryValuationResponse
  */

@@ -1,6 +1,7 @@
 
 # AgingReportResponse
 
+One record in `data`.
 
 ## Properties
 

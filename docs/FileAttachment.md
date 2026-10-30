@@ -1,7 +1,7 @@
 
 # FileAttachment
 
-A file uploaded to one document, such as the delivery note of a goods receipt or a receipt photo on an expense.
+A file uploaded to one document, such as the delivery note of a goods receipt.
 
 ## Properties
 

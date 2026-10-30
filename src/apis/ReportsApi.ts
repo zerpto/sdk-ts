@@ -238,7 +238,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns what you owe your vendors as of a date, grouped by vendor into current and overdue buckets (1-30, 31-60, 61-90 and over 90 days), with each vendor\'s total and a grand `totals` at the bottom. Use it to see who needs paying soon and how overdue you already are.  Take the vendor behind each `party_id` from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), and the open bills behind the balance from [`GET /v1/ap/invoices`](#tag/invoice/GET/v1/ap/invoices). Settle a balance with [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * AP aging
      */
     async getApAgingRaw(requestParameters: GetApAgingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AgingReportResponse>> {
@@ -249,7 +249,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns what you owe your vendors as of a date, grouped by vendor into current and overdue buckets (1-30, 31-60, 61-90 and over 90 days), with each vendor\'s total and a grand `totals` at the bottom. Use it to see who needs paying soon and how overdue you already are.  Take the vendor behind each `party_id` from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors), and the open bills behind the balance from [`GET /v1/ap/invoices`](#tag/invoice/GET/v1/ap/invoices). Settle a balance with [`POST /v1/ap/payments`](#tag/payment/POST/v1/ap/payments).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * AP aging
      */
     async getApAging(requestParameters: GetApAgingRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AgingReportResponse> {
@@ -297,7 +297,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns what your customers owe as of a date, grouped by customer into current and overdue buckets (1-30, 31-60, 61-90 and over 90 days), with each customer\'s total and a grand `totals` at the bottom. Use it to see who to chase for payment and how overdue they are.  Take the customer behind each `party_id` from [`GET /v1/customers`](#tag/customers/GET/v1/customers), and the open invoices behind the balance from [`GET /v1/ar/invoices`](#tag/customer-invoice/GET/v1/ar/invoices). Settle a balance with [`POST /v1/ar/payments`](#tag/customer-payment/POST/v1/ar/payments).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * AR aging
      */
     async getArAgingRaw(requestParameters: GetArAgingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AgingReportResponse>> {
@@ -308,7 +308,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns what your customers owe as of a date, grouped by customer into current and overdue buckets (1-30, 31-60, 61-90 and over 90 days), with each customer\'s total and a grand `totals` at the bottom. Use it to see who to chase for payment and how overdue they are.  Take the customer behind each `party_id` from [`GET /v1/customers`](#tag/customers/GET/v1/customers), and the open invoices behind the balance from [`GET /v1/ar/invoices`](#tag/customer-invoice/GET/v1/ar/invoices). Settle a balance with [`POST /v1/ar/payments`](#tag/customer-payment/POST/v1/ar/payments).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * AR aging
      */
     async getArAging(requestParameters: GetArAgingRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AgingReportResponse> {
@@ -360,7 +360,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns every fixed asset as of a date, one line per asset with its cost, accumulated depreciation and net book value, plus the totals across all of them. Use it to see what the business owns and its current carrying value, for an audit or a management report.  Limit it to one category with the `category_id` from [`GET /v1/assets/categories`](#tag/categories/GET/v1/assets/categories). Each line\'s `asset_id` is read in full with [`GET /v1/assets/{id}`](#tag/fixed-assets/GET/v1/assets/{id}), including its depreciation schedule. `total_net_book_value` matches the fixed asset accounts\' combined balance on [`GET /v1/reports/trial-balance`](#tag/reports/GET/v1/reports/trial-balance).  Error codes: `unknown_category`.  **Response meta** - `meta` is empty. 
      * Asset register report
      */
     async getAssetRegisterRaw(requestParameters: GetAssetRegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AssetRegisterResponse>> {
@@ -371,7 +371,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns every fixed asset as of a date, one line per asset with its cost, accumulated depreciation and net book value, plus the totals across all of them. Use it to see what the business owns and its current carrying value, for an audit or a management report.  Limit it to one category with the `category_id` from [`GET /v1/assets/categories`](#tag/categories/GET/v1/assets/categories). Each line\'s `asset_id` is read in full with [`GET /v1/assets/{id}`](#tag/fixed-assets/GET/v1/assets/{id}), including its depreciation schedule. `total_net_book_value` matches the fixed asset accounts\' combined balance on [`GET /v1/reports/trial-balance`](#tag/reports/GET/v1/reports/trial-balance).  Error codes: `unknown_category`.  **Response meta** - `meta` is empty. 
      * Asset register report
      */
     async getAssetRegister(requestParameters: GetAssetRegisterRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AssetRegisterResponse> {
@@ -419,7 +419,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns assets, liabilities and equity as of a date, each grouped into sections with the accounts\' amounts and a section total, with `total_assets` and `total_liabilities_and_equity` matching at the bottom. Use it to see what the business owns, owes and is worth on a given day.  The sections follow the `type` on [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts). The same balances, ungrouped, are in [`GET /v1/reports/trial-balance`](#tag/reports/GET/v1/reports/trial-balance), and the `net_income` from [`GET /v1/reports/profit-and-loss`](#tag/reports/GET/v1/reports/profit-and-loss) for the year to date is what carries into equity between statements.  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Balance sheet
      */
     async getBalanceSheetRaw(requestParameters: GetBalanceSheetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BalanceSheetResponse>> {
@@ -430,7 +430,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns assets, liabilities and equity as of a date, each grouped into sections with the accounts\' amounts and a section total, with `total_assets` and `total_liabilities_and_equity` matching at the bottom. Use it to see what the business owns, owes and is worth on a given day.  The sections follow the `type` on [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts). The same balances, ungrouped, are in [`GET /v1/reports/trial-balance`](#tag/reports/GET/v1/reports/trial-balance), and the `net_income` from [`GET /v1/reports/profit-and-loss`](#tag/reports/GET/v1/reports/profit-and-loss) for the year to date is what carries into equity between statements.  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Balance sheet
      */
     async getBalanceSheet(requestParameters: GetBalanceSheetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BalanceSheetResponse> {
@@ -611,7 +611,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Moving-average valuation. Its total equals the GL inventory account balance.  **Response meta** - `meta` is empty. 
+     * Returns what your stock is worth as of a date, one line per item and warehouse, at the moving-average cost, with a grand `total`. Use it to see the value sitting on the shelves, or to check one warehouse\'s share of it.  Limit it to one place with the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). The quantity on each line comes from the same stock as [`GET /v1/reports/stock-card`](#tag/reports/GET/v1/reports/stock-card), and the `total` always equals the inventory account\'s balance on [`GET /v1/reports/trial-balance`](#tag/reports/GET/v1/reports/trial-balance).  Error codes: `unknown_warehouse`.  **Response meta** - `meta` is empty. 
      * Inventory valuation
      */
     async getInventoryValuationRaw(requestParameters: GetInventoryValuationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InventoryValuationResponse>> {
@@ -622,7 +622,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Moving-average valuation. Its total equals the GL inventory account balance.  **Response meta** - `meta` is empty. 
+     * Returns what your stock is worth as of a date, one line per item and warehouse, at the moving-average cost, with a grand `total`. Use it to see the value sitting on the shelves, or to check one warehouse\'s share of it.  Limit it to one place with the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). The quantity on each line comes from the same stock as [`GET /v1/reports/stock-card`](#tag/reports/GET/v1/reports/stock-card), and the `total` always equals the inventory account\'s balance on [`GET /v1/reports/trial-balance`](#tag/reports/GET/v1/reports/trial-balance).  Error codes: `unknown_warehouse`.  **Response meta** - `meta` is empty. 
      * Inventory valuation
      */
     async getInventoryValuation(requestParameters: GetInventoryValuationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InventoryValuationResponse> {
@@ -692,7 +692,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns the PPh 23 you withheld from vendor bills over a date range, one line per withholding with its base amount, the amount withheld and the certificate number if issued, plus the period\'s `total_base` and `total_withheld`. Use it to see what you withheld for the period, or, filtered to one vendor, what you withheld from them.  Take the `vendor_id` for the filter from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors). Each line is a withholding record, listed and created with [`GET /v1/tax/withholdings`](#tag/tax/GET/v1/tax/withholdings) and [`POST /v1/tax/withholdings`](#tag/tax/POST/v1/tax/withholdings), and recorded on the vendor bill it reduces.  Error codes: `invalid_date_range` (`end_date` before `start_date`).  **Response meta** - `meta` is empty. 
      * Withholding report per period
      */
     async getPphWithholdingReportRaw(requestParameters: GetPphWithholdingReportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WithholdingReportResponse>> {
@@ -703,7 +703,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns the PPh 23 you withheld from vendor bills over a date range, one line per withholding with its base amount, the amount withheld and the certificate number if issued, plus the period\'s `total_base` and `total_withheld`. Use it to see what you withheld for the period, or, filtered to one vendor, what you withheld from them.  Take the `vendor_id` for the filter from [`GET /v1/vendors`](#tag/vendors/GET/v1/vendors). Each line is a withholding record, listed and created with [`GET /v1/tax/withholdings`](#tag/tax/GET/v1/tax/withholdings) and [`POST /v1/tax/withholdings`](#tag/tax/POST/v1/tax/withholdings), and recorded on the vendor bill it reduces.  Error codes: `invalid_date_range` (`end_date` before `start_date`).  **Response meta** - `meta` is empty. 
      * Withholding report per period
      */
     async getPphWithholdingReport(requestParameters: GetPphWithholdingReportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WithholdingReportResponse> {
@@ -769,7 +769,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Output PPN from posted AR invoices, input PPN from posted AP bills. `net_payable` is output minus input; negative means a credit.  **Response meta** - `meta` is empty. 
+     * Returns output PPN from posted AR invoices and input PPN from posted AP bills over a date range, one line per invoice with its `dpp` (tax base) and `ppn`, plus the totals and `net_payable`, output minus input. A negative `net_payable` means a credit. Use it to see what PPN you owe or can claim back for the period before filing.  Each output line\'s document is an AR invoice read with [`GET /v1/ar/invoices/{id}`](#tag/customer-invoice/GET/v1/ar/invoices/{id}); each input line is an AP bill read with [`GET /v1/ap/invoices/{id}`](#tag/invoice/GET/v1/ap/invoices/{id}). The output side is also what [`GET /v1/tax/invoices`](#tag/tax/GET/v1/tax/invoices) turns into faktur pajak, one per posted invoice with PPN.  Error codes: `invalid_date_range` (`end_date` before `start_date`).  **Response meta** - `meta` is empty. 
      * PPN input vs output report
      */
     async getPpnReportRaw(requestParameters: GetPpnReportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PpnReportResponse>> {
@@ -780,7 +780,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Output PPN from posted AR invoices, input PPN from posted AP bills. `net_payable` is output minus input; negative means a credit.  **Response meta** - `meta` is empty. 
+     * Returns output PPN from posted AR invoices and input PPN from posted AP bills over a date range, one line per invoice with its `dpp` (tax base) and `ppn`, plus the totals and `net_payable`, output minus input. A negative `net_payable` means a credit. Use it to see what PPN you owe or can claim back for the period before filing.  Each output line\'s document is an AR invoice read with [`GET /v1/ar/invoices/{id}`](#tag/customer-invoice/GET/v1/ar/invoices/{id}); each input line is an AP bill read with [`GET /v1/ap/invoices/{id}`](#tag/invoice/GET/v1/ap/invoices/{id}). The output side is also what [`GET /v1/tax/invoices`](#tag/tax/GET/v1/tax/invoices) turns into faktur pajak, one per posted invoice with PPN.  Error codes: `invalid_date_range` (`end_date` before `start_date`).  **Response meta** - `meta` is empty. 
      * PPN input vs output report
      */
     async getPpnReport(requestParameters: GetPpnReportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PpnReportResponse> {
@@ -846,7 +846,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns revenue and expenses for a date range, grouped into sections such as Revenue and Expenses, each with its accounts\' amounts and a section total, ending in `net_income`. Use it to see how the business performed over a period, such as a month or a quarter.  The sections follow the `type` on [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts). Revenue accounts move with posted customer invoices ([`POST /v1/ar/invoices/{id}/confirm`](#tag/customer-invoice/POST/v1/ar/invoices/{id}/confirm)) and income entries ([`POST /v1/income/{id}/confirm`](#tag/income/POST/v1/income/{id}/confirm)); expense accounts move with posted vendor bills and expenses ([`POST /v1/expenses/{id}/confirm`](#tag/expenses/POST/v1/expenses/{id}/confirm)). [`GET /v1/reports/trial-balance`](#tag/reports/GET/v1/reports/trial-balance) shows the same accounts without the date range.  Error codes: `invalid_date_range` (`end_date` before `start_date`).  **Response meta** - `meta` is empty. 
      * Profit and loss
      */
     async getProfitAndLossRaw(requestParameters: GetProfitAndLossRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ProfitAndLossResponse>> {
@@ -857,7 +857,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns revenue and expenses for a date range, grouped into sections such as Revenue and Expenses, each with its accounts\' amounts and a section total, ending in `net_income`. Use it to see how the business performed over a period, such as a month or a quarter.  The sections follow the `type` on [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts). Revenue accounts move with posted customer invoices ([`POST /v1/ar/invoices/{id}/confirm`](#tag/customer-invoice/POST/v1/ar/invoices/{id}/confirm)) and income entries ([`POST /v1/income/{id}/confirm`](#tag/income/POST/v1/income/{id}/confirm)); expense accounts move with posted vendor bills and expenses ([`POST /v1/expenses/{id}/confirm`](#tag/expenses/POST/v1/expenses/{id}/confirm)). [`GET /v1/reports/trial-balance`](#tag/reports/GET/v1/reports/trial-balance) shows the same accounts without the date range.  Error codes: `invalid_date_range` (`end_date` before `start_date`).  **Response meta** - `meta` is empty. 
      * Profit and loss
      */
     async getProfitAndLoss(requestParameters: GetProfitAndLossRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProfitAndLossResponse> {
@@ -938,7 +938,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns every stock movement for one item over a date range, in order, with the running quantity left after each line, plus the opening and closing quantity for the range. Use it to trace exactly how an item\'s stock reached its current level, for an audit or to investigate a discrepancy.  Take the `item_id` from [`GET /v1/items`](#tag/product-items/GET/v1/items) and, to limit it to one place, the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Each line\'s `source_type` and `source_id` point back to the goods receipt, delivery, adjustment or transfer that moved the stock. [`GET /v1/reports/inventory-valuation`](#tag/reports/GET/v1/reports/inventory-valuation) shows the value of what is left instead of the movements that got it there.  Error codes: `unknown_item`, `unknown_warehouse`.  **Response meta** - `meta` is empty. 
      * Stock card per item
      */
     async getStockCardRaw(requestParameters: GetStockCardRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockCardResponse>> {
@@ -949,7 +949,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns every stock movement for one item over a date range, in order, with the running quantity left after each line, plus the opening and closing quantity for the range. Use it to trace exactly how an item\'s stock reached its current level, for an audit or to investigate a discrepancy.  Take the `item_id` from [`GET /v1/items`](#tag/product-items/GET/v1/items) and, to limit it to one place, the `warehouse_id` from [`GET /v1/inventory/warehouses`](#tag/warehouses/GET/v1/inventory/warehouses). Each line\'s `source_type` and `source_id` point back to the goods receipt, delivery, adjustment or transfer that moved the stock. [`GET /v1/reports/inventory-valuation`](#tag/reports/GET/v1/reports/inventory-valuation) shows the value of what is left instead of the movements that got it there.  Error codes: `unknown_item`, `unknown_warehouse`.  **Response meta** - `meta` is empty. 
      * Stock card per item
      */
     async getStockCard(requestParameters: GetStockCardRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockCardResponse> {
@@ -997,7 +997,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns the balance of every account in your chart of accounts as of a date, split into its debit and credit columns, with `total_debit` and `total_credit` at the bottom. Use it to confirm the books balance before trusting any other report, or to look up any single account\'s current standing, including a cash or bank account\'s.  List the accounts behind each row with [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts). Every posted [`POST /v1/gl/journal-entries`](#tag/journal/POST/v1/gl/journal-entries), and every other posted document, feeds these balances. [`GET /v1/reports/balance-sheet`](#tag/reports/GET/v1/reports/balance-sheet) and [`GET /v1/reports/profit-and-loss`](#tag/reports/GET/v1/reports/profit-and-loss) regroup the same balances into statements, and [`GET /v1/reports/cash-balances`](#tag/reports/GET/v1/reports/cash-balances) is a shortcut for just your cash accounts.  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Trial balance
      */
     async getTrialBalanceRaw(requestParameters: GetTrialBalanceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TrialBalanceResponse>> {
@@ -1008,7 +1008,7 @@ export class ReportsApi extends runtime.BaseAPI {
     }
 
     /**
-     * **Response meta** - `meta` is empty. 
+     * Returns the balance of every account in your chart of accounts as of a date, split into its debit and credit columns, with `total_debit` and `total_credit` at the bottom. Use it to confirm the books balance before trusting any other report, or to look up any single account\'s current standing, including a cash or bank account\'s.  List the accounts behind each row with [`GET /v1/accounts`](#tag/accounts/GET/v1/accounts). Every posted [`POST /v1/gl/journal-entries`](#tag/journal/POST/v1/gl/journal-entries), and every other posted document, feeds these balances. [`GET /v1/reports/balance-sheet`](#tag/reports/GET/v1/reports/balance-sheet) and [`GET /v1/reports/profit-and-loss`](#tag/reports/GET/v1/reports/profit-and-loss) regroup the same balances into statements, and [`GET /v1/reports/cash-balances`](#tag/reports/GET/v1/reports/cash-balances) is a shortcut for just your cash accounts.  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Trial balance
      */
     async getTrialBalance(requestParameters: GetTrialBalanceRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TrialBalanceResponse> {

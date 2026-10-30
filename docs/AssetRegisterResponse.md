@@ -1,6 +1,7 @@
 
 # AssetRegisterResponse
 
+One record in `data`.
 
 ## Properties
 

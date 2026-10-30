@@ -1,6 +1,7 @@
 
 # ProfitAndLossResponse
 
+One record in `data`.
 
 ## Properties
 

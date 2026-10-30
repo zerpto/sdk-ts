@@ -22,7 +22,7 @@ import {
 } from './PpnReport';
 
 /**
- * 
+ * One record in `data`.
  * @export
  * @interface PpnReportResponse
  */

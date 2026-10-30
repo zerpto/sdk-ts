@@ -1,6 +1,7 @@
 
 # StockCardResponse
 
+One record in `data`.
 
 ## Properties
 

@@ -20,13 +20,13 @@ import {
     ReceiptLineToJSON,
     ReceiptLineToJSONTyped,
 } from './ReceiptLine';
-import type { FileAttachment } from './FileAttachment';
+import type { ReceiptAttachment } from './ReceiptAttachment';
 import {
-    FileAttachmentFromJSON,
-    FileAttachmentFromJSONTyped,
-    FileAttachmentToJSON,
-    FileAttachmentToJSONTyped,
-} from './FileAttachment';
+    ReceiptAttachmentFromJSON,
+    ReceiptAttachmentFromJSONTyped,
+    ReceiptAttachmentToJSON,
+    ReceiptAttachmentToJSONTyped,
+} from './ReceiptAttachment';
 
 /**
  * 
@@ -95,9 +95,9 @@ export interface Expense {
      */
     total: string;
     /**
-     * Receipt files added with [`POST /v1/expenses/{id}/attachments`](#tag/expenses/POST/v1/expenses/{id}/attachments).
+     * Files added with [`POST /v1/expenses/{id}/attachments`](#tag/expenses/POST/v1/expenses/{id}/attachments), each labelled `receipt`, `payment_proof` or `other`.
      */
-    attachments: Array<FileAttachment>;
+    attachments: Array<ReceiptAttachment>;
     /**
      * Set once posted.
      */
@@ -179,7 +179,7 @@ export function ExpenseFromJSONTyped(json: any, ignoreDiscriminator: boolean): E
         'subtotal': json['subtotal'],
         'taxTotal': json['tax_total'],
         'total': json['total'],
-        'attachments': ((json['attachments'] as Array<any>).map(FileAttachmentFromJSON)),
+        'attachments': ((json['attachments'] as Array<any>).map(ReceiptAttachmentFromJSON)),
         'journalEntryId': json['journal_entry_id'] === undefined ? undefined : json['journal_entry_id'] === null ? null : json['journal_entry_id'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
         'updatedAt': json['updated_at'] == null ? undefined : (parseDateTime(json['updated_at'])),
@@ -210,7 +210,7 @@ export function ExpenseToJSONTyped(value?: Omit<Expense, 'id'|'number'|'createdA
         'subtotal': value['subtotal'],
         'tax_total': value['taxTotal'],
         'total': value['total'],
-        'attachments': ((value['attachments'] as Array<any>).map(FileAttachmentToJSON)),
+        'attachments': ((value['attachments'] as Array<any>).map(ReceiptAttachmentToJSON)),
         'journal_entry_id': value['journalEntryId'],
     };
 }

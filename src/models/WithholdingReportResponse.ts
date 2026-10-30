@@ -22,7 +22,7 @@ import {
 } from './WithholdingReport';
 
 /**
- * 
+ * One record in `data`.
  * @export
  * @interface WithholdingReportResponse
  */

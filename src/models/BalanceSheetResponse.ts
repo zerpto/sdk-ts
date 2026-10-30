@@ -22,7 +22,7 @@ import {
 } from './BalanceSheet';
 
 /**
- * 
+ * One record in `data`.
  * @export
  * @interface BalanceSheetResponse
  */

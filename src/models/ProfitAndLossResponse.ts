@@ -22,7 +22,7 @@ import {
 } from './ProfitAndLoss';
 
 /**
- * 
+ * One record in `data`.
  * @export
  * @interface ProfitAndLossResponse
  */

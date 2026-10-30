@@ -22,7 +22,7 @@ import {
 } from './AssetRegister';
 
 /**
- * 
+ * One record in `data`.
  * @export
  * @interface AssetRegisterResponse
  */

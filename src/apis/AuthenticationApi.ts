@@ -24,6 +24,11 @@ import {
     ChangePasswordInputToJSON,
 } from '../models/ChangePasswordInput';
 import {
+    type GoogleSignInInput,
+    GoogleSignInInputFromJSON,
+    GoogleSignInInputToJSON,
+} from '../models/GoogleSignInInput';
+import {
     type LoginInput,
     LoginInputFromJSON,
     LoginInputToJSON,
@@ -81,6 +86,13 @@ export interface ChangePasswordRequest {
      * 
      */
     changePasswordInput: ChangePasswordInput;
+}
+
+export interface GoogleSignInRequest {
+    /**
+     * 
+     */
+    googleSignInInput: GoogleSignInInput;
 }
 
 export interface LoginRequest {
@@ -265,6 +277,55 @@ export class AuthenticationApi extends runtime.BaseAPI {
      */
     async getMe(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MeResponse> {
         const response = await this.getMeRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for googleSignIn without sending the request
+     */
+    async googleSignInRequestOpts(requestParameters: GoogleSignInRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['googleSignInInput'] == null) {
+            throw new runtime.RequiredError(
+                'googleSignInInput',
+                'Required parameter "googleSignInInput" was null or undefined when calling googleSignIn().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/v1/auth/google`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: GoogleSignInInputToJSON(requestParameters['googleSignInInput']),
+        };
+    }
+
+    /**
+     * Exchanges a Google ID token for Zerpto access and refresh tokens, creating the account first if this is the person\'s first time signing in with Google. Use it after the frontend completes Google\'s own sign-in (Google Identity Services) and receives a signed ID token. The response is the same shape as [`POST /v1/auth/sign-in`](#tag/authentication/POST/v1/auth/sign-in): tokens plus the user and the tenant, with `tenant: null` for someone who hasn\'t created one yet.  If the token\'s email matches an existing account, whether it was created here or by an earlier Google sign-in, that account logs in: Google\'s own email verification is trusted, so no separate [`POST /v1/auth/verify-email`](#tag/authentication/POST/v1/auth/verify-email) step is needed either way. A brand new account is `active` immediately and has no password, so it can currently only sign in with Google again. To continue after this call, use [`GET /v1/auth/tenants`](#tag/tenant/GET/v1/auth/tenants) and [`POST /v1/auth/switch-tenant`](#tag/tenant/POST/v1/auth/switch-tenant), or create a tenant with [`POST /v1/tenants`](#tag/tenants/POST/v1/tenants) when `tenant` is null.  Error codes: `invalid_google_token`, `google_email_not_verified`, `account_deactivated`, `account_locked`.  **Response meta** - `meta` is empty. 
+     * Sign in with Google
+     */
+    async googleSignInRaw(requestParameters: GoogleSignInRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LoginResultResponse>> {
+        const requestOptions = await this.googleSignInRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => LoginResultResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Exchanges a Google ID token for Zerpto access and refresh tokens, creating the account first if this is the person\'s first time signing in with Google. Use it after the frontend completes Google\'s own sign-in (Google Identity Services) and receives a signed ID token. The response is the same shape as [`POST /v1/auth/sign-in`](#tag/authentication/POST/v1/auth/sign-in): tokens plus the user and the tenant, with `tenant: null` for someone who hasn\'t created one yet.  If the token\'s email matches an existing account, whether it was created here or by an earlier Google sign-in, that account logs in: Google\'s own email verification is trusted, so no separate [`POST /v1/auth/verify-email`](#tag/authentication/POST/v1/auth/verify-email) step is needed either way. A brand new account is `active` immediately and has no password, so it can currently only sign in with Google again. To continue after this call, use [`GET /v1/auth/tenants`](#tag/tenant/GET/v1/auth/tenants) and [`POST /v1/auth/switch-tenant`](#tag/tenant/POST/v1/auth/switch-tenant), or create a tenant with [`POST /v1/tenants`](#tag/tenants/POST/v1/tenants) when `tenant` is null.  Error codes: `invalid_google_token`, `google_email_not_verified`, `account_deactivated`, `account_locked`.  **Response meta** - `meta` is empty. 
+     * Sign in with Google
+     */
+    async googleSignIn(requestParameters: GoogleSignInRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LoginResultResponse> {
+        const response = await this.googleSignInRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

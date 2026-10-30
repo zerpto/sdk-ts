@@ -94,6 +94,7 @@ All URIs are relative to *https://api.zerpto.com*
 *AuthenticationApi* | [**acceptInvite**](docs/AuthenticationApi.md#acceptinvite) | **POST** /v1/auth/accept-invite | Accept invite, create account
 *AuthenticationApi* | [**changePassword**](docs/AuthenticationApi.md#changepassword) | **PUT** /v1/auth/password | Change your password
 *AuthenticationApi* | [**getMe**](docs/AuthenticationApi.md#getme) | **GET** /v1/auth/me | Current user and permissions
+*AuthenticationApi* | [**googleSignIn**](docs/AuthenticationApi.md#googlesignin) | **POST** /v1/auth/google | Sign in with Google
 *AuthenticationApi* | [**login**](docs/AuthenticationApi.md#login) | **POST** /v1/auth/sign-in | Log in with email, password
 *AuthenticationApi* | [**logout**](docs/AuthenticationApi.md#logout) | **DELETE** /v1/auth/sign-out | Log out of the session
 *AuthenticationApi* | [**refreshToken**](docs/AuthenticationApi.md#refreshtoken) | **POST** /v1/auth/refresh | Refresh the access token
@@ -161,7 +162,7 @@ All URIs are relative to *https://api.zerpto.com*
 *ExpensesApi* | [**listExpenses**](docs/ExpensesApi.md#listexpenses) | **GET** /v1/expenses | List expenses
 *ExpensesApi* | [**postExpense**](docs/ExpensesApi.md#postexpense) | **POST** /v1/expenses/{id}/confirm | Post expense to the GL
 *ExpensesApi* | [**updateExpense**](docs/ExpensesApi.md#updateexpense) | **PATCH** /v1/expenses/{id} | Update expense
-*ExpensesApi* | [**uploadExpenseAttachments**](docs/ExpensesApi.md#uploadexpenseattachments) | **POST** /v1/expenses/{id}/attachments | Upload expense receipts
+*ExpensesApi* | [**uploadExpenseAttachments**](docs/ExpensesApi.md#uploadexpenseattachments) | **POST** /v1/expenses/{id}/attachments | Upload expense files
 *ExpensesApi* | [**voidExpense**](docs/ExpensesApi.md#voidexpense) | **POST** /v1/expenses/{id}/void | Void expense
 *ForgotPasswordApi* | [**forgotPassword**](docs/ForgotPasswordApi.md#forgotpassword) | **POST** /v1/auth/reset-password | Send a password reset email
 *ForgotPasswordApi* | [**resetPassword**](docs/ForgotPasswordApi.md#resetpassword) | **PUT** /v1/auth/reset-password | Reset password using a token
@@ -182,7 +183,7 @@ All URIs are relative to *https://api.zerpto.com*
 *IncomeApi* | [**listIncomes**](docs/IncomeApi.md#listincomes) | **GET** /v1/income | List income
 *IncomeApi* | [**postIncome**](docs/IncomeApi.md#postincome) | **POST** /v1/income/{id}/confirm | Post income to the GL
 *IncomeApi* | [**updateIncome**](docs/IncomeApi.md#updateincome) | **PATCH** /v1/income/{id} | Update income
-*IncomeApi* | [**uploadIncomeAttachments**](docs/IncomeApi.md#uploadincomeattachments) | **POST** /v1/income/{id}/attachments | Upload income proof files
+*IncomeApi* | [**uploadIncomeAttachments**](docs/IncomeApi.md#uploadincomeattachments) | **POST** /v1/income/{id}/attachments | Upload income files
 *IncomeApi* | [**voidIncome**](docs/IncomeApi.md#voidincome) | **POST** /v1/income/{id}/void | Void income
 *InventoryApi* | [**listStock**](docs/InventoryApi.md#liststock) | **GET** /v1/inventory/stock | Stock on hand
 *InventoryApi* | [**listStockMovements**](docs/InventoryApi.md#liststockmovements) | **GET** /v1/inventory/movements | Stock movement ledger
@@ -479,6 +480,7 @@ All URIs are relative to *https://api.zerpto.com*
 - [GoodsReceiptListResponse](docs/GoodsReceiptListResponse.md)
 - [GoodsReceiptResponse](docs/GoodsReceiptResponse.md)
 - [GoodsReceiptUpdate](docs/GoodsReceiptUpdate.md)
+- [GoogleSignInInput](docs/GoogleSignInInput.md)
 - [Health](docs/Health.md)
 - [HealthResponse](docs/HealthResponse.md)
 - [Income](docs/Income.md)
@@ -556,6 +558,7 @@ All URIs are relative to *https://api.zerpto.com*
 - [QuotationListResponse](docs/QuotationListResponse.md)
 - [QuotationResponse](docs/QuotationResponse.md)
 - [QuotationUpdate](docs/QuotationUpdate.md)
+- [ReceiptAttachment](docs/ReceiptAttachment.md)
 - [ReceiptLine](docs/ReceiptLine.md)
 - [ReceiptLineInput](docs/ReceiptLineInput.md)
 - [RefreshInput](docs/RefreshInput.md)

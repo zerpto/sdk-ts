@@ -1,6 +1,7 @@
 
 # BalanceSheetResponse
 
+One record in `data`.
 
 ## Properties
 

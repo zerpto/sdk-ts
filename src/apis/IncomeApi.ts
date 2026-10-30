@@ -149,6 +149,10 @@ export interface UploadIncomeAttachmentsRequest {
      */
     id: string;
     /**
+     * Applies to every file in this call.
+     */
+    kind: UploadIncomeAttachmentsKindEnum;
+    /**
      * PDF, JPEG or PNG, up to 10 MB each.
      */
     files: Array<Blob>;
@@ -693,6 +697,13 @@ export class IncomeApi extends runtime.BaseAPI {
             );
         }
 
+        if (requestParameters['kind'] == null) {
+            throw new runtime.RequiredError(
+                'kind',
+                'Required parameter "kind" was null or undefined when calling uploadIncomeAttachments().'
+            );
+        }
+
         if (requestParameters['files'] == null) {
             throw new runtime.RequiredError(
                 'files',
@@ -740,6 +751,10 @@ export class IncomeApi extends runtime.BaseAPI {
             formParams = new URLSearchParams();
         }
 
+        if (requestParameters['kind'] != null) {
+            formParams.append('kind', requestParameters['kind'] as any);
+        }
+
         if (requestParameters['files'] != null) {
             requestParameters['files'].forEach((element) => {
                 formParams.append('files', element as any);
@@ -760,8 +775,8 @@ export class IncomeApi extends runtime.BaseAPI {
     }
 
     /**
-     * Attaches proof files to an income entry, such as a bank statement reference or a photo of a handwritten receipt. Send one or more files in a single call; each one is added to the entry\'s `attachments` and nothing is replaced. Files can be added while the entry is a draft or posted, but not once it is cancelled or void. A repeated request with the same `Idempotency-Key` returns the first result.  Create the income entry first with [`POST /v1/income`](#tag/income/POST/v1/income). The files are read back with [`GET /v1/income/{id}`](#tag/income/GET/v1/income/{id}) as `attachments`, each with a short-lived `download_url`. While the entry is a draft, a wrong file is removed with [`DELETE /v1/income/{id}/attachments/{attachment_id}`](#tag/income/DELETE/v1/income/{id}/attachments/{attachment_id}).  Error codes: `income_closed`, `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
-     * Upload income proof files
+     * Attaches files to an income entry, each labelled with its `kind`: the payer\'s `receipt` showing what was sold or why they paid, the `payment_proof` that the money actually arrived (a bank credit notification, a screenshot), or `other`. Send one or more files of the same `kind` in a single call; each one is added to the entry\'s `attachments` and nothing is replaced. Upload the receipt and the payment proof as two separate calls, one per `kind`. Files can be added while the entry is a draft or posted, but not once it is cancelled or void. A repeated request with the same `Idempotency-Key` returns the first result.  Create the income entry first with [`POST /v1/income`](#tag/income/POST/v1/income). The files are read back with [`GET /v1/income/{id}`](#tag/income/GET/v1/income/{id}) as `attachments`, each with its `kind` and a short-lived `download_url`. While the entry is a draft, a wrong file is removed with [`DELETE /v1/income/{id}/attachments/{attachment_id}`](#tag/income/DELETE/v1/income/{id}/attachments/{attachment_id}).  Error codes: `income_closed`, `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
+     * Upload income files
      */
     async uploadIncomeAttachmentsRaw(requestParameters: UploadIncomeAttachmentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IncomeResponse>> {
         const requestOptions = await this.uploadIncomeAttachmentsRequestOpts(requestParameters);
@@ -771,8 +786,8 @@ export class IncomeApi extends runtime.BaseAPI {
     }
 
     /**
-     * Attaches proof files to an income entry, such as a bank statement reference or a photo of a handwritten receipt. Send one or more files in a single call; each one is added to the entry\'s `attachments` and nothing is replaced. Files can be added while the entry is a draft or posted, but not once it is cancelled or void. A repeated request with the same `Idempotency-Key` returns the first result.  Create the income entry first with [`POST /v1/income`](#tag/income/POST/v1/income). The files are read back with [`GET /v1/income/{id}`](#tag/income/GET/v1/income/{id}) as `attachments`, each with a short-lived `download_url`. While the entry is a draft, a wrong file is removed with [`DELETE /v1/income/{id}/attachments/{attachment_id}`](#tag/income/DELETE/v1/income/{id}/attachments/{attachment_id}).  Error codes: `income_closed`, `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
-     * Upload income proof files
+     * Attaches files to an income entry, each labelled with its `kind`: the payer\'s `receipt` showing what was sold or why they paid, the `payment_proof` that the money actually arrived (a bank credit notification, a screenshot), or `other`. Send one or more files of the same `kind` in a single call; each one is added to the entry\'s `attachments` and nothing is replaced. Upload the receipt and the payment proof as two separate calls, one per `kind`. Files can be added while the entry is a draft or posted, but not once it is cancelled or void. A repeated request with the same `Idempotency-Key` returns the first result.  Create the income entry first with [`POST /v1/income`](#tag/income/POST/v1/income). The files are read back with [`GET /v1/income/{id}`](#tag/income/GET/v1/income/{id}) as `attachments`, each with its `kind` and a short-lived `download_url`. While the entry is a draft, a wrong file is removed with [`DELETE /v1/income/{id}/attachments/{attachment_id}`](#tag/income/DELETE/v1/income/{id}/attachments/{attachment_id}).  Error codes: `income_closed`, `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
+     * Upload income files
      */
     async uploadIncomeAttachments(requestParameters: UploadIncomeAttachmentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IncomeResponse> {
         const response = await this.uploadIncomeAttachmentsRaw(requestParameters, initOverrides);
@@ -858,3 +873,12 @@ export const ListIncomesStatusEnum = {
     Void: 'void',
 } as const;
 export type ListIncomesStatusEnum = typeof ListIncomesStatusEnum[keyof typeof ListIncomesStatusEnum];
+/**
+ * @export
+ */
+export const UploadIncomeAttachmentsKindEnum = {
+    Receipt: 'receipt',
+    PaymentProof: 'payment_proof',
+    Other: 'other',
+} as const;
+export type UploadIncomeAttachmentsKindEnum = typeof UploadIncomeAttachmentsKindEnum[keyof typeof UploadIncomeAttachmentsKindEnum];

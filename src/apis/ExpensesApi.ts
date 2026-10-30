@@ -149,6 +149,10 @@ export interface UploadExpenseAttachmentsRequest {
      */
     id: string;
     /**
+     * Applies to every file in this call.
+     */
+    kind: UploadExpenseAttachmentsKindEnum;
+    /**
      * PDF, JPEG or PNG, up to 10 MB each.
      */
     files: Array<Blob>;
@@ -693,6 +697,13 @@ export class ExpensesApi extends runtime.BaseAPI {
             );
         }
 
+        if (requestParameters['kind'] == null) {
+            throw new runtime.RequiredError(
+                'kind',
+                'Required parameter "kind" was null or undefined when calling uploadExpenseAttachments().'
+            );
+        }
+
         if (requestParameters['files'] == null) {
             throw new runtime.RequiredError(
                 'files',
@@ -740,6 +751,10 @@ export class ExpensesApi extends runtime.BaseAPI {
             formParams = new URLSearchParams();
         }
 
+        if (requestParameters['kind'] != null) {
+            formParams.append('kind', requestParameters['kind'] as any);
+        }
+
         if (requestParameters['files'] != null) {
             requestParameters['files'].forEach((element) => {
                 formParams.append('files', element as any);
@@ -760,8 +775,8 @@ export class ExpensesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Attaches receipt files to an expense, such as a photo of a printed receipt or a PDF from a marketplace. Send one or more files in a single call; each one is added to the expense\'s `attachments` and nothing is replaced. Files can be added while the expense is a draft or posted, but not once it is cancelled or void. A repeated request with the same `Idempotency-Key` returns the first result.  Create the expense first with [`POST /v1/expenses`](#tag/expenses/POST/v1/expenses). The files are read back with [`GET /v1/expenses/{id}`](#tag/expenses/GET/v1/expenses/{id}) as `attachments`, each with a short-lived `download_url`. While the expense is a draft, a wrong file is removed with [`DELETE /v1/expenses/{id}/attachments/{attachment_id}`](#tag/expenses/DELETE/v1/expenses/{id}/attachments/{attachment_id}).  Error codes: `expense_closed`, `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
-     * Upload expense receipts
+     * Attaches files to an expense, each labelled with its `kind`: the store\'s `receipt` showing what was bought, the `payment_proof` that the money actually left the account (a bank transfer slip, a screenshot), or `other`. Send one or more files of the same `kind` in a single call; each one is added to the expense\'s `attachments` and nothing is replaced. Upload the receipt and the payment proof as two separate calls, one per `kind`. Files can be added while the expense is a draft or posted, but not once it is cancelled or void. A repeated request with the same `Idempotency-Key` returns the first result.  Create the expense first with [`POST /v1/expenses`](#tag/expenses/POST/v1/expenses). The files are read back with [`GET /v1/expenses/{id}`](#tag/expenses/GET/v1/expenses/{id}) as `attachments`, each with its `kind` and a short-lived `download_url`. While the expense is a draft, a wrong file is removed with [`DELETE /v1/expenses/{id}/attachments/{attachment_id}`](#tag/expenses/DELETE/v1/expenses/{id}/attachments/{attachment_id}).  Error codes: `expense_closed`, `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
+     * Upload expense files
      */
     async uploadExpenseAttachmentsRaw(requestParameters: UploadExpenseAttachmentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExpenseResponse>> {
         const requestOptions = await this.uploadExpenseAttachmentsRequestOpts(requestParameters);
@@ -771,8 +786,8 @@ export class ExpensesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Attaches receipt files to an expense, such as a photo of a printed receipt or a PDF from a marketplace. Send one or more files in a single call; each one is added to the expense\'s `attachments` and nothing is replaced. Files can be added while the expense is a draft or posted, but not once it is cancelled or void. A repeated request with the same `Idempotency-Key` returns the first result.  Create the expense first with [`POST /v1/expenses`](#tag/expenses/POST/v1/expenses). The files are read back with [`GET /v1/expenses/{id}`](#tag/expenses/GET/v1/expenses/{id}) as `attachments`, each with a short-lived `download_url`. While the expense is a draft, a wrong file is removed with [`DELETE /v1/expenses/{id}/attachments/{attachment_id}`](#tag/expenses/DELETE/v1/expenses/{id}/attachments/{attachment_id}).  Error codes: `expense_closed`, `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
-     * Upload expense receipts
+     * Attaches files to an expense, each labelled with its `kind`: the store\'s `receipt` showing what was bought, the `payment_proof` that the money actually left the account (a bank transfer slip, a screenshot), or `other`. Send one or more files of the same `kind` in a single call; each one is added to the expense\'s `attachments` and nothing is replaced. Upload the receipt and the payment proof as two separate calls, one per `kind`. Files can be added while the expense is a draft or posted, but not once it is cancelled or void. A repeated request with the same `Idempotency-Key` returns the first result.  Create the expense first with [`POST /v1/expenses`](#tag/expenses/POST/v1/expenses). The files are read back with [`GET /v1/expenses/{id}`](#tag/expenses/GET/v1/expenses/{id}) as `attachments`, each with its `kind` and a short-lived `download_url`. While the expense is a draft, a wrong file is removed with [`DELETE /v1/expenses/{id}/attachments/{attachment_id}`](#tag/expenses/DELETE/v1/expenses/{id}/attachments/{attachment_id}).  Error codes: `expense_closed`, `unsupported_file_type`, `file_too_large`.  **Response meta** - `meta` is empty. 
+     * Upload expense files
      */
     async uploadExpenseAttachments(requestParameters: UploadExpenseAttachmentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ExpenseResponse> {
         const response = await this.uploadExpenseAttachmentsRaw(requestParameters, initOverrides);
@@ -858,3 +873,12 @@ export const ListExpensesStatusEnum = {
     Void: 'void',
 } as const;
 export type ListExpensesStatusEnum = typeof ListExpensesStatusEnum[keyof typeof ListExpensesStatusEnum];
+/**
+ * @export
+ */
+export const UploadExpenseAttachmentsKindEnum = {
+    Receipt: 'receipt',
+    PaymentProof: 'payment_proof',
+    Other: 'other',
+} as const;
+export type UploadExpenseAttachmentsKindEnum = typeof UploadExpenseAttachmentsKindEnum[keyof typeof UploadExpenseAttachmentsKindEnum];

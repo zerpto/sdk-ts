@@ -22,7 +22,7 @@ import {
 } from './StockCard';
 
 /**
- * 
+ * One record in `data`.
  * @export
  * @interface StockCardResponse
  */

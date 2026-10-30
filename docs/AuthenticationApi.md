@@ -7,6 +7,7 @@ All URIs are relative to *https://api.zerpto.com*
 | [**acceptInvite**](AuthenticationApi.md#acceptinvite) | **POST** /v1/auth/accept-invite | Accept invite, create account |
 | [**changePassword**](AuthenticationApi.md#changepassword) | **PUT** /v1/auth/password | Change your password |
 | [**getMe**](AuthenticationApi.md#getme) | **GET** /v1/auth/me | Current user and permissions |
+| [**googleSignIn**](AuthenticationApi.md#googlesignin) | **POST** /v1/auth/google | Sign in with Google |
 | [**login**](AuthenticationApi.md#login) | **POST** /v1/auth/sign-in | Log in with email, password |
 | [**logout**](AuthenticationApi.md#logout) | **DELETE** /v1/auth/sign-out | Log out of the session |
 | [**refreshToken**](AuthenticationApi.md#refreshtoken) | **POST** /v1/auth/refresh | Refresh the access token |
@@ -219,6 +220,76 @@ This endpoint does not need any parameter.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Success |  -  |
+| **401** | Missing, invalid or revoked API key. |  -  |
+| **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## googleSignIn
+
+> LoginResultResponse googleSignIn(googleSignInInput)
+
+Sign in with Google
+
+Exchanges a Google ID token for Zerpto access and refresh tokens, creating the account first if this is the person\&#39;s first time signing in with Google. Use it after the frontend completes Google\&#39;s own sign-in (Google Identity Services) and receives a signed ID token. The response is the same shape as [&#x60;POST /v1/auth/sign-in&#x60;](#tag/authentication/POST/v1/auth/sign-in): tokens plus the user and the tenant, with &#x60;tenant: null&#x60; for someone who hasn\&#39;t created one yet.  If the token\&#39;s email matches an existing account, whether it was created here or by an earlier Google sign-in, that account logs in: Google\&#39;s own email verification is trusted, so no separate [&#x60;POST /v1/auth/verify-email&#x60;](#tag/authentication/POST/v1/auth/verify-email) step is needed either way. A brand new account is &#x60;active&#x60; immediately and has no password, so it can currently only sign in with Google again. To continue after this call, use [&#x60;GET /v1/auth/tenants&#x60;](#tag/tenant/GET/v1/auth/tenants) and [&#x60;POST /v1/auth/switch-tenant&#x60;](#tag/tenant/POST/v1/auth/switch-tenant), or create a tenant with [&#x60;POST /v1/tenants&#x60;](#tag/tenants/POST/v1/tenants) when &#x60;tenant&#x60; is null.  Error codes: &#x60;invalid_google_token&#x60;, &#x60;google_email_not_verified&#x60;, &#x60;account_deactivated&#x60;, &#x60;account_locked&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  AuthenticationApi,
+} from '@zerpto/sdk';
+import type { GoogleSignInRequest } from '@zerpto/sdk';
+
+async function example() {
+  console.log("🚀 Testing @zerpto/sdk SDK...");
+  const api = new AuthenticationApi();
+
+  const body = {
+    // GoogleSignInInput
+    googleSignInInput: ...,
+  } satisfies GoogleSignInRequest;
+
+  try {
+    const data = await api.googleSignIn(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **googleSignInInput** | [GoogleSignInInput](GoogleSignInInput.md) |  | |
+
+### Return type
+
+[**LoginResultResponse**](LoginResultResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Logged in |  -  |
+| **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
 

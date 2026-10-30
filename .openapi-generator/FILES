@@ -178,6 +178,7 @@ docs/GoodsReceiptLine.md
 docs/GoodsReceiptListResponse.md
 docs/GoodsReceiptResponse.md
 docs/GoodsReceiptUpdate.md
+docs/GoogleSignInInput.md
 docs/Health.md
 docs/HealthResponse.md
 docs/Income.md
@@ -268,6 +269,7 @@ docs/QuotationListResponse.md
 docs/QuotationResponse.md
 docs/QuotationUpdate.md
 docs/QuotationsApi.md
+docs/ReceiptAttachment.md
 docs/ReceiptLine.md
 docs/ReceiptLineInput.md
 docs/RefreshInput.md
@@ -624,6 +626,7 @@ src/models/GoodsReceiptLine.ts
 src/models/GoodsReceiptListResponse.ts
 src/models/GoodsReceiptResponse.ts
 src/models/GoodsReceiptUpdate.ts
+src/models/GoogleSignInInput.ts
 src/models/Health.ts
 src/models/HealthResponse.ts
 src/models/Income.ts
@@ -701,6 +704,7 @@ src/models/QuotationInput.ts
 src/models/QuotationListResponse.ts
 src/models/QuotationResponse.ts
 src/models/QuotationUpdate.ts
+src/models/ReceiptAttachment.ts
 src/models/ReceiptLine.ts
 src/models/ReceiptLineInput.ts
 src/models/RefreshInput.ts

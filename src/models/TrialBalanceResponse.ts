@@ -22,7 +22,7 @@ import {
 } from './TrialBalance';
 
 /**
- * 
+ * One record in `data`.
  * @export
  * @interface TrialBalanceResponse
  */

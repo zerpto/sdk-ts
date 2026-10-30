@@ -1,6 +1,7 @@
 
 # InventoryValuationResponse
 
+One record in `data`.
 
 ## Properties
 
