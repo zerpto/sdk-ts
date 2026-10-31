@@ -32,6 +32,10 @@ export interface Account {
      */
     name: string;
     /**
+     * What the account is for, for people picking it on a journal entry or item.
+     */
+    description?: string | null;
+    /**
      * 
      */
     type: AccountTypeEnum;
@@ -116,6 +120,7 @@ export function AccountFromJSONTyped(json: any, ignoreDiscriminator: boolean): A
         'id': json['id'],
         'code': json['code'],
         'name': json['name'],
+        'description': json['description'] === undefined ? undefined : json['description'] === null ? null : json['description'],
         'type': json['type'],
         'parentId': json['parent_id'] === undefined ? undefined : json['parent_id'] === null ? null : json['parent_id'],
         'isPostable': json['is_postable'],
@@ -138,6 +143,7 @@ export function AccountToJSONTyped(value?: Omit<Account, 'id'|'createdAt'> | nul
         
         'code': value['code'],
         'name': value['name'],
+        'description': value['description'],
         'type': value['type'],
         'parent_id': value['parentId'],
         'is_postable': value['isPostable'],

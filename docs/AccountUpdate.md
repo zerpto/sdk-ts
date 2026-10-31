@@ -8,6 +8,7 @@ All fields optional; only those sent are changed.
 Name | Type
 ------------ | -------------
 `name` | string
+`description` | string
 `parentId` | string
 `isPostable` | boolean
 
@@ -19,6 +20,7 @@ import type { AccountUpdate } from '@zerpto/sdk'
 // TODO: Update the object below with actual values
 const example = {
   "name": Kas,
+  "description": null,
   "parentId": null,
   "isPostable": null,
 } satisfies AccountUpdate

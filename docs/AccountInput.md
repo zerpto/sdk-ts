@@ -8,6 +8,7 @@ Name | Type
 ------------ | -------------
 `code` | string
 `name` | string
+`description` | string
 `type` | string
 `parentId` | string
 `isPostable` | boolean
@@ -21,6 +22,7 @@ import type { AccountInput } from '@zerpto/sdk'
 const example = {
   "code": 1-1100,
   "name": Kas,
+  "description": null,
   "type": null,
   "parentId": null,
   "isPostable": null,

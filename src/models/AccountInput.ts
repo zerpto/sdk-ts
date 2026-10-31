@@ -28,6 +28,10 @@ export interface AccountInput {
      */
     name: string;
     /**
+     * What the account is for, for people picking it on a journal entry or item.
+     */
+    description?: string | null;
+    /**
      * 
      */
     type: AccountInputTypeEnum;
@@ -77,6 +81,7 @@ export function AccountInputFromJSONTyped(json: any, ignoreDiscriminator: boolea
         
         'code': json['code'],
         'name': json['name'],
+        'description': json['description'] === undefined ? undefined : json['description'] === null ? null : json['description'],
         'type': json['type'],
         'parentId': json['parent_id'] === undefined ? undefined : json['parent_id'] === null ? null : json['parent_id'],
         'isPostable': json['is_postable'] == null ? undefined : json['is_postable'],
@@ -96,6 +101,7 @@ export function AccountInputToJSONTyped(value?: AccountInput | null, ignoreDiscr
         
         'code': value['code'],
         'name': value['name'],
+        'description': value['description'],
         'type': value['type'],
         'parent_id': value['parentId'],
         'is_postable': value['isPostable'],

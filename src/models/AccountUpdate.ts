@@ -24,6 +24,10 @@ export interface AccountUpdate {
      */
     name?: string;
     /**
+     * What the account is for, for people picking it on a journal entry or item.
+     */
+    description?: string | null;
+    /**
      * 
      */
     parentId?: string | null;
@@ -51,6 +55,7 @@ export function AccountUpdateFromJSONTyped(json: any, ignoreDiscriminator: boole
     return {
         
         'name': json['name'] == null ? undefined : json['name'],
+        'description': json['description'] === undefined ? undefined : json['description'] === null ? null : json['description'],
         'parentId': json['parent_id'] === undefined ? undefined : json['parent_id'] === null ? null : json['parent_id'],
         'isPostable': json['is_postable'] == null ? undefined : json['is_postable'],
     };
@@ -68,6 +73,7 @@ export function AccountUpdateToJSONTyped(value?: AccountUpdate | null, ignoreDis
     return {
         
         'name': value['name'],
+        'description': value['description'],
         'parent_id': value['parentId'],
         'is_postable': value['isPostable'],
     };

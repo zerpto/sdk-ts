@@ -9,6 +9,7 @@ Name | Type
 `id` | string
 `code` | string
 `name` | string
+`description` | string
 `type` | string
 `parentId` | string
 `isPostable` | boolean
@@ -26,6 +27,7 @@ const example = {
   "id": acc-0192f3a1-5d2c-7e44-8b1f-3c9a6e0d7b25,
   "code": 1-1100,
   "name": Kas,
+  "description": null,
   "type": null,
   "parentId": null,
   "isPostable": null,
