@@ -10,6 +10,7 @@ Name | Type
 `number` | string
 `vendorId` | string
 `payeeName` | string
+`expensedAt` | Date
 `expenseDate` | Date
 `currency` | string
 `paidVia` | [PaymentSource](PaymentSource.md)
@@ -37,6 +38,7 @@ const example = {
   "number": null,
   "vendorId": null,
   "payeeName": null,
+  "expensedAt": null,
   "expenseDate": null,
   "currency": IDR,
   "paidVia": null,

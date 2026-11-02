@@ -9,7 +9,7 @@ Name | Type
 ------------ | -------------
 `vendorId` | string
 `payeeName` | string
-`expenseDate` | Date
+`expensedAt` | Date
 `currency` | string
 `paidVia` | [PaymentSource](PaymentSource.md)
 `method` | string
@@ -26,7 +26,7 @@ import type { ExpenseInput } from '@zerpto/sdk'
 const example = {
   "vendorId": null,
   "payeeName": null,
-  "expenseDate": null,
+  "expensedAt": null,
   "currency": IDR,
   "paidVia": null,
   "method": null,

@@ -10,6 +10,7 @@ Name | Type
 `number` | string
 `customerId` | string
 `payerName` | string
+`incomedAt` | Date
 `incomeDate` | Date
 `currency` | string
 `cashAccountId` | string
@@ -37,6 +38,7 @@ const example = {
   "number": null,
   "customerId": null,
   "payerName": null,
+  "incomedAt": null,
   "incomeDate": null,
   "currency": IDR,
   "cashAccountId": null,

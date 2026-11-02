@@ -9,7 +9,7 @@ Name | Type
 ------------ | -------------
 `customerId` | string
 `payerName` | string
-`incomeDate` | Date
+`incomedAt` | Date
 `currency` | string
 `cashAccountId` | string
 `method` | string
@@ -26,7 +26,7 @@ import type { IncomeInput } from '@zerpto/sdk'
 const example = {
   "customerId": null,
   "payerName": null,
-  "incomeDate": null,
+  "incomedAt": null,
   "currency": IDR,
   "cashAccountId": null,
   "method": null,

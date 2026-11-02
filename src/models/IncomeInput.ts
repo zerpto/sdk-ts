@@ -36,9 +36,9 @@ export interface IncomeInput {
      */
     payerName?: string | null;
     /**
-     * 
+     * When the income happened, with a UTC offset or `Z` (`2026-10-25T09:45:00+07:00`); a timestamp without one is rejected with `offset_required`. Stored in UTC and returned with `Z`.
      */
-    incomeDate: Date;
+    incomedAt: Date;
     /**
      * ISO 4217 currency code.
      */
@@ -82,7 +82,7 @@ export type IncomeInputMethodEnum = typeof IncomeInputMethodEnum[keyof typeof In
  * Check if a given object implements the IncomeInput interface.
  */
 export function instanceOfIncomeInput(value: object): value is IncomeInput {
-    if ((!('incomeDate' in (value as Record<string, any>)) && !('income_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['incomeDate'] === undefined && (value as Record<string, any>)['income_date'] === undefined)) return false;
+    if ((!('incomedAt' in (value as Record<string, any>)) && !('incomed_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['incomedAt'] === undefined && (value as Record<string, any>)['incomed_at'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
     if ((!('cashAccountId' in (value as Record<string, any>)) && !('cash_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['cashAccountId'] === undefined && (value as Record<string, any>)['cash_account_id'] === undefined)) return false;
     if (!('lines' in value) || value['lines'] === undefined) return false;
@@ -101,7 +101,7 @@ export function IncomeInputFromJSONTyped(json: any, ignoreDiscriminator: boolean
         
         'customerId': json['customer_id'] === undefined ? undefined : json['customer_id'] === null ? null : json['customer_id'],
         'payerName': json['payer_name'] === undefined ? undefined : json['payer_name'] === null ? null : json['payer_name'],
-        'incomeDate': (json['income_date'] == null ? json['income_date'] : parseDate(json['income_date'])),
+        'incomedAt': (json['incomed_at'] == null ? json['incomed_at'] : parseDateTime(json['incomed_at'])),
         'currency': json['currency'],
         'cashAccountId': json['cash_account_id'],
         'method': json['method'] == null ? undefined : json['method'],
@@ -124,7 +124,7 @@ export function IncomeInputToJSONTyped(value?: IncomeInput | null, ignoreDiscrim
         
         'customer_id': value['customerId'],
         'payer_name': value['payerName'],
-        'income_date': value['incomeDate'] == null ? value['incomeDate'] : serializeDate(value['incomeDate']),
+        'incomed_at': value['incomedAt'] == null ? value['incomedAt'] : serializeDateTime(value['incomedAt']),
         'currency': value['currency'],
         'cash_account_id': value['cashAccountId'],
         'method': value['method'],

@@ -36,9 +36,9 @@ export interface IncomeUpdate {
      */
     payerName?: string | null;
     /**
-     * 
+     * When the income happened, with a UTC offset or `Z` (`2026-10-25T09:45:00+07:00`); a timestamp without one is rejected with `offset_required`. Stored in UTC and returned with `Z`.
      */
-    incomeDate?: Date;
+    incomedAt?: Date;
     /**
      * ISO 4217 currency code.
      */
@@ -97,7 +97,7 @@ export function IncomeUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolea
         
         'customerId': json['customer_id'] === undefined ? undefined : json['customer_id'] === null ? null : json['customer_id'],
         'payerName': json['payer_name'] === undefined ? undefined : json['payer_name'] === null ? null : json['payer_name'],
-        'incomeDate': json['income_date'] == null ? undefined : (parseDate(json['income_date'])),
+        'incomedAt': json['incomed_at'] == null ? undefined : (parseDateTime(json['incomed_at'])),
         'currency': json['currency'] == null ? undefined : json['currency'],
         'cashAccountId': json['cash_account_id'] == null ? undefined : json['cash_account_id'],
         'method': json['method'] == null ? undefined : json['method'],
@@ -120,7 +120,7 @@ export function IncomeUpdateToJSONTyped(value?: IncomeUpdate | null, ignoreDiscr
         
         'customer_id': value['customerId'],
         'payer_name': value['payerName'],
-        'income_date': value['incomeDate'] == null ? value['incomeDate'] : serializeDate(value['incomeDate']),
+        'incomed_at': value['incomedAt'] == null ? value['incomedAt'] : serializeDateTime(value['incomedAt']),
         'currency': value['currency'],
         'cash_account_id': value['cashAccountId'],
         'method': value['method'],

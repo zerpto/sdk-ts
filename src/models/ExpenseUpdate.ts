@@ -43,9 +43,9 @@ export interface ExpenseUpdate {
      */
     payeeName?: string | null;
     /**
-     * 
+     * When the expense happened, with a UTC offset or `Z` (`2026-10-22T09:45:00+07:00`); a timestamp without one is rejected with `offset_required`. Stored in UTC and returned with `Z`.
      */
-    expenseDate?: Date;
+    expensedAt?: Date;
     /**
      * ISO 4217 currency code.
      */
@@ -103,7 +103,7 @@ export function ExpenseUpdateFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'vendorId': json['vendor_id'] === undefined ? undefined : json['vendor_id'] === null ? null : json['vendor_id'],
         'payeeName': json['payee_name'] === undefined ? undefined : json['payee_name'] === null ? null : json['payee_name'],
-        'expenseDate': json['expense_date'] == null ? undefined : (parseDate(json['expense_date'])),
+        'expensedAt': json['expensed_at'] == null ? undefined : (parseDateTime(json['expensed_at'])),
         'currency': json['currency'] == null ? undefined : json['currency'],
         'paidVia': json['paid_via'] == null ? undefined : PaymentSourceFromJSON(json['paid_via']),
         'method': json['method'] === undefined ? undefined : json['method'] === null ? null : json['method'],
@@ -126,7 +126,7 @@ export function ExpenseUpdateToJSONTyped(value?: ExpenseUpdate | null, ignoreDis
         
         'vendor_id': value['vendorId'],
         'payee_name': value['payeeName'],
-        'expense_date': value['expenseDate'] == null ? value['expenseDate'] : serializeDate(value['expenseDate']),
+        'expensed_at': value['expensedAt'] == null ? value['expensedAt'] : serializeDateTime(value['expensedAt']),
         'currency': value['currency'],
         'paid_via': PaymentSourceToJSON(value['paidVia']),
         'method': value['method'],

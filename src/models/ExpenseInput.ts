@@ -43,9 +43,9 @@ export interface ExpenseInput {
      */
     payeeName?: string | null;
     /**
-     * 
+     * When the expense happened, with a UTC offset or `Z` (`2026-10-22T09:45:00+07:00`); a timestamp without one is rejected with `offset_required`. Stored in UTC and returned with `Z`.
      */
-    expenseDate: Date;
+    expensedAt: Date;
     /**
      * ISO 4217 currency code.
      */
@@ -88,7 +88,7 @@ export type ExpenseInputMethodEnum = typeof ExpenseInputMethodEnum[keyof typeof 
  * Check if a given object implements the ExpenseInput interface.
  */
 export function instanceOfExpenseInput(value: object): value is ExpenseInput {
-    if ((!('expenseDate' in (value as Record<string, any>)) && !('expense_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['expenseDate'] === undefined && (value as Record<string, any>)['expense_date'] === undefined)) return false;
+    if ((!('expensedAt' in (value as Record<string, any>)) && !('expensed_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['expensedAt'] === undefined && (value as Record<string, any>)['expensed_at'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
     if ((!('paidVia' in (value as Record<string, any>)) && !('paid_via' in (value as Record<string, any>))) || ((value as Record<string, any>)['paidVia'] === undefined && (value as Record<string, any>)['paid_via'] === undefined)) return false;
     if (!('lines' in value) || value['lines'] === undefined) return false;
@@ -107,7 +107,7 @@ export function ExpenseInputFromJSONTyped(json: any, ignoreDiscriminator: boolea
         
         'vendorId': json['vendor_id'] === undefined ? undefined : json['vendor_id'] === null ? null : json['vendor_id'],
         'payeeName': json['payee_name'] === undefined ? undefined : json['payee_name'] === null ? null : json['payee_name'],
-        'expenseDate': (json['expense_date'] == null ? json['expense_date'] : parseDate(json['expense_date'])),
+        'expensedAt': (json['expensed_at'] == null ? json['expensed_at'] : parseDateTime(json['expensed_at'])),
         'currency': json['currency'],
         'paidVia': PaymentSourceFromJSON(json['paid_via']),
         'method': json['method'] === undefined ? undefined : json['method'] === null ? null : json['method'],
@@ -130,7 +130,7 @@ export function ExpenseInputToJSONTyped(value?: ExpenseInput | null, ignoreDiscr
         
         'vendor_id': value['vendorId'],
         'payee_name': value['payeeName'],
-        'expense_date': value['expenseDate'] == null ? value['expenseDate'] : serializeDate(value['expenseDate']),
+        'expensed_at': value['expensedAt'] == null ? value['expensedAt'] : serializeDateTime(value['expensedAt']),
         'currency': value['currency'],
         'paid_via': PaymentSourceToJSON(value['paidVia']),
         'method': value['method'],

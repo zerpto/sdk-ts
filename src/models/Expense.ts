@@ -58,9 +58,13 @@ export interface Expense {
      */
     payeeName?: string | null;
     /**
-     * 
+     * When the expense happened, in UTC with `Z`. Localize it with the tenant `timezone`.
      */
-    expenseDate: Date;
+    expensedAt: Date;
+    /**
+     * The accounting date, `expensed_at` converted to the tenant `timezone` (DST included). It decides the period and the journal entry date, and is what `date_from` and `date_to` filter on.
+     */
+    readonly expenseDate: Date;
     /**
      * ISO 4217 currency code.
      */
@@ -148,6 +152,7 @@ export type ExpenseStatusEnum = typeof ExpenseStatusEnum[keyof typeof ExpenseSta
 export function instanceOfExpense(value: object): value is Expense {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('number' in value) || value['number'] === undefined) return false;
+    if ((!('expensedAt' in (value as Record<string, any>)) && !('expensed_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['expensedAt'] === undefined && (value as Record<string, any>)['expensed_at'] === undefined)) return false;
     if ((!('expenseDate' in (value as Record<string, any>)) && !('expense_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['expenseDate'] === undefined && (value as Record<string, any>)['expense_date'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
     if ((!('paidVia' in (value as Record<string, any>)) && !('paid_via' in (value as Record<string, any>))) || ((value as Record<string, any>)['paidVia'] === undefined && (value as Record<string, any>)['paid_via'] === undefined)) return false;
@@ -174,6 +179,7 @@ export function ExpenseFromJSONTyped(json: any, ignoreDiscriminator: boolean): E
         'number': json['number'],
         'vendorId': json['vendor_id'] === undefined ? undefined : json['vendor_id'] === null ? null : json['vendor_id'],
         'payeeName': json['payee_name'] === undefined ? undefined : json['payee_name'] === null ? null : json['payee_name'],
+        'expensedAt': (json['expensed_at'] == null ? json['expensed_at'] : parseDateTime(json['expensed_at'])),
         'expenseDate': (json['expense_date'] == null ? json['expense_date'] : parseDate(json['expense_date'])),
         'currency': json['currency'],
         'paidVia': PaymentSourceFromJSON(json['paid_via']),
@@ -196,7 +202,7 @@ export function ExpenseToJSON(json: any): Expense {
     return ExpenseToJSONTyped(json, false);
 }
 
-export function ExpenseToJSONTyped(value?: Omit<Expense, 'id'|'number'|'createdAt'|'updatedAt'> | null, ignoreDiscriminator: boolean = false): any {
+export function ExpenseToJSONTyped(value?: Omit<Expense, 'id'|'number'|'expenseDate'|'createdAt'|'updatedAt'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -205,7 +211,7 @@ export function ExpenseToJSONTyped(value?: Omit<Expense, 'id'|'number'|'createdA
         
         'vendor_id': value['vendorId'],
         'payee_name': value['payeeName'],
-        'expense_date': value['expenseDate'] == null ? value['expenseDate'] : serializeDate(value['expenseDate']),
+        'expensed_at': value['expensedAt'] == null ? value['expensedAt'] : serializeDateTime(value['expensedAt']),
         'currency': value['currency'],
         'paid_via': PaymentSourceToJSON(value['paidVia']),
         'method': value['method'],

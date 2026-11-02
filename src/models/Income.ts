@@ -51,9 +51,13 @@ export interface Income {
      */
     payerName?: string | null;
     /**
-     * 
+     * When the income happened, in UTC with `Z`. Localize it with the tenant `timezone`.
      */
-    incomeDate: Date;
+    incomedAt: Date;
+    /**
+     * The accounting date, `incomed_at` converted to the tenant `timezone` (DST included). It decides the period and the journal entry date, and is what `date_from` and `date_to` filter on.
+     */
+    readonly incomeDate: Date;
     /**
      * ISO 4217 currency code.
      */
@@ -142,6 +146,7 @@ export type IncomeStatusEnum = typeof IncomeStatusEnum[keyof typeof IncomeStatus
 export function instanceOfIncome(value: object): value is Income {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('number' in value) || value['number'] === undefined) return false;
+    if ((!('incomedAt' in (value as Record<string, any>)) && !('incomed_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['incomedAt'] === undefined && (value as Record<string, any>)['incomed_at'] === undefined)) return false;
     if ((!('incomeDate' in (value as Record<string, any>)) && !('income_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['incomeDate'] === undefined && (value as Record<string, any>)['income_date'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
     if ((!('cashAccountId' in (value as Record<string, any>)) && !('cash_account_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['cashAccountId'] === undefined && (value as Record<string, any>)['cash_account_id'] === undefined)) return false;
@@ -168,6 +173,7 @@ export function IncomeFromJSONTyped(json: any, ignoreDiscriminator: boolean): In
         'number': json['number'],
         'customerId': json['customer_id'] === undefined ? undefined : json['customer_id'] === null ? null : json['customer_id'],
         'payerName': json['payer_name'] === undefined ? undefined : json['payer_name'] === null ? null : json['payer_name'],
+        'incomedAt': (json['incomed_at'] == null ? json['incomed_at'] : parseDateTime(json['incomed_at'])),
         'incomeDate': (json['income_date'] == null ? json['income_date'] : parseDate(json['income_date'])),
         'currency': json['currency'],
         'cashAccountId': json['cash_account_id'],
@@ -190,7 +196,7 @@ export function IncomeToJSON(json: any): Income {
     return IncomeToJSONTyped(json, false);
 }
 
-export function IncomeToJSONTyped(value?: Omit<Income, 'id'|'number'|'createdAt'|'updatedAt'> | null, ignoreDiscriminator: boolean = false): any {
+export function IncomeToJSONTyped(value?: Omit<Income, 'id'|'number'|'incomeDate'|'createdAt'|'updatedAt'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -199,7 +205,7 @@ export function IncomeToJSONTyped(value?: Omit<Income, 'id'|'number'|'createdAt'
         
         'customer_id': value['customerId'],
         'payer_name': value['payerName'],
-        'income_date': value['incomeDate'] == null ? value['incomeDate'] : serializeDate(value['incomeDate']),
+        'incomed_at': value['incomedAt'] == null ? value['incomedAt'] : serializeDateTime(value['incomedAt']),
         'currency': value['currency'],
         'cash_account_id': value['cashAccountId'],
         'method': value['method'],
