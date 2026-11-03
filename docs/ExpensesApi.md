@@ -616,7 +616,7 @@ example().catch(console.error);
 
 Upload expense files
 
-Attaches files to an expense, each labelled with its &#x60;kind&#x60;: the store\&#39;s &#x60;receipt&#x60; showing what was bought, the &#x60;payment_proof&#x60; that the money actually left the account (a bank transfer slip, a screenshot), or &#x60;other&#x60;. Send one or more files of the same &#x60;kind&#x60; in a single call; each one is added to the expense\&#39;s &#x60;attachments&#x60; and nothing is replaced. Upload the receipt and the payment proof as two separate calls, one per &#x60;kind&#x60;. Files can be added while the expense is a draft or posted, but not once it is cancelled or void. A repeated request with the same &#x60;Idempotency-Key&#x60; returns the first result.  Create the expense first with [&#x60;POST /v1/expenses&#x60;](#tag/expenses/POST/v1/expenses). The files are read back with [&#x60;GET /v1/expenses/{id}&#x60;](#tag/expenses/GET/v1/expenses/{id}) as &#x60;attachments&#x60;, each with its &#x60;kind&#x60; and a short-lived &#x60;download_url&#x60;. While the expense is a draft, a wrong file is removed with [&#x60;DELETE /v1/expenses/{id}/attachments/{attachment_id}&#x60;](#tag/expenses/DELETE/v1/expenses/{id}/attachments/{attachment_id}).  Error codes: &#x60;expense_closed&#x60;, &#x60;unsupported_file_type&#x60;, &#x60;file_too_large&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+Attaches files to an expense, each labelled with its &#x60;kind&#x60;: the store\&#39;s &#x60;receipt&#x60; showing what was bought, the &#x60;payment_proof&#x60; that the money actually left the account (a bank transfer slip, a screenshot), or &#x60;other&#x60;. Send one or more files of the same &#x60;kind&#x60; in a single call; each one is added to the expense\&#39;s &#x60;attachments&#x60; and nothing is replaced. Upload the receipt and the payment proof as two separate calls, one per &#x60;kind&#x60;. A long receipt can be sent as a video: it is accepted as recorded, converted in the background to a playable MP4, and shows &#x60;status: processing&#x60; until it is &#x60;ready&#x60;. Files can be added while the expense is a draft or posted, but not once it is cancelled or void. A repeated request with the same &#x60;Idempotency-Key&#x60; returns the first result.  Create the expense first with [&#x60;POST /v1/expenses&#x60;](#tag/expenses/POST/v1/expenses). The files are read back with [&#x60;GET /v1/expenses/{id}&#x60;](#tag/expenses/GET/v1/expenses/{id}) as &#x60;attachments&#x60;, each with its &#x60;kind&#x60;, a short-lived &#x60;download_url&#x60; and, for a video, a &#x60;playback_url&#x60; once its &#x60;status&#x60; is &#x60;ready&#x60;. While the expense is a draft, a wrong file is removed with [&#x60;DELETE /v1/expenses/{id}/attachments/{attachment_id}&#x60;](#tag/expenses/DELETE/v1/expenses/{id}/attachments/{attachment_id}).  Error codes: &#x60;expense_closed&#x60;, &#x60;unsupported_file_type&#x60;, &#x60;file_too_large&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -642,7 +642,7 @@ async function example() {
     id: 'id_example',
     // string | Applies to every file in this call.
     kind: 'kind_example',
-    // Array<Blob> | PDF, JPEG or PNG, up to 10 MB each.
+    // Array<Blob> | PDF, JPEG, PNG or video (MP4, MOV or WebM, including iPhone HEVC), up to 10 MB each for a PDF or image and 100 MB each for a video.
     files: [new Blob(['example file content'], { type: 'application/octet-stream' })],
     // string | Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours. (optional)
     idempotencyKey: 'idempotencyKey_example',
@@ -667,7 +667,7 @@ example().catch(console.error);
 |------------- | ------------- | ------------- | -------------|
 | **id** | `string` | Resource ID. | [Defaults to `undefined`] |
 | **kind** | `receipt`, `payment_proof`, `other` | Applies to every file in this call. | [Defaults to `undefined`] [Enum: receipt, payment_proof, other] |
-| **files** | `Array<Blob>` | PDF, JPEG or PNG, up to 10 MB each. | |
+| **files** | `Array<Blob>` | PDF, JPEG, PNG or video (MP4, MOV or WebM, including iPhone HEVC), up to 10 MB each for a PDF or image and 100 MB each for a video. | |
 | **idempotencyKey** | `string` | Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours. | [Optional] [Defaults to `undefined`] |
 
 ### Return type

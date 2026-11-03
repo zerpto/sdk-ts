@@ -58,7 +58,7 @@ export interface Expense {
      */
     payeeName?: string | null;
     /**
-     * When the expense happened, in UTC with `Z`. Localize it with the tenant `timezone`.
+     * When the expense happened, always in UTC with `Z`. Convert it to the tenant `timezone` when you display it.
      */
     expensedAt: Date;
     /**

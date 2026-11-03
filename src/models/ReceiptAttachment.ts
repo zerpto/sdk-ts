@@ -40,9 +40,17 @@ export interface ReceiptAttachment {
      */
     size: number;
     /**
-     * Short-lived; read the document again for a new link once it expires.
+     * The file exactly as uploaded. Short-lived; read the document again for a new link once it expires.
      */
     downloadUrl: string;
+    /**
+     * A link to the video converted to H.264 MP4, which plays in every browser. Null for a PDF or image, and for a video until its `status` is `ready`. Short-lived, like `download_url`.
+     */
+    playbackUrl: string | null;
+    /**
+     * A PDF or image is always `ready`. A video is `processing` while it is converted, then `ready`, or `failed` when it cannot be converted; its `download_url` still works. Read the document again to see the change.
+     */
+    status: ReceiptAttachmentStatusEnum;
     /**
      * 
      */
@@ -60,6 +68,16 @@ export const ReceiptAttachmentKindEnum = {
 } as const;
 export type ReceiptAttachmentKindEnum = typeof ReceiptAttachmentKindEnum[keyof typeof ReceiptAttachmentKindEnum];
 
+/**
+ * @export
+ */
+export const ReceiptAttachmentStatusEnum = {
+    Ready: 'ready',
+    Processing: 'processing',
+    Failed: 'failed',
+} as const;
+export type ReceiptAttachmentStatusEnum = typeof ReceiptAttachmentStatusEnum[keyof typeof ReceiptAttachmentStatusEnum];
+
 
 /**
  * Check if a given object implements the ReceiptAttachment interface.
@@ -71,6 +89,8 @@ export function instanceOfReceiptAttachment(value: object): value is ReceiptAtta
     if ((!('contentType' in (value as Record<string, any>)) && !('content_type' in (value as Record<string, any>))) || ((value as Record<string, any>)['contentType'] === undefined && (value as Record<string, any>)['content_type'] === undefined)) return false;
     if (!('size' in value) || value['size'] === undefined) return false;
     if ((!('downloadUrl' in (value as Record<string, any>)) && !('download_url' in (value as Record<string, any>))) || ((value as Record<string, any>)['downloadUrl'] === undefined && (value as Record<string, any>)['download_url'] === undefined)) return false;
+    if ((!('playbackUrl' in (value as Record<string, any>)) && !('playback_url' in (value as Record<string, any>))) || ((value as Record<string, any>)['playbackUrl'] === undefined && (value as Record<string, any>)['playback_url'] === undefined)) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
     if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
     return true;
 }
@@ -91,6 +111,8 @@ export function ReceiptAttachmentFromJSONTyped(json: any, ignoreDiscriminator: b
         'contentType': json['content_type'],
         'size': json['size'],
         'downloadUrl': json['download_url'],
+        'playbackUrl': json['playback_url'],
+        'status': json['status'],
         'createdAt': (json['created_at'] == null ? json['created_at'] : parseDateTime(json['created_at'])),
     };
 }
@@ -111,6 +133,8 @@ export function ReceiptAttachmentToJSONTyped(value?: Omit<ReceiptAttachment, 'id
         'content_type': value['contentType'],
         'size': value['size'],
         'download_url': value['downloadUrl'],
+        'playback_url': value['playbackUrl'],
+        'status': value['status'],
     };
 }
 

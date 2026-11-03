@@ -28,7 +28,7 @@ export interface FileAttachment {
      */
     filename: string;
     /**
-     * 
+     * As uploaded, such as `image/jpeg`, `application/pdf` or `video/quicktime`.
      */
     contentType: string;
     /**

@@ -51,7 +51,7 @@ export interface Income {
      */
     payerName?: string | null;
     /**
-     * When the income happened, in UTC with `Z`. Localize it with the tenant `timezone`.
+     * When the income happened, always in UTC with `Z`. Convert it to the tenant `timezone` when you display it.
      */
     incomedAt: Date;
     /**

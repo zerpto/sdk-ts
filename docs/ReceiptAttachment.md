@@ -13,6 +13,8 @@ Name | Type
 `contentType` | string
 `size` | number
 `downloadUrl` | string
+`playbackUrl` | string
+`status` | string
 `createdAt` | Date
 
 ## Example
@@ -28,6 +30,8 @@ const example = {
   "contentType": null,
   "size": null,
   "downloadUrl": null,
+  "playbackUrl": null,
+  "status": null,
   "createdAt": null,
 } satisfies ReceiptAttachment
 

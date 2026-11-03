@@ -43,7 +43,7 @@ export interface ExpenseInput {
      */
     payeeName?: string | null;
     /**
-     * When the expense happened, with a UTC offset or `Z` (`2026-10-22T09:45:00+07:00`); a timestamp without one is rejected with `offset_required`. Stored in UTC and returned with `Z`.
+     * When the expense happened. Show the time field in the tenant `timezone` (from `GET /v1/tenant`), then convert what the user typed to UTC and send it with `Z` (`2026-10-22T02:45:00Z`). An offset such as `+07:00` is accepted, but a timestamp without one is rejected with `offset_required`.
      */
     expensedAt: Date;
     /**
