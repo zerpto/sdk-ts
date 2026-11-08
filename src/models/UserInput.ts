@@ -26,10 +26,6 @@ export interface UserInput {
     /**
      * 
      */
-    name: string;
-    /**
-     * 
-     */
     roleIds: Array<string>;
 }
 
@@ -38,7 +34,6 @@ export interface UserInput {
  */
 export function instanceOfUserInput(value: object): value is UserInput {
     if (!('email' in value) || value['email'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
     if ((!('roleIds' in (value as Record<string, any>)) && !('role_ids' in (value as Record<string, any>))) || ((value as Record<string, any>)['roleIds'] === undefined && (value as Record<string, any>)['role_ids'] === undefined)) return false;
     return true;
 }
@@ -54,7 +49,6 @@ export function UserInputFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     return {
         
         'email': json['email'],
-        'name': json['name'],
         'roleIds': json['role_ids'],
     };
 }
@@ -71,7 +65,6 @@ export function UserInputToJSONTyped(value?: UserInput | null, ignoreDiscriminat
     return {
         
         'email': value['email'],
-        'name': value['name'],
         'role_ids': value['roleIds'],
     };
 }

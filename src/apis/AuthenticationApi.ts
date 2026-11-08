@@ -14,6 +14,11 @@
 
 import * as runtime from '../runtime';
 import {
+    type AcceptInviteExistingInput,
+    AcceptInviteExistingInputFromJSON,
+    AcceptInviteExistingInputToJSON,
+} from '../models/AcceptInviteExistingInput';
+import {
     type AcceptInviteInput,
     AcceptInviteInputFromJSON,
     AcceptInviteInputToJSON,
@@ -64,6 +69,11 @@ import {
     TokenPairResponseToJSON,
 } from '../models/TokenPairResponse';
 import {
+    type UserResponse,
+    UserResponseFromJSON,
+    UserResponseToJSON,
+} from '../models/UserResponse';
+import {
     type VerifyEmailInput,
     VerifyEmailInputFromJSON,
     VerifyEmailInputToJSON,
@@ -79,6 +89,13 @@ export interface AcceptInviteRequest {
      * 
      */
     acceptInviteInput: AcceptInviteInput;
+}
+
+export interface AcceptInviteExistingRequest {
+    /**
+     * 
+     */
+    acceptInviteExistingInput: AcceptInviteExistingInput;
 }
 
 export interface ChangePasswordRequest {
@@ -158,7 +175,7 @@ export class AuthenticationApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates an account from an invitation and signs the new user in. Use it when someone opens the link in an invitation email and chooses a password. The person joins the tenant that invited them, with the roles chosen in the invitation, and gets tokens in the response, so no separate login call is needed.  The token comes from the invitation email sent by [`POST /v1/users`](#tag/platform/POST/v1/users). The new user lands in the tenant that invited them, with the roles chosen in the invitation.  Error codes: `invalid_token`, `token_expired`, `weak_password`.  **Response meta** - `meta` is empty. 
+     * Creates an account from an invitation and signs the new user in. Use it when someone opens the link in an invitation email and chooses a password. The person joins the tenant that invited them, with the roles chosen in the invitation, and gets tokens in the response, so no separate login call is needed.  The token comes from the invitation email sent by [`POST /v1/users`](#tag/platform/POST/v1/users). The new user lands in the tenant that invited them, with the roles chosen in the invitation. If the invited email already has a Zerpto account, this call fails with `account_exists`: the person signs in and uses [`POST /v1/auth/accept-invite/existing`](#tag/authentication/POST/v1/auth/accept-invite/existing) instead.  Error codes: `invalid_token`, `token_expired`, `weak_password`, `account_exists`.  **Response meta** - `meta` is empty. 
      * Accept invite, create account
      */
     async acceptInviteRaw(requestParameters: AcceptInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LoginResultResponse>> {
@@ -169,11 +186,68 @@ export class AuthenticationApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates an account from an invitation and signs the new user in. Use it when someone opens the link in an invitation email and chooses a password. The person joins the tenant that invited them, with the roles chosen in the invitation, and gets tokens in the response, so no separate login call is needed.  The token comes from the invitation email sent by [`POST /v1/users`](#tag/platform/POST/v1/users). The new user lands in the tenant that invited them, with the roles chosen in the invitation.  Error codes: `invalid_token`, `token_expired`, `weak_password`.  **Response meta** - `meta` is empty. 
+     * Creates an account from an invitation and signs the new user in. Use it when someone opens the link in an invitation email and chooses a password. The person joins the tenant that invited them, with the roles chosen in the invitation, and gets tokens in the response, so no separate login call is needed.  The token comes from the invitation email sent by [`POST /v1/users`](#tag/platform/POST/v1/users). The new user lands in the tenant that invited them, with the roles chosen in the invitation. If the invited email already has a Zerpto account, this call fails with `account_exists`: the person signs in and uses [`POST /v1/auth/accept-invite/existing`](#tag/authentication/POST/v1/auth/accept-invite/existing) instead.  Error codes: `invalid_token`, `token_expired`, `weak_password`, `account_exists`.  **Response meta** - `meta` is empty. 
      * Accept invite, create account
      */
     async acceptInvite(requestParameters: AcceptInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LoginResultResponse> {
         const response = await this.acceptInviteRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for acceptInviteExisting without sending the request
+     */
+    async acceptInviteExistingRequestOpts(requestParameters: AcceptInviteExistingRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['acceptInviteExistingInput'] == null) {
+            throw new runtime.RequiredError(
+                'acceptInviteExistingInput',
+                'Required parameter "acceptInviteExistingInput" was null or undefined when calling acceptInviteExisting().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/auth/accept-invite/existing`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: AcceptInviteExistingInputToJSON(requestParameters['acceptInviteExistingInput']),
+        };
+    }
+
+    /**
+     * Adds the signed-in person to the tenant that invited them, using the token from the invitation email, and keeps their existing account, name and password. Use it when the invited email already has a Zerpto account, for example from another company. The membership becomes `active` with the roles chosen in the invitation.  The token comes from the invitation email sent after [`POST /v1/users`](#tag/users/POST/v1/users). The caller must be signed in with [`POST /v1/auth/sign-in`](#tag/authentication/POST/v1/auth/sign-in) as the account the invitation was sent to; a person with no account uses [`POST /v1/auth/accept-invite`](#tag/authentication/POST/v1/auth/accept-invite) instead. The current session does not change. To work in the new tenant, find it with [`GET /v1/auth/tenants`](#tag/tenant/GET/v1/auth/tenants) and move there with [`POST /v1/auth/switch-tenant`](#tag/tenant/POST/v1/auth/switch-tenant).  Error codes: `invalid_token`, `token_expired`, `email_mismatch`.  **Response meta** - `meta` is empty. 
+     * Join a tenant from an invite
+     */
+    async acceptInviteExistingRaw(requestParameters: AcceptInviteExistingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>> {
+        const requestOptions = await this.acceptInviteExistingRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Adds the signed-in person to the tenant that invited them, using the token from the invitation email, and keeps their existing account, name and password. Use it when the invited email already has a Zerpto account, for example from another company. The membership becomes `active` with the roles chosen in the invitation.  The token comes from the invitation email sent after [`POST /v1/users`](#tag/users/POST/v1/users). The caller must be signed in with [`POST /v1/auth/sign-in`](#tag/authentication/POST/v1/auth/sign-in) as the account the invitation was sent to; a person with no account uses [`POST /v1/auth/accept-invite`](#tag/authentication/POST/v1/auth/accept-invite) instead. The current session does not change. To work in the new tenant, find it with [`GET /v1/auth/tenants`](#tag/tenant/GET/v1/auth/tenants) and move there with [`POST /v1/auth/switch-tenant`](#tag/tenant/POST/v1/auth/switch-tenant).  Error codes: `invalid_token`, `token_expired`, `email_mismatch`.  **Response meta** - `meta` is empty. 
+     * Join a tenant from an invite
+     */
+    async acceptInviteExisting(requestParameters: AcceptInviteExistingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse> {
+        const response = await this.acceptInviteExistingRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

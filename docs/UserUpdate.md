@@ -1,13 +1,11 @@
 
 # UserUpdate
 
-All fields optional; only those sent are changed.
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`name` | string
 `roleIds` | Array&lt;string&gt;
 
 ## Example
@@ -17,7 +15,6 @@ import type { UserUpdate } from '@zerpto/sdk'
 
 // TODO: Update the object below with actual values
 const example = {
-  "name": null,
   "roleIds": null,
 } satisfies UserUpdate
 

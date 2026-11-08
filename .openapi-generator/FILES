@@ -2,6 +2,7 @@
 README.md
 docs/APIApi.md
 docs/APIKeysApi.md
+docs/AcceptInviteExistingInput.md
 docs/AcceptInviteInput.md
 docs/Account.md
 docs/AccountInput.md
@@ -489,6 +490,7 @@ src/apis/WarehousesApi.ts
 src/apis/WebhooksApi.ts
 src/apis/index.ts
 src/index.ts
+src/models/AcceptInviteExistingInput.ts
 src/models/AcceptInviteInput.ts
 src/models/Account.ts
 src/models/AccountInput.ts

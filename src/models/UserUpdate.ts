@@ -14,25 +14,22 @@
 
 import { mapValues } from '../runtime';
 /**
- * All fields optional; only those sent are changed.
+ * 
  * @export
  * @interface UserUpdate
  */
 export interface UserUpdate {
     /**
-     * 
-     */
-    name?: string;
-    /**
      * Replaces the user's roles. Removing the last `owner` role from the last owner returns 409 `last_owner`.
      */
-    roleIds?: Array<string>;
+    roleIds: Array<string>;
 }
 
 /**
  * Check if a given object implements the UserUpdate interface.
  */
 export function instanceOfUserUpdate(value: object): value is UserUpdate {
+    if ((!('roleIds' in (value as Record<string, any>)) && !('role_ids' in (value as Record<string, any>))) || ((value as Record<string, any>)['roleIds'] === undefined && (value as Record<string, any>)['role_ids'] === undefined)) return false;
     return true;
 }
 
@@ -46,8 +43,7 @@ export function UserUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'name': json['name'] == null ? undefined : json['name'],
-        'roleIds': json['role_ids'] == null ? undefined : json['role_ids'],
+        'roleIds': json['role_ids'],
     };
 }
 
@@ -62,7 +58,6 @@ export function UserUpdateToJSONTyped(value?: UserUpdate | null, ignoreDiscrimin
 
     return {
         
-        'name': value['name'],
         'role_ids': value['roleIds'],
     };
 }

@@ -82,6 +82,20 @@ export interface ListUsersRequest {
     createdBefore?: Date;
 }
 
+export interface ReactivateUserRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+}
+
+export interface RevokeUserInvitationRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+}
+
 export interface UpdateUserRequest {
     /**
      * Resource ID.
@@ -148,7 +162,7 @@ export class UsersApi extends runtime.BaseAPI {
     }
 
     /**
-     * Adds a person to the current tenant by email and name, and gives them one or more roles. The user starts as `invited` and becomes `active` once they accept the invitation. Use it when someone joins the company and needs to work in Zerpto.  Get the role ids from [`GET /v1/roles`](#tag/roles-and-permissions/GET/v1/roles) first. The person then follows the invitation email, which ends with [`POST /v1/auth/accept-invite`](#tag/authentication/POST/v1/auth/accept-invite) to set a password. Send an `Idempotency-Key` header so a retry does not create the user twice. Roles can be changed later with [`PATCH /v1/users/{id}`](#tag/users/PATCH/v1/users/{id}).  Error codes: `email_taken`, `unknown_role`.  **Response meta** - `meta` is empty. 
+     * Invites a person to the current tenant by email and gives them one or more roles. The user starts as `invited` and becomes `active` once they accept the invitation. You do not send a name: the person fills it in themselves when they accept. Use it when someone joins the company and needs to work in Zerpto.  Get the role ids from [`GET /v1/roles`](#tag/roles-and-permissions/GET/v1/roles) first. A person with no Zerpto account follows the invitation email to [`POST /v1/auth/accept-invite`](#tag/authentication/POST/v1/auth/accept-invite) and sets a name and password. A person who already has an account, for example from another company, signs in and accepts with [`POST /v1/auth/accept-invite/existing`](#tag/authentication/POST/v1/auth/accept-invite/existing). Both cases return the same response, so the call never tells you whether the email already has an account. Send an `Idempotency-Key` header so a retry does not invite twice. Roles can be changed later with [`PATCH /v1/users/{id}`](#tag/users/PATCH/v1/users/{id}), and an invitation sent by mistake is cancelled with [`DELETE /v1/users/{id}`](#tag/users/DELETE/v1/users/{id}).  Error codes: `already_member`, `user_deactivated`, `unknown_role`.  **Response meta** - `meta` is empty. 
      * Create user
      */
     async createUserRaw(requestParameters: CreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>> {
@@ -159,7 +173,7 @@ export class UsersApi extends runtime.BaseAPI {
     }
 
     /**
-     * Adds a person to the current tenant by email and name, and gives them one or more roles. The user starts as `invited` and becomes `active` once they accept the invitation. Use it when someone joins the company and needs to work in Zerpto.  Get the role ids from [`GET /v1/roles`](#tag/roles-and-permissions/GET/v1/roles) first. The person then follows the invitation email, which ends with [`POST /v1/auth/accept-invite`](#tag/authentication/POST/v1/auth/accept-invite) to set a password. Send an `Idempotency-Key` header so a retry does not create the user twice. Roles can be changed later with [`PATCH /v1/users/{id}`](#tag/users/PATCH/v1/users/{id}).  Error codes: `email_taken`, `unknown_role`.  **Response meta** - `meta` is empty. 
+     * Invites a person to the current tenant by email and gives them one or more roles. The user starts as `invited` and becomes `active` once they accept the invitation. You do not send a name: the person fills it in themselves when they accept. Use it when someone joins the company and needs to work in Zerpto.  Get the role ids from [`GET /v1/roles`](#tag/roles-and-permissions/GET/v1/roles) first. A person with no Zerpto account follows the invitation email to [`POST /v1/auth/accept-invite`](#tag/authentication/POST/v1/auth/accept-invite) and sets a name and password. A person who already has an account, for example from another company, signs in and accepts with [`POST /v1/auth/accept-invite/existing`](#tag/authentication/POST/v1/auth/accept-invite/existing). Both cases return the same response, so the call never tells you whether the email already has an account. Send an `Idempotency-Key` header so a retry does not invite twice. Roles can be changed later with [`PATCH /v1/users/{id}`](#tag/users/PATCH/v1/users/{id}), and an invitation sent by mistake is cancelled with [`DELETE /v1/users/{id}`](#tag/users/DELETE/v1/users/{id}).  Error codes: `already_member`, `user_deactivated`, `unknown_role`.  **Response meta** - `meta` is empty. 
      * Create user
      */
     async createUser(requestParameters: CreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse> {
@@ -199,7 +213,7 @@ export class UsersApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/v1/users/{id}`;
+        let urlPath = `/v1/users/{id}/activate`;
         urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
         return {
@@ -211,8 +225,8 @@ export class UsersApi extends runtime.BaseAPI {
     }
 
     /**
-     * Deactivates a user so they can no longer sign in or act on the tenant. The record stays, with status `deactivated`, because the documents they created or approved still point to it. Use it when someone leaves the company.  Find the id with [`GET /v1/users`](#tag/users/GET/v1/users). A deactivated user still appears in that list and can still be read with [`GET /v1/users/{id}`](#tag/users/GET/v1/users/{id}). The last owner of a tenant cannot be deactivated, so hand the owner role to someone else with [`PATCH /v1/users/{id}`](#tag/users/PATCH/v1/users/{id}) first.  Error codes: `last_owner`.  **Response meta** - No response body, so no meta. 
-     * Deactivate User
+     * Deactivates an active user so they can no longer sign in to the tenant or act on it. The record stays, with status `deactivated`, because the documents they created or approved still point to it. Their account and their access to other tenants are not affected. Use it when someone leaves the company. Calling it on a user who is already deactivated changes nothing.  Find the id with [`GET /v1/users`](#tag/users/GET/v1/users). A deactivated user still appears in that list and can still be read with [`GET /v1/users/{id}`](#tag/users/GET/v1/users/{id}). The last owner of a tenant cannot be deactivated, so hand the owner role to someone else with [`PATCH /v1/users/{id}`](#tag/users/PATCH/v1/users/{id}) first. Bring the person back with [`PUT /v1/users/{id}/activate`](#tag/users/PUT/v1/users/{id}/activate). A user who has not accepted yet cannot be deactivated; cancel the invitation with [`DELETE /v1/users/{id}`](#tag/users/DELETE/v1/users/{id}) instead.  Error codes: `last_owner`, `user_invited`.  **Response meta** - No response body, so no meta. 
+     * Deactivate a user
      */
     async deactivateUserRaw(requestParameters: DeactivateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const requestOptions = await this.deactivateUserRequestOpts(requestParameters);
@@ -222,8 +236,8 @@ export class UsersApi extends runtime.BaseAPI {
     }
 
     /**
-     * Deactivates a user so they can no longer sign in or act on the tenant. The record stays, with status `deactivated`, because the documents they created or approved still point to it. Use it when someone leaves the company.  Find the id with [`GET /v1/users`](#tag/users/GET/v1/users). A deactivated user still appears in that list and can still be read with [`GET /v1/users/{id}`](#tag/users/GET/v1/users/{id}). The last owner of a tenant cannot be deactivated, so hand the owner role to someone else with [`PATCH /v1/users/{id}`](#tag/users/PATCH/v1/users/{id}) first.  Error codes: `last_owner`.  **Response meta** - No response body, so no meta. 
-     * Deactivate User
+     * Deactivates an active user so they can no longer sign in to the tenant or act on it. The record stays, with status `deactivated`, because the documents they created or approved still point to it. Their account and their access to other tenants are not affected. Use it when someone leaves the company. Calling it on a user who is already deactivated changes nothing.  Find the id with [`GET /v1/users`](#tag/users/GET/v1/users). A deactivated user still appears in that list and can still be read with [`GET /v1/users/{id}`](#tag/users/GET/v1/users/{id}). The last owner of a tenant cannot be deactivated, so hand the owner role to someone else with [`PATCH /v1/users/{id}`](#tag/users/PATCH/v1/users/{id}) first. Bring the person back with [`PUT /v1/users/{id}/activate`](#tag/users/PUT/v1/users/{id}/activate). A user who has not accepted yet cannot be deactivated; cancel the invitation with [`DELETE /v1/users/{id}`](#tag/users/DELETE/v1/users/{id}) instead.  Error codes: `last_owner`, `user_invited`.  **Response meta** - No response body, so no meta. 
+     * Deactivate a user
      */
     async deactivateUser(requestParameters: DeactivateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.deactivateUserRaw(requestParameters, initOverrides);
@@ -368,6 +382,131 @@ export class UsersApi extends runtime.BaseAPI {
     }
 
     /**
+     * Creates request options for reactivateUser without sending the request
+     */
+    async reactivateUserRequestOpts(requestParameters: ReactivateUserRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling reactivateUser().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/users/{id}/activate`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Restores a deactivated user so they can sign in to the tenant again with the roles they had. The status goes back to `active`. Use it when someone returns after leaving, or when a user was deactivated by mistake. Calling it on a user who is already active changes nothing and returns the user.  Find the id with [`GET /v1/users`](#tag/users/GET/v1/users). Once restored, the person signs in as usual with [`POST /v1/auth/sign-in`](#tag/authentication/POST/v1/auth/sign-in), and their roles can be adjusted with [`PATCH /v1/users/{id}`](#tag/users/PATCH/v1/users/{id}). To remove access again, call [`DELETE /v1/users/{id}/activate`](#tag/users/DELETE/v1/users/{id}/activate).  Error codes: `user_invited`.  **Response meta** - `meta` is empty. 
+     * Reactivate a user
+     */
+    async reactivateUserRaw(requestParameters: ReactivateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>> {
+        const requestOptions = await this.reactivateUserRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Restores a deactivated user so they can sign in to the tenant again with the roles they had. The status goes back to `active`. Use it when someone returns after leaving, or when a user was deactivated by mistake. Calling it on a user who is already active changes nothing and returns the user.  Find the id with [`GET /v1/users`](#tag/users/GET/v1/users). Once restored, the person signs in as usual with [`POST /v1/auth/sign-in`](#tag/authentication/POST/v1/auth/sign-in), and their roles can be adjusted with [`PATCH /v1/users/{id}`](#tag/users/PATCH/v1/users/{id}). To remove access again, call [`DELETE /v1/users/{id}/activate`](#tag/users/DELETE/v1/users/{id}/activate).  Error codes: `user_invited`.  **Response meta** - `meta` is empty. 
+     * Reactivate a user
+     */
+    async reactivateUser(requestParameters: ReactivateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse> {
+        const response = await this.reactivateUserRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for revokeUserInvitation without sending the request
+     */
+    async revokeUserInvitationRequestOpts(requestParameters: RevokeUserInvitationRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling revokeUserInvitation().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/users/{id}`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Cancels an invitation that has not been accepted yet. The invited user is removed from the tenant and the link in the invitation email stops working. Use it when an invite went to the wrong address or the person no longer needs access. Only a user whose status is `invited` can be removed this way, because users who have accepted keep their record for the documents they created or approved.  Find the id with [`GET /v1/users`](#tag/users/GET/v1/users) by looking for the status `invited`. Once revoked, the user no longer appears there, and the token fails in [`POST /v1/auth/accept-invite`](#tag/authentication/POST/v1/auth/accept-invite) and [`POST /v1/auth/accept-invite/existing`](#tag/authentication/POST/v1/auth/accept-invite/existing). To invite the person again, call [`POST /v1/users`](#tag/users/POST/v1/users). To remove access from someone who already accepted, use [`DELETE /v1/users/{id}/activate`](#tag/users/DELETE/v1/users/{id}/activate).  Error codes: `user_not_invited`.  **Response meta** - No response body, so no meta. 
+     * Revoke an invitation
+     */
+    async revokeUserInvitationRaw(requestParameters: RevokeUserInvitationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.revokeUserInvitationRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Cancels an invitation that has not been accepted yet. The invited user is removed from the tenant and the link in the invitation email stops working. Use it when an invite went to the wrong address or the person no longer needs access. Only a user whose status is `invited` can be removed this way, because users who have accepted keep their record for the documents they created or approved.  Find the id with [`GET /v1/users`](#tag/users/GET/v1/users) by looking for the status `invited`. Once revoked, the user no longer appears there, and the token fails in [`POST /v1/auth/accept-invite`](#tag/authentication/POST/v1/auth/accept-invite) and [`POST /v1/auth/accept-invite/existing`](#tag/authentication/POST/v1/auth/accept-invite/existing). To invite the person again, call [`POST /v1/users`](#tag/users/POST/v1/users). To remove access from someone who already accepted, use [`DELETE /v1/users/{id}/activate`](#tag/users/DELETE/v1/users/{id}/activate).  Error codes: `user_not_invited`.  **Response meta** - No response body, so no meta. 
+     * Revoke an invitation
+     */
+    async revokeUserInvitation(requestParameters: RevokeUserInvitationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.revokeUserInvitationRaw(requestParameters, initOverrides);
+    }
+
+    /**
      * Creates request options for updateUser without sending the request
      */
     async updateUserRequestOpts(requestParameters: UpdateUserRequest): Promise<runtime.RequestOpts> {
@@ -421,7 +560,7 @@ export class UsersApi extends runtime.BaseAPI {
     }
 
     /**
-     * Changes a user\'s name or roles. Send only the fields to change; `role_ids`, when sent, replaces the whole list of roles, so include every role the user should keep. Use it to promote someone, move them to another team, or fix a typo in their name. The email address cannot be changed here.  Role ids come from [`GET /v1/roles`](#tag/roles-and-permissions/GET/v1/roles). Permissions follow the roles, so check the result with [`GET /v1/users/{id}/permissions`](#tag/roles-and-permissions/GET/v1/users/{id}/permissions). To remove a person\'s access altogether, use [`DELETE /v1/users/{id}`](#tag/users/DELETE/v1/users/{id}) instead.  Error codes: `unknown_role`, `last_owner`.  **Response meta** - `meta` is empty. 
+     * Changes the roles of a user in the current tenant. `role_ids` replaces the whole list of roles, so include every role the user should keep. Use it to promote someone or move them to another team. The email address and the name cannot be changed here: the name belongs to the person, who sets it when they accept the invitation.  Role ids come from [`GET /v1/roles`](#tag/roles-and-permissions/GET/v1/roles). Permissions follow the roles, so check the result with [`GET /v1/users/{id}/permissions`](#tag/roles-and-permissions/GET/v1/users/{id}/permissions). To remove a person\'s access altogether, use [`DELETE /v1/users/{id}/activate`](#tag/users/DELETE/v1/users/{id}/activate); a deactivated user must be restored with [`PUT /v1/users/{id}/activate`](#tag/users/PUT/v1/users/{id}/activate) before the roles can change.  Error codes: `unknown_role`, `last_owner`, `user_deactivated`.  **Response meta** - `meta` is empty. 
      * Update User
      */
     async updateUserRaw(requestParameters: UpdateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>> {
@@ -432,7 +571,7 @@ export class UsersApi extends runtime.BaseAPI {
     }
 
     /**
-     * Changes a user\'s name or roles. Send only the fields to change; `role_ids`, when sent, replaces the whole list of roles, so include every role the user should keep. Use it to promote someone, move them to another team, or fix a typo in their name. The email address cannot be changed here.  Role ids come from [`GET /v1/roles`](#tag/roles-and-permissions/GET/v1/roles). Permissions follow the roles, so check the result with [`GET /v1/users/{id}/permissions`](#tag/roles-and-permissions/GET/v1/users/{id}/permissions). To remove a person\'s access altogether, use [`DELETE /v1/users/{id}`](#tag/users/DELETE/v1/users/{id}) instead.  Error codes: `unknown_role`, `last_owner`.  **Response meta** - `meta` is empty. 
+     * Changes the roles of a user in the current tenant. `role_ids` replaces the whole list of roles, so include every role the user should keep. Use it to promote someone or move them to another team. The email address and the name cannot be changed here: the name belongs to the person, who sets it when they accept the invitation.  Role ids come from [`GET /v1/roles`](#tag/roles-and-permissions/GET/v1/roles). Permissions follow the roles, so check the result with [`GET /v1/users/{id}/permissions`](#tag/roles-and-permissions/GET/v1/users/{id}/permissions). To remove a person\'s access altogether, use [`DELETE /v1/users/{id}/activate`](#tag/users/DELETE/v1/users/{id}/activate); a deactivated user must be restored with [`PUT /v1/users/{id}/activate`](#tag/users/PUT/v1/users/{id}/activate) before the roles can change.  Error codes: `unknown_role`, `last_owner`, `user_deactivated`.  **Response meta** - `meta` is empty. 
      * Update User
      */
     async updateUser(requestParameters: UpdateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse> {

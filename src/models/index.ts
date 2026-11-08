@@ -1,5 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './AcceptInviteExistingInput';
 export * from './AcceptInviteInput';
 export * from './Account';
 export * from './AccountInput';

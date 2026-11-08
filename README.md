@@ -92,6 +92,7 @@ All URIs are relative to *https://api.zerpto.com*
 *AssetsApi* | [**listAssets**](docs/AssetsApi.md#listassets) | **GET** /v1/assets | List assets
 *AssetsApi* | [**updateAsset**](docs/AssetsApi.md#updateasset) | **PATCH** /v1/assets/{id} | Update asset
 *AuthenticationApi* | [**acceptInvite**](docs/AuthenticationApi.md#acceptinvite) | **POST** /v1/auth/accept-invite | Accept invite, create account
+*AuthenticationApi* | [**acceptInviteExisting**](docs/AuthenticationApi.md#acceptinviteexisting) | **POST** /v1/auth/accept-invite/existing | Join a tenant from an invite
 *AuthenticationApi* | [**changePassword**](docs/AuthenticationApi.md#changepassword) | **PUT** /v1/auth/password | Change your password
 *AuthenticationApi* | [**getMe**](docs/AuthenticationApi.md#getme) | **GET** /v1/auth/me | Current user and permissions
 *AuthenticationApi* | [**googleSignIn**](docs/AuthenticationApi.md#googlesignin) | **POST** /v1/auth/google | Sign in with Google
@@ -314,9 +315,11 @@ All URIs are relative to *https://api.zerpto.com*
 *TransfersApi* | [**listStockTransfers**](docs/TransfersApi.md#liststocktransfers) | **GET** /v1/inventory/transfers | List warehouse transfers
 *TransfersApi* | [**postStockTransfer**](docs/TransfersApi.md#poststocktransfer) | **POST** /v1/inventory/transfers/{id}/confirm | Post transfer
 *UsersApi* | [**createUser**](docs/UsersApi.md#createuser) | **POST** /v1/users | Create user
-*UsersApi* | [**deactivateUser**](docs/UsersApi.md#deactivateuser) | **DELETE** /v1/users/{id} | Deactivate User
+*UsersApi* | [**deactivateUser**](docs/UsersApi.md#deactivateuser) | **DELETE** /v1/users/{id}/activate | Deactivate a user
 *UsersApi* | [**getUser**](docs/UsersApi.md#getuser) | **GET** /v1/users/{id} | Get User
 *UsersApi* | [**listUsers**](docs/UsersApi.md#listusers) | **GET** /v1/users | List users
+*UsersApi* | [**reactivateUser**](docs/UsersApi.md#reactivateuser) | **PUT** /v1/users/{id}/activate | Reactivate a user
+*UsersApi* | [**revokeUserInvitation**](docs/UsersApi.md#revokeuserinvitation) | **DELETE** /v1/users/{id} | Revoke an invitation
 *UsersApi* | [**updateUser**](docs/UsersApi.md#updateuser) | **PATCH** /v1/users/{id} | Update User
 *VendorsApi* | [**archiveVendor**](docs/VendorsApi.md#archivevendor) | **DELETE** /v1/vendors/{id} | Archive Vendor
 *VendorsApi* | [**createVendor**](docs/VendorsApi.md#createvendor) | **POST** /v1/vendors | Create vendor
@@ -341,6 +344,7 @@ All URIs are relative to *https://api.zerpto.com*
 
 ### Models
 
+- [AcceptInviteExistingInput](docs/AcceptInviteExistingInput.md)
 - [AcceptInviteInput](docs/AcceptInviteInput.md)
 - [Account](docs/Account.md)
 - [AccountInput](docs/AccountInput.md)

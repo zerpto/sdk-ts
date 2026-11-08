@@ -5,9 +5,11 @@ All URIs are relative to *https://api.zerpto.com*
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
 | [**createUser**](UsersApi.md#createuser) | **POST** /v1/users | Create user |
-| [**deactivateUser**](UsersApi.md#deactivateuser) | **DELETE** /v1/users/{id} | Deactivate User |
+| [**deactivateUser**](UsersApi.md#deactivateuser) | **DELETE** /v1/users/{id}/activate | Deactivate a user |
 | [**getUser**](UsersApi.md#getuser) | **GET** /v1/users/{id} | Get User |
 | [**listUsers**](UsersApi.md#listusers) | **GET** /v1/users | List users |
+| [**reactivateUser**](UsersApi.md#reactivateuser) | **PUT** /v1/users/{id}/activate | Reactivate a user |
+| [**revokeUserInvitation**](UsersApi.md#revokeuserinvitation) | **DELETE** /v1/users/{id} | Revoke an invitation |
 | [**updateUser**](UsersApi.md#updateuser) | **PATCH** /v1/users/{id} | Update User |
 
 
@@ -18,7 +20,7 @@ All URIs are relative to *https://api.zerpto.com*
 
 Create user
 
-Adds a person to the current tenant by email and name, and gives them one or more roles. The user starts as &#x60;invited&#x60; and becomes &#x60;active&#x60; once they accept the invitation. Use it when someone joins the company and needs to work in Zerpto.  Get the role ids from [&#x60;GET /v1/roles&#x60;](#tag/roles-and-permissions/GET/v1/roles) first. The person then follows the invitation email, which ends with [&#x60;POST /v1/auth/accept-invite&#x60;](#tag/authentication/POST/v1/auth/accept-invite) to set a password. Send an &#x60;Idempotency-Key&#x60; header so a retry does not create the user twice. Roles can be changed later with [&#x60;PATCH /v1/users/{id}&#x60;](#tag/users/PATCH/v1/users/{id}).  Error codes: &#x60;email_taken&#x60;, &#x60;unknown_role&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+Invites a person to the current tenant by email and gives them one or more roles. The user starts as &#x60;invited&#x60; and becomes &#x60;active&#x60; once they accept the invitation. You do not send a name: the person fills it in themselves when they accept. Use it when someone joins the company and needs to work in Zerpto.  Get the role ids from [&#x60;GET /v1/roles&#x60;](#tag/roles-and-permissions/GET/v1/roles) first. A person with no Zerpto account follows the invitation email to [&#x60;POST /v1/auth/accept-invite&#x60;](#tag/authentication/POST/v1/auth/accept-invite) and sets a name and password. A person who already has an account, for example from another company, signs in and accepts with [&#x60;POST /v1/auth/accept-invite/existing&#x60;](#tag/authentication/POST/v1/auth/accept-invite/existing). Both cases return the same response, so the call never tells you whether the email already has an account. Send an &#x60;Idempotency-Key&#x60; header so a retry does not invite twice. Roles can be changed later with [&#x60;PATCH /v1/users/{id}&#x60;](#tag/users/PATCH/v1/users/{id}), and an invitation sent by mistake is cancelled with [&#x60;DELETE /v1/users/{id}&#x60;](#tag/users/DELETE/v1/users/{id}).  Error codes: &#x60;already_member&#x60;, &#x60;user_deactivated&#x60;, &#x60;unknown_role&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -98,9 +100,9 @@ example().catch(console.error);
 
 > deactivateUser(id)
 
-Deactivate User
+Deactivate a user
 
-Deactivates a user so they can no longer sign in or act on the tenant. The record stays, with status &#x60;deactivated&#x60;, because the documents they created or approved still point to it. Use it when someone leaves the company.  Find the id with [&#x60;GET /v1/users&#x60;](#tag/users/GET/v1/users). A deactivated user still appears in that list and can still be read with [&#x60;GET /v1/users/{id}&#x60;](#tag/users/GET/v1/users/{id}). The last owner of a tenant cannot be deactivated, so hand the owner role to someone else with [&#x60;PATCH /v1/users/{id}&#x60;](#tag/users/PATCH/v1/users/{id}) first.  Error codes: &#x60;last_owner&#x60;.  **Response meta** - No response body, so no meta. 
+Deactivates an active user so they can no longer sign in to the tenant or act on it. The record stays, with status &#x60;deactivated&#x60;, because the documents they created or approved still point to it. Their account and their access to other tenants are not affected. Use it when someone leaves the company. Calling it on a user who is already deactivated changes nothing.  Find the id with [&#x60;GET /v1/users&#x60;](#tag/users/GET/v1/users). A deactivated user still appears in that list and can still be read with [&#x60;GET /v1/users/{id}&#x60;](#tag/users/GET/v1/users/{id}). The last owner of a tenant cannot be deactivated, so hand the owner role to someone else with [&#x60;PATCH /v1/users/{id}&#x60;](#tag/users/PATCH/v1/users/{id}) first. Bring the person back with [&#x60;PUT /v1/users/{id}/activate&#x60;](#tag/users/PUT/v1/users/{id}/activate). A user who has not accepted yet cannot be deactivated; cancel the invitation with [&#x60;DELETE /v1/users/{id}&#x60;](#tag/users/DELETE/v1/users/{id}) instead.  Error codes: &#x60;last_owner&#x60;, &#x60;user_invited&#x60;.  **Response meta** - No response body, so no meta. 
 
 ### Example
 
@@ -336,13 +338,169 @@ example().catch(console.error);
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
+## reactivateUser
+
+> UserResponse reactivateUser(id)
+
+Reactivate a user
+
+Restores a deactivated user so they can sign in to the tenant again with the roles they had. The status goes back to &#x60;active&#x60;. Use it when someone returns after leaving, or when a user was deactivated by mistake. Calling it on a user who is already active changes nothing and returns the user.  Find the id with [&#x60;GET /v1/users&#x60;](#tag/users/GET/v1/users). Once restored, the person signs in as usual with [&#x60;POST /v1/auth/sign-in&#x60;](#tag/authentication/POST/v1/auth/sign-in), and their roles can be adjusted with [&#x60;PATCH /v1/users/{id}&#x60;](#tag/users/PATCH/v1/users/{id}). To remove access again, call [&#x60;DELETE /v1/users/{id}/activate&#x60;](#tag/users/DELETE/v1/users/{id}/activate).  Error codes: &#x60;user_invited&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  UsersApi,
+} from '@zerpto/sdk';
+import type { ReactivateUserRequest } from '@zerpto/sdk';
+
+async function example() {
+  console.log("🚀 Testing @zerpto/sdk SDK...");
+  const config = new Configuration({ 
+    // Configure HTTP bearer authorization: ApiKeyAuth
+    accessToken: "YOUR BEARER TOKEN",
+    // Configure HTTP bearer authorization: UserJWT
+    accessToken: "YOUR BEARER TOKEN",
+  });
+  const api = new UsersApi(config);
+
+  const body = {
+    // string | Resource ID.
+    id: id_example,
+  } satisfies ReactivateUserRequest;
+
+  try {
+    const data = await api.reactivateUser(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **id** | `string` | Resource ID. | [Defaults to `undefined`] |
+
+### Return type
+
+[**UserResponse**](UserResponse.md)
+
+### Authorization
+
+[ApiKeyAuth](../README.md#ApiKeyAuth), [UserJWT](../README.md#UserJWT)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Success |  -  |
+| **401** | Missing, invalid or revoked API key. |  -  |
+| **403** | The key or user lacks permission for this action. |  -  |
+| **404** | Resource not found in this tenant. |  -  |
+| **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
+| **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## revokeUserInvitation
+
+> revokeUserInvitation(id)
+
+Revoke an invitation
+
+Cancels an invitation that has not been accepted yet. The invited user is removed from the tenant and the link in the invitation email stops working. Use it when an invite went to the wrong address or the person no longer needs access. Only a user whose status is &#x60;invited&#x60; can be removed this way, because users who have accepted keep their record for the documents they created or approved.  Find the id with [&#x60;GET /v1/users&#x60;](#tag/users/GET/v1/users) by looking for the status &#x60;invited&#x60;. Once revoked, the user no longer appears there, and the token fails in [&#x60;POST /v1/auth/accept-invite&#x60;](#tag/authentication/POST/v1/auth/accept-invite) and [&#x60;POST /v1/auth/accept-invite/existing&#x60;](#tag/authentication/POST/v1/auth/accept-invite/existing). To invite the person again, call [&#x60;POST /v1/users&#x60;](#tag/users/POST/v1/users). To remove access from someone who already accepted, use [&#x60;DELETE /v1/users/{id}/activate&#x60;](#tag/users/DELETE/v1/users/{id}/activate).  Error codes: &#x60;user_not_invited&#x60;.  **Response meta** - No response body, so no meta. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  UsersApi,
+} from '@zerpto/sdk';
+import type { RevokeUserInvitationRequest } from '@zerpto/sdk';
+
+async function example() {
+  console.log("🚀 Testing @zerpto/sdk SDK...");
+  const config = new Configuration({ 
+    // Configure HTTP bearer authorization: ApiKeyAuth
+    accessToken: "YOUR BEARER TOKEN",
+    // Configure HTTP bearer authorization: UserJWT
+    accessToken: "YOUR BEARER TOKEN",
+  });
+  const api = new UsersApi(config);
+
+  const body = {
+    // string | Resource ID.
+    id: id_example,
+  } satisfies RevokeUserInvitationRequest;
+
+  try {
+    const data = await api.revokeUserInvitation(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **id** | `string` | Resource ID. | [Defaults to `undefined`] |
+
+### Return type
+
+`void` (Empty response body)
+
+### Authorization
+
+[ApiKeyAuth](../README.md#ApiKeyAuth), [UserJWT](../README.md#UserJWT)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **204** | No content |  -  |
+| **401** | Missing, invalid or revoked API key. |  -  |
+| **403** | The key or user lacks permission for this action. |  -  |
+| **404** | Resource not found in this tenant. |  -  |
+| **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
+| **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
 ## updateUser
 
 > UserResponse updateUser(id, userUpdate)
 
 Update User
 
-Changes a user\&#39;s name or roles. Send only the fields to change; &#x60;role_ids&#x60;, when sent, replaces the whole list of roles, so include every role the user should keep. Use it to promote someone, move them to another team, or fix a typo in their name. The email address cannot be changed here.  Role ids come from [&#x60;GET /v1/roles&#x60;](#tag/roles-and-permissions/GET/v1/roles). Permissions follow the roles, so check the result with [&#x60;GET /v1/users/{id}/permissions&#x60;](#tag/roles-and-permissions/GET/v1/users/{id}/permissions). To remove a person\&#39;s access altogether, use [&#x60;DELETE /v1/users/{id}&#x60;](#tag/users/DELETE/v1/users/{id}) instead.  Error codes: &#x60;unknown_role&#x60;, &#x60;last_owner&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+Changes the roles of a user in the current tenant. &#x60;role_ids&#x60; replaces the whole list of roles, so include every role the user should keep. Use it to promote someone or move them to another team. The email address and the name cannot be changed here: the name belongs to the person, who sets it when they accept the invitation.  Role ids come from [&#x60;GET /v1/roles&#x60;](#tag/roles-and-permissions/GET/v1/roles). Permissions follow the roles, so check the result with [&#x60;GET /v1/users/{id}/permissions&#x60;](#tag/roles-and-permissions/GET/v1/users/{id}/permissions). To remove a person\&#39;s access altogether, use [&#x60;DELETE /v1/users/{id}/activate&#x60;](#tag/users/DELETE/v1/users/{id}/activate); a deactivated user must be restored with [&#x60;PUT /v1/users/{id}/activate&#x60;](#tag/users/PUT/v1/users/{id}/activate) before the roles can change.  Error codes: &#x60;unknown_role&#x60;, &#x60;last_owner&#x60;, &#x60;user_deactivated&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 

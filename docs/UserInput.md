@@ -7,7 +7,6 @@
 Name | Type
 ------------ | -------------
 `email` | string
-`name` | string
 `roleIds` | Array&lt;string&gt;
 
 ## Example
@@ -18,7 +17,6 @@ import type { UserInput } from '@zerpto/sdk'
 // TODO: Update the object below with actual values
 const example = {
   "email": null,
-  "name": null,
   "roleIds": null,
 } satisfies UserInput
 

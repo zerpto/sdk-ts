@@ -20,7 +20,7 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface User {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID of the person's membership in this tenant (`mem`).
      */
     readonly id: string;
     /**
@@ -28,15 +28,15 @@ export interface User {
      */
     email: string;
     /**
-     * 
+     * The person's own name, filled in when they accept the invitation. Null while the user is `invited`.
      */
-    name: string;
+    readonly name: string | null;
     /**
      * Roles the user holds in this tenant. Permissions are the union of all of them, plus direct grants (see `GET /v1/users/{id}/permissions`).
      */
     roleIds: Array<string>;
     /**
-     * 
+     * `invited` until the invitation is accepted, then `active`. `deactivated` users cannot sign in to this tenant until they are reactivated.
      */
     status: UserStatusEnum;
     /**
@@ -92,7 +92,7 @@ export function UserToJSON(json: any): User {
     return UserToJSONTyped(json, false);
 }
 
-export function UserToJSONTyped(value?: Omit<User, 'id'|'createdAt'> | null, ignoreDiscriminator: boolean = false): any {
+export function UserToJSONTyped(value?: Omit<User, 'id'|'name'|'createdAt'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -100,7 +100,6 @@ export function UserToJSONTyped(value?: Omit<User, 'id'|'createdAt'> | null, ign
     return {
         
         'email': value['email'],
-        'name': value['name'],
         'role_ids': value['roleIds'],
         'status': value['status'],
     };

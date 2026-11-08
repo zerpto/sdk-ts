@@ -5,6 +5,7 @@ All URIs are relative to *https://api.zerpto.com*
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
 | [**acceptInvite**](AuthenticationApi.md#acceptinvite) | **POST** /v1/auth/accept-invite | Accept invite, create account |
+| [**acceptInviteExisting**](AuthenticationApi.md#acceptinviteexisting) | **POST** /v1/auth/accept-invite/existing | Join a tenant from an invite |
 | [**changePassword**](AuthenticationApi.md#changepassword) | **PUT** /v1/auth/password | Change your password |
 | [**getMe**](AuthenticationApi.md#getme) | **GET** /v1/auth/me | Current user and permissions |
 | [**googleSignIn**](AuthenticationApi.md#googlesignin) | **POST** /v1/auth/google | Sign in with Google |
@@ -22,7 +23,7 @@ All URIs are relative to *https://api.zerpto.com*
 
 Accept invite, create account
 
-Creates an account from an invitation and signs the new user in. Use it when someone opens the link in an invitation email and chooses a password. The person joins the tenant that invited them, with the roles chosen in the invitation, and gets tokens in the response, so no separate login call is needed.  The token comes from the invitation email sent by [&#x60;POST /v1/users&#x60;](#tag/platform/POST/v1/users). The new user lands in the tenant that invited them, with the roles chosen in the invitation.  Error codes: &#x60;invalid_token&#x60;, &#x60;token_expired&#x60;, &#x60;weak_password&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+Creates an account from an invitation and signs the new user in. Use it when someone opens the link in an invitation email and chooses a password. The person joins the tenant that invited them, with the roles chosen in the invitation, and gets tokens in the response, so no separate login call is needed.  The token comes from the invitation email sent by [&#x60;POST /v1/users&#x60;](#tag/platform/POST/v1/users). The new user lands in the tenant that invited them, with the roles chosen in the invitation. If the invited email already has a Zerpto account, this call fails with &#x60;account_exists&#x60;: the person signs in and uses [&#x60;POST /v1/auth/accept-invite/existing&#x60;](#tag/authentication/POST/v1/auth/accept-invite/existing) instead.  Error codes: &#x60;invalid_token&#x60;, &#x60;token_expired&#x60;, &#x60;weak_password&#x60;, &#x60;account_exists&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -80,6 +81,82 @@ No authorization required
 |-------------|-------------|------------------|
 | **201** | Account created and logged in |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
+| **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
+| **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## acceptInviteExisting
+
+> UserResponse acceptInviteExisting(acceptInviteExistingInput)
+
+Join a tenant from an invite
+
+Adds the signed-in person to the tenant that invited them, using the token from the invitation email, and keeps their existing account, name and password. Use it when the invited email already has a Zerpto account, for example from another company. The membership becomes &#x60;active&#x60; with the roles chosen in the invitation.  The token comes from the invitation email sent after [&#x60;POST /v1/users&#x60;](#tag/users/POST/v1/users). The caller must be signed in with [&#x60;POST /v1/auth/sign-in&#x60;](#tag/authentication/POST/v1/auth/sign-in) as the account the invitation was sent to; a person with no account uses [&#x60;POST /v1/auth/accept-invite&#x60;](#tag/authentication/POST/v1/auth/accept-invite) instead. The current session does not change. To work in the new tenant, find it with [&#x60;GET /v1/auth/tenants&#x60;](#tag/tenant/GET/v1/auth/tenants) and move there with [&#x60;POST /v1/auth/switch-tenant&#x60;](#tag/tenant/POST/v1/auth/switch-tenant).  Error codes: &#x60;invalid_token&#x60;, &#x60;token_expired&#x60;, &#x60;email_mismatch&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  AuthenticationApi,
+} from '@zerpto/sdk';
+import type { AcceptInviteExistingRequest } from '@zerpto/sdk';
+
+async function example() {
+  console.log("🚀 Testing @zerpto/sdk SDK...");
+  const config = new Configuration({ 
+    // Configure HTTP bearer authorization: UserJWT
+    accessToken: "YOUR BEARER TOKEN",
+  });
+  const api = new AuthenticationApi(config);
+
+  const body = {
+    // AcceptInviteExistingInput
+    acceptInviteExistingInput: ...,
+  } satisfies AcceptInviteExistingRequest;
+
+  try {
+    const data = await api.acceptInviteExisting(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **acceptInviteExistingInput** | [AcceptInviteExistingInput](AcceptInviteExistingInput.md) |  | |
+
+### Return type
+
+[**UserResponse**](UserResponse.md)
+
+### Authorization
+
+[UserJWT](../README.md#UserJWT)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Joined the tenant |  -  |
+| **400** | Malformed request or invalid parameter. |  -  |
+| **401** | Missing, invalid or revoked API key. |  -  |
+| **403** | The key or user lacks permission for this action. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
 
