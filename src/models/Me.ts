@@ -46,6 +46,10 @@ export interface Me {
      * Effective permissions, the union of all roles and unexpired direct grants.
      */
     permissions: Array<string>;
+    /**
+     * True while this person has never had a free trial in any tenant, so subscribing starts one. False once they have had one; it is about the person, not the current tenant, and stays false after they switch tenant.
+     */
+    trialAvailable: boolean;
 }
 
 /**
@@ -55,6 +59,7 @@ export function instanceOfMe(value: object): value is Me {
     if (!('user' in value) || value['user'] === undefined) return false;
     if (!('tenant' in value) || value['tenant'] === undefined) return false;
     if (!('permissions' in value) || value['permissions'] === undefined) return false;
+    if ((!('trialAvailable' in (value as Record<string, any>)) && !('trial_available' in (value as Record<string, any>))) || ((value as Record<string, any>)['trialAvailable'] === undefined && (value as Record<string, any>)['trial_available'] === undefined)) return false;
     return true;
 }
 
@@ -71,6 +76,7 @@ export function MeFromJSONTyped(json: any, ignoreDiscriminator: boolean): Me {
         'user': AuthUserFromJSON(json['user']),
         'tenant': TenantSummaryFromJSON(json['tenant']),
         'permissions': json['permissions'],
+        'trialAvailable': json['trial_available'],
     };
 }
 
@@ -88,6 +94,7 @@ export function MeToJSONTyped(value?: Me | null, ignoreDiscriminator: boolean = 
         'user': AuthUserToJSON(value['user']),
         'tenant': TenantSummaryToJSON(value['tenant']),
         'permissions': value['permissions'],
+        'trial_available': value['trialAvailable'],
     };
 }
 

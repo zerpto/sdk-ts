@@ -28,7 +28,7 @@ export interface Subscription {
      */
     status: SubscriptionStatusEnum;
     /**
-     * Users included plus additional users.
+     * Users included plus additional users. During a trial, 3 users are included; afterwards the plan's `included_seats`. Active and invited users count against it.
      */
     seats: number;
     /**
@@ -48,7 +48,7 @@ export interface Subscription {
      */
     cancelAtPeriodEnd?: boolean;
     /**
-     * 
+     * When the 30-day trial ends, in UTC with `Z`. Null when there is no trial, either because the person who subscribed already had one in this or another tenant, or because the trial is over.
      */
     trialEndsAt?: Date | null;
     /**

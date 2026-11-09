@@ -28,7 +28,7 @@ export interface SubscribeInput {
      */
     billingCycle: SubscribeInputBillingCycleEnum;
     /**
-     * Defaults to the number of active users, or the plan's included seats if higher.
+     * Defaults to the number of active users or, if higher, to the seats included: 3 during the trial, the plan's `included_seats` otherwise. Seats above the 3 of the trial are paid at once.
      */
     seats?: number;
 }

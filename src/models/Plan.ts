@@ -36,7 +36,7 @@ export interface Plan {
      */
     name: string;
     /**
-     * Users included in the base price.
+     * Users included in the base price once the trial is over. During the 30-day trial every tenant has 3, whatever the plan.
      */
     includedSeats: number;
     /**
