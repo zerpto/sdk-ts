@@ -39,10 +39,40 @@ import {
     CheckoutResponseToJSON,
 } from '../models/CheckoutResponse';
 import {
+    type CreditBalanceResponse,
+    CreditBalanceResponseFromJSON,
+    CreditBalanceResponseToJSON,
+} from '../models/CreditBalanceResponse';
+import {
+    type CreditEntryListResponse,
+    CreditEntryListResponseFromJSON,
+    CreditEntryListResponseToJSON,
+} from '../models/CreditEntryListResponse';
+import {
+    type CreditRefundListResponse,
+    CreditRefundListResponseFromJSON,
+    CreditRefundListResponseToJSON,
+} from '../models/CreditRefundListResponse';
+import {
+    type CreditRefundResponse,
+    CreditRefundResponseFromJSON,
+    CreditRefundResponseToJSON,
+} from '../models/CreditRefundResponse';
+import {
+    type CreditTopUpInput,
+    CreditTopUpInputFromJSON,
+    CreditTopUpInputToJSON,
+} from '../models/CreditTopUpInput';
+import {
     type PaymentMethodListResponse,
     PaymentMethodListResponseFromJSON,
     PaymentMethodListResponseToJSON,
 } from '../models/PaymentMethodListResponse';
+import {
+    type SeatAdditionInput,
+    SeatAdditionInputFromJSON,
+    SeatAdditionInputToJSON,
+} from '../models/SeatAdditionInput';
 import {
     type SubscribeInput,
     SubscribeInputFromJSON,
@@ -59,6 +89,17 @@ import {
     SubscriptionUpdateToJSON,
 } from '../models/SubscriptionUpdate';
 
+export interface AddSeatsRequest {
+    /**
+     * 
+     */
+    seatAdditionInput: SeatAdditionInput;
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
+}
+
 export interface CancelSubscriptionRequest {
     /**
      * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
@@ -71,6 +112,24 @@ export interface CreateCheckoutRequest {
      * 
      */
     checkoutInput: CheckoutInput;
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
+}
+
+export interface CreateCreditRefundRequest {
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
+}
+
+export interface CreateCreditTopUpRequest {
+    /**
+     * 
+     */
+    creditTopUpInput: CreditTopUpInput;
     /**
      * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
      */
@@ -132,6 +191,28 @@ export interface ListBillingPaymentsRequest {
     invoiceId?: string;
 }
 
+export interface ListCreditEntriesRequest {
+    /**
+     * Page size.
+     */
+    perPage?: number;
+    /**
+     * Page number, starting at 1.
+     */
+    page?: number;
+}
+
+export interface ListCreditRefundsRequest {
+    /**
+     * Page size.
+     */
+    perPage?: number;
+    /**
+     * Page number, starting at 1.
+     */
+    page?: number;
+}
+
 export interface ListPaymentMethodsRequest {
     /**
      * Page size.
@@ -154,6 +235,13 @@ export interface ReceiveXenditWebhookRequest {
     requestBody: { [key: string]: any; };
 }
 
+export interface StartTrialRequest {
+    /**
+     * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
+     */
+    idempotencyKey?: string;
+}
+
 export interface UpdateSubscriptionRequest {
     /**
      * 
@@ -165,6 +253,75 @@ export interface UpdateSubscriptionRequest {
  * 
  */
 export class BillingApi extends runtime.BaseAPI {
+
+    /**
+     * Creates request options for addSeats without sending the request
+     */
+    async addSeatsRequestOpts(requestParameters: AddSeatsRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['seatAdditionInput'] == null) {
+            throw new runtime.RequiredError(
+                'seatAdditionInput',
+                'Required parameter "seatAdditionInput" was null or undefined when calling addSeats().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/billing/seat-additions`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SeatAdditionInputToJSON(requestParameters['seatAdditionInput']),
+        };
+    }
+
+    /**
+     * Buys more seats in the middle of a billing period. The charge is prorated for the days left in the current period, and the next renewal bills all seats in full. It creates an invoice, applies any credit first, and the new seats activate only when it is paid. Use it when an owner needs to invite more people than the seats bought allow.  The charge is `seats` × the seat price × days remaining ÷ days in the period, rounded half up once on the invoice line. Days remaining run from today up to, but not including, the next due date. The result is an invoice of kind `seat_addition`; pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). An unpaid invoice expires after 24 hours and no seats activate. Once it is paid, `purchased_seats` in [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) goes up and [`POST /v1/users`](#tag/users/POST/v1/users) can invite more people. Send an `Idempotency-Key` header so a retry does not buy twice.  Error codes: `subscription_not_paid`.  **Response meta** - `meta` is empty. 
+     * Add seats now
+     */
+    async addSeatsRaw(requestParameters: AddSeatsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BillingInvoiceDetailResponse>> {
+        const requestOptions = await this.addSeatsRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => BillingInvoiceDetailResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Buys more seats in the middle of a billing period. The charge is prorated for the days left in the current period, and the next renewal bills all seats in full. It creates an invoice, applies any credit first, and the new seats activate only when it is paid. Use it when an owner needs to invite more people than the seats bought allow.  The charge is `seats` × the seat price × days remaining ÷ days in the period, rounded half up once on the invoice line. Days remaining run from today up to, but not including, the next due date. The result is an invoice of kind `seat_addition`; pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). An unpaid invoice expires after 24 hours and no seats activate. Once it is paid, `purchased_seats` in [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) goes up and [`POST /v1/users`](#tag/users/POST/v1/users) can invite more people. Send an `Idempotency-Key` header so a retry does not buy twice.  Error codes: `subscription_not_paid`.  **Response meta** - `meta` is empty. 
+     * Add seats now
+     */
+    async addSeats(requestParameters: AddSeatsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BillingInvoiceDetailResponse> {
+        const response = await this.addSeatsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Creates request options for cancelSubscription without sending the request
@@ -206,7 +363,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Cancels the subscription at the end of the current period. The tenant keeps full access until `current_period_end`, then becomes read-only, and its data stays available for export and is not deleted. Calling it again on a subscription that is already being cancelled returns 200 and changes nothing.  After this call [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) shows `cancel_at_period_end` as true, and no further invoices are created or charged. A subscription that is already `canceled` has nothing to cancel. Send an `Idempotency-Key` header so a retry is safe.  Error codes: `subscription_not_active`.  **Response meta** - `meta` is empty. 
+     * Stops the subscription from renewing. The tenant keeps every feature and all its paid seats until `current_period_end`, then drops to the free plan with its data kept. No further renewal invoices are created, and nothing already paid is refunded. Use it when an owner decides to leave. Calling it again on a subscription that is already being cancelled returns 200 and changes nothing.  After this call [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) shows `cancel_at_period_end` as true. The tenant can subscribe again at any time with [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription). Send an `Idempotency-Key` header so a retry is safe.  Error codes: `subscription_not_paid`.  **Response meta** - `meta` is empty. 
      * Cancel at period end
      */
     async cancelSubscriptionRaw(requestParameters: CancelSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
@@ -217,7 +374,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Cancels the subscription at the end of the current period. The tenant keeps full access until `current_period_end`, then becomes read-only, and its data stays available for export and is not deleted. Calling it again on a subscription that is already being cancelled returns 200 and changes nothing.  After this call [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) shows `cancel_at_period_end` as true, and no further invoices are created or charged. A subscription that is already `canceled` has nothing to cancel. Send an `Idempotency-Key` header so a retry is safe.  Error codes: `subscription_not_active`.  **Response meta** - `meta` is empty. 
+     * Stops the subscription from renewing. The tenant keeps every feature and all its paid seats until `current_period_end`, then drops to the free plan with its data kept. No further renewal invoices are created, and nothing already paid is refunded. Use it when an owner decides to leave. Calling it again on a subscription that is already being cancelled returns 200 and changes nothing.  After this call [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) shows `cancel_at_period_end` as true. The tenant can subscribe again at any time with [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription). Send an `Idempotency-Key` header so a retry is safe.  Error codes: `subscription_not_paid`.  **Response meta** - `meta` is empty. 
      * Cancel at period end
      */
     async cancelSubscription(requestParameters: CancelSubscriptionRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
@@ -275,7 +432,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Starts a payment for an open subscription invoice and returns the address of a payment page hosted by Xendit. Redirect the person to it. They choose how to pay on that page, such as an e-wallet like GoPay or OVO, QRIS, a bank virtual account or a card, and for a method that can be saved (an e-wallet or a card) they can choose to save it for the next period. No card or account data passes through this API.  The invoice id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). Each call creates a new payment attempt with its own `payment_url`, which stops working at `expires_at`. The redirect back to your site is not proof of payment: the payment becomes `paid` when Xendit confirms it through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). Follow it with [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments). A saved method is listed by [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods), and from then on renewals are charged to it without calling this. Send an `Idempotency-Key` header so a retry does not create two attempts.  Error codes: `invoice_not_payable` (already paid or void).  **Response meta** - `meta` is empty. 
+     * Starts a payment for an open subscription invoice and returns the address of a payment page hosted by Xendit. Redirect the person to it. They choose how to pay on that page, such as an e-wallet like GoPay or OVO, QRIS, a bank virtual account or a card, and for a method that can be saved (an e-wallet or a card) they can choose to save it for the next period. No card or account data passes through this API.  The invoice id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). The amount to pay is the invoice\'s `amount_due`, after any credit. Each call creates a new payment attempt with its own `payment_url`, which stops working at `expires_at`. The redirect back to your site is not proof of payment: the payment becomes `paid` when Xendit confirms it through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). Follow it with [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments). A saved method is listed by [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods), and from then on renewals are charged to it without calling this. Send an `Idempotency-Key` header so a retry does not create two attempts.  Error codes: `invoice_not_payable` (already paid, expired or void).  **Response meta** - `meta` is empty. 
      * Pay an invoice on Xendit
      */
     async createCheckoutRaw(requestParameters: CreateCheckoutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckoutResponse>> {
@@ -286,11 +443,139 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Starts a payment for an open subscription invoice and returns the address of a payment page hosted by Xendit. Redirect the person to it. They choose how to pay on that page, such as an e-wallet like GoPay or OVO, QRIS, a bank virtual account or a card, and for a method that can be saved (an e-wallet or a card) they can choose to save it for the next period. No card or account data passes through this API.  The invoice id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). Each call creates a new payment attempt with its own `payment_url`, which stops working at `expires_at`. The redirect back to your site is not proof of payment: the payment becomes `paid` when Xendit confirms it through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). Follow it with [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments). A saved method is listed by [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods), and from then on renewals are charged to it without calling this. Send an `Idempotency-Key` header so a retry does not create two attempts.  Error codes: `invoice_not_payable` (already paid or void).  **Response meta** - `meta` is empty. 
+     * Starts a payment for an open subscription invoice and returns the address of a payment page hosted by Xendit. Redirect the person to it. They choose how to pay on that page, such as an e-wallet like GoPay or OVO, QRIS, a bank virtual account or a card, and for a method that can be saved (an e-wallet or a card) they can choose to save it for the next period. No card or account data passes through this API.  The invoice id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). The amount to pay is the invoice\'s `amount_due`, after any credit. Each call creates a new payment attempt with its own `payment_url`, which stops working at `expires_at`. The redirect back to your site is not proof of payment: the payment becomes `paid` when Xendit confirms it through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). Follow it with [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments). A saved method is listed by [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods), and from then on renewals are charged to it without calling this. Send an `Idempotency-Key` header so a retry does not create two attempts.  Error codes: `invoice_not_payable` (already paid, expired or void).  **Response meta** - `meta` is empty. 
      * Pay an invoice on Xendit
      */
     async createCheckout(requestParameters: CreateCheckoutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckoutResponse> {
         const response = await this.createCheckoutRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for createCreditRefund without sending the request
+     */
+    async createCreditRefundRequestOpts(requestParameters: CreateCreditRefundRequest): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/billing/credit/refunds`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Asks for the whole remaining credit balance to be sent back through Xendit, and empties the balance. Only the owner can do it. Use it when an owner stops using Zerpto and wants the unused credit back. Subscription payments, including unused seats in the current period, are never refunded.  The refund starts as `pending` and is updated when Xendit reports back through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). Follow it with [`GET /v1/billing/credit/refunds`](#tag/billing/GET/v1/billing/credit/refunds). Send an `Idempotency-Key` header so a retry does not refund twice.  Error codes: `credit_empty`, `refund_pending`.  **Response meta** - `meta` is empty. 
+     * Refund the credit
+     */
+    async createCreditRefundRaw(requestParameters: CreateCreditRefundRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreditRefundResponse>> {
+        const requestOptions = await this.createCreditRefundRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreditRefundResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Asks for the whole remaining credit balance to be sent back through Xendit, and empties the balance. Only the owner can do it. Use it when an owner stops using Zerpto and wants the unused credit back. Subscription payments, including unused seats in the current period, are never refunded.  The refund starts as `pending` and is updated when Xendit reports back through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). Follow it with [`GET /v1/billing/credit/refunds`](#tag/billing/GET/v1/billing/credit/refunds). Send an `Idempotency-Key` header so a retry does not refund twice.  Error codes: `credit_empty`, `refund_pending`.  **Response meta** - `meta` is empty. 
+     * Refund the credit
+     */
+    async createCreditRefund(requestParameters: CreateCreditRefundRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreditRefundResponse> {
+        const response = await this.createCreditRefundRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for createCreditTopUp without sending the request
+     */
+    async createCreditTopUpRequestOpts(requestParameters: CreateCreditTopUpRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['creditTopUpInput'] == null) {
+            throw new runtime.RequiredError(
+                'creditTopUpInput',
+                'Required parameter "creditTopUpInput" was null or undefined when calling createCreditTopUp().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/billing/credit/top-ups`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: CreditTopUpInputToJSON(requestParameters['creditTopUpInput']),
+        };
+    }
+
+    /**
+     * Starts a top-up of the credit balance and returns the address of a payment page hosted by Xendit. Redirect the person to it. The credit does not expire. Use it to pay renewals in advance, or to keep seats paid without handling an invoice each month.  The balance goes up when Xendit confirms the payment through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit), and the movement shows in [`GET /v1/billing/credit/ledger`](#tag/billing/GET/v1/billing/credit/ledger). The payment itself is listed by [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments). Credit already held is used first for the next invoice. Send an `Idempotency-Key` header so a retry does not create two payment pages.  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Top up the credit
+     */
+    async createCreditTopUpRaw(requestParameters: CreateCreditTopUpRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckoutResponse>> {
+        const requestOptions = await this.createCreditTopUpRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CheckoutResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Starts a top-up of the credit balance and returns the address of a payment page hosted by Xendit. Redirect the person to it. The credit does not expire. Use it to pay renewals in advance, or to keep seats paid without handling an invoice each month.  The balance goes up when Xendit confirms the payment through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit), and the movement shows in [`GET /v1/billing/credit/ledger`](#tag/billing/GET/v1/billing/credit/ledger). The payment itself is listed by [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments). Credit already held is used first for the next invoice. Send an `Idempotency-Key` header so a retry does not create two payment pages.  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Top up the credit
+     */
+    async createCreditTopUp(requestParameters: CreateCreditTopUpRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckoutResponse> {
+        const response = await this.createCreditTopUpRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -344,21 +629,21 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Subscribes the current tenant to a plan and a billing cycle. When the signed-in person has never had a trial (see `trial_available` in [`GET /v1/auth/me`](#tag/authentication/GET/v1/auth/me)), the subscription starts as `trialing` for 30 days, with full access for 3 users, so the tenant uses the service straight away and pays later: the first invoice is created at the same time and falls due when the trial ends, which `trial_ends_at` shows.  Plan ids and prices come from [`GET /v1/plans`](#tag/plans/GET/v1/plans). When the invoice is due, pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). The first confirmed payment moves the subscription to `active`, and the confirmation arrives through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). A person gets one trial only, counted across every tenant they create or own, so opening another workspace does not start another trial. If the signed-in account has had a trial before, in this tenant or any other, the subscription starts without a trial: `trial_ends_at` is null, the first invoice is due immediately, and the subscription stays `past_due` (read-only) until that invoice is paid. `seats` defaults to the number of active users or, if higher, to the seats included: 3 during the trial, the plan\'s `included_seats` otherwise. Seats above the 3 of the trial are invoiced right away, not at the end of the trial. Send an `Idempotency-Key` header so a retry does not subscribe twice.  Error codes: `subscription_exists`, `unknown_plan`.  **Response meta** - `meta` is empty. 
-     * Subscribe to a plan
+     * Subscribes the current tenant by buying a number of seats at the seat price. It creates the first invoice, which is due now and paid first: the seats and every feature activate only when it is paid, and the billing day becomes the day the payment is confirmed. Use it when an owner wants to unlock all features straight away, or when the trial is ending.  `seats` must be at least the seats already in use, which are the owner, every active user and every pending invite, so a tenant coming out of a trial cannot buy fewer seats than it used unless it first removes users with [`DELETE /v1/users/{{id}}`](#tag/users/DELETE/v1/users/{{id}}) or [`DELETE /v1/users/{{id}}/activate`](#tag/users/DELETE/v1/users/{{id}}/activate). Any credit balance is applied first ([`GET /v1/billing/credit`](#tag/billing/GET/v1/billing/credit)); the rest is paid with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and the confirmation arrives through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit), which makes the `status` `paid`. An unpaid invoice expires after 24 hours and nothing activates. The price comes from [`GET /v1/pricing`](#tag/pricing/GET/v1/pricing). Send an `Idempotency-Key` header so a retry does not create two invoices.  Error codes: `subscription_exists`, `seats_below_occupied`, `invoice_pending`.  **Response meta** - `meta` is empty. 
+     * Subscribe with seats
      */
-    async createSubscriptionRaw(requestParameters: CreateSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
+    async createSubscriptionRaw(requestParameters: CreateSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BillingInvoiceDetailResponse>> {
         const requestOptions = await this.createSubscriptionRequestOpts(requestParameters);
         const response = await this.request(requestOptions, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SubscriptionResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => BillingInvoiceDetailResponseFromJSON(jsonValue));
     }
 
     /**
-     * Subscribes the current tenant to a plan and a billing cycle. When the signed-in person has never had a trial (see `trial_available` in [`GET /v1/auth/me`](#tag/authentication/GET/v1/auth/me)), the subscription starts as `trialing` for 30 days, with full access for 3 users, so the tenant uses the service straight away and pays later: the first invoice is created at the same time and falls due when the trial ends, which `trial_ends_at` shows.  Plan ids and prices come from [`GET /v1/plans`](#tag/plans/GET/v1/plans). When the invoice is due, pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). The first confirmed payment moves the subscription to `active`, and the confirmation arrives through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). A person gets one trial only, counted across every tenant they create or own, so opening another workspace does not start another trial. If the signed-in account has had a trial before, in this tenant or any other, the subscription starts without a trial: `trial_ends_at` is null, the first invoice is due immediately, and the subscription stays `past_due` (read-only) until that invoice is paid. `seats` defaults to the number of active users or, if higher, to the seats included: 3 during the trial, the plan\'s `included_seats` otherwise. Seats above the 3 of the trial are invoiced right away, not at the end of the trial. Send an `Idempotency-Key` header so a retry does not subscribe twice.  Error codes: `subscription_exists`, `unknown_plan`.  **Response meta** - `meta` is empty. 
-     * Subscribe to a plan
+     * Subscribes the current tenant by buying a number of seats at the seat price. It creates the first invoice, which is due now and paid first: the seats and every feature activate only when it is paid, and the billing day becomes the day the payment is confirmed. Use it when an owner wants to unlock all features straight away, or when the trial is ending.  `seats` must be at least the seats already in use, which are the owner, every active user and every pending invite, so a tenant coming out of a trial cannot buy fewer seats than it used unless it first removes users with [`DELETE /v1/users/{{id}}`](#tag/users/DELETE/v1/users/{{id}}) or [`DELETE /v1/users/{{id}}/activate`](#tag/users/DELETE/v1/users/{{id}}/activate). Any credit balance is applied first ([`GET /v1/billing/credit`](#tag/billing/GET/v1/billing/credit)); the rest is paid with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and the confirmation arrives through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit), which makes the `status` `paid`. An unpaid invoice expires after 24 hours and nothing activates. The price comes from [`GET /v1/pricing`](#tag/pricing/GET/v1/pricing). Send an `Idempotency-Key` header so a retry does not create two invoices.  Error codes: `subscription_exists`, `seats_below_occupied`, `invoice_pending`.  **Response meta** - `meta` is empty. 
+     * Subscribe with seats
      */
-    async createSubscription(requestParameters: CreateSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
+    async createSubscription(requestParameters: CreateSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BillingInvoiceDetailResponse> {
         const response = await this.createSubscriptionRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -469,7 +754,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns one subscription invoice in full: its lines, subtotal, PPN, total, billing period, due date, the time it was paid and a link to the PDF. Use it to show an invoice to the person, or to let them download it.  The id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). If the status is `open`, pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout); the attempts made so far are in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns one subscription invoice in full: its lines, subtotal, PPN, total, billing period, due date, the time it was paid and a link to the PDF. Use it to show an invoice to the person, or to let them download it.  The id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). A renewal invoice is created 7 days before its due date with any credit already applied, and one that credit covers entirely is paid on the due date without a payment. If the status is `open`, pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout); the attempts made so far are in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get subscription invoice
      */
     async getBillingInvoiceRaw(requestParameters: GetBillingInvoiceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BillingInvoiceDetailResponse>> {
@@ -480,11 +765,66 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns one subscription invoice in full: its lines, subtotal, PPN, total, billing period, due date, the time it was paid and a link to the PDF. Use it to show an invoice to the person, or to let them download it.  The id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). If the status is `open`, pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout); the attempts made so far are in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns one subscription invoice in full: its lines, subtotal, PPN, total, billing period, due date, the time it was paid and a link to the PDF. Use it to show an invoice to the person, or to let them download it.  The id comes from [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). A renewal invoice is created 7 days before its due date with any credit already applied, and one that credit covers entirely is paid on the due date without a payment. If the status is `open`, pay it with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout); the attempts made so far are in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Get subscription invoice
      */
     async getBillingInvoice(requestParameters: GetBillingInvoiceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BillingInvoiceDetailResponse> {
         const response = await this.getBillingInvoiceRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for getCreditBalance without sending the request
+     */
+    async getCreditBalanceRequestOpts(): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/billing/credit`;
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Returns the prepaid credit the tenant holds. The credit is applied first to every invoice, before anything is charged on Xendit, and an invoice it covers entirely is paid by itself. Use it on the billing page to show how much credit is left.  The balance is the sum of the movements listed by [`GET /v1/billing/credit/ledger`](#tag/billing/GET/v1/billing/credit/ledger). Add credit with [`POST /v1/billing/credit/top-ups`](#tag/billing/POST/v1/billing/credit/top-ups) and take what is left back with [`POST /v1/billing/credit/refunds`](#tag/billing/POST/v1/billing/credit/refunds).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Get the credit balance
+     */
+    async getCreditBalanceRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreditBalanceResponse>> {
+        const requestOptions = await this.getCreditBalanceRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreditBalanceResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns the prepaid credit the tenant holds. The credit is applied first to every invoice, before anything is charged on Xendit, and an invoice it covers entirely is paid by itself. Use it on the billing page to show how much credit is left.  The balance is the sum of the movements listed by [`GET /v1/billing/credit/ledger`](#tag/billing/GET/v1/billing/credit/ledger). Add credit with [`POST /v1/billing/credit/top-ups`](#tag/billing/POST/v1/billing/credit/top-ups) and take what is left back with [`POST /v1/billing/credit/refunds`](#tag/billing/POST/v1/billing/credit/refunds).  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Get the credit balance
+     */
+    async getCreditBalance(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreditBalanceResponse> {
+        const response = await this.getCreditBalanceRaw(initOverrides);
         return await response.value();
     }
 
@@ -524,8 +864,8 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns the subscription of the current tenant: its plan, status, billing cycle, number of seats, whether paid API access is on, when the current period ends, when the trial ends during a trial, and the saved payment method charged for renewals. Use it to build the plan page, or to decide what a tenant may still do: a `past_due` or `canceled` subscription makes the tenant read-only.  A subscription is created with [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription), changed with [`PATCH /v1/billing/subscription`](#tag/billing/PATCH/v1/billing/subscription) and cancelled with [`DELETE /v1/billing/subscription`](#tag/billing/DELETE/v1/billing/subscription). The invoices behind it are listed by [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices), and the saved payment methods by [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods).  Error codes: none specific.  **Response meta** - `meta` is empty. 
-     * Get current plan and add-ons
+     * Returns the billing state of the current tenant: its `status` (`free`, `trial`, `paid` or `overdue`), the seats it has bought and the seats in use, any seat reduction scheduled for the next renewal, the billing day and period, and when the trial ends. Use it to build the billing page, to show how many seats are still free before inviting someone, or to decide what the tenant may still do.  `free` has the basic features and one seat. `trial` has every feature for up to 3 seats. `paid` has every feature for the seats bought. `overdue` has dropped back to the basic features, with every user except the owner read-only, until the open invoice is paid. Which feature is basic or paid comes from [`GET /v1/features`](#tag/pricing/GET/v1/features). Seats are bought with [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription) and [`POST /v1/billing/seat-additions`](#tag/billing/POST/v1/billing/seat-additions), reduced with [`PATCH /v1/billing/subscription`](#tag/billing/PATCH/v1/billing/subscription), and the invoices behind them are listed by [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). All dates follow Asia/Jakarta.  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Get seats and billing status
      */
     async getSubscriptionRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
         const requestOptions = await this.getSubscriptionRequestOpts();
@@ -535,8 +875,8 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns the subscription of the current tenant: its plan, status, billing cycle, number of seats, whether paid API access is on, when the current period ends, when the trial ends during a trial, and the saved payment method charged for renewals. Use it to build the plan page, or to decide what a tenant may still do: a `past_due` or `canceled` subscription makes the tenant read-only.  A subscription is created with [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription), changed with [`PATCH /v1/billing/subscription`](#tag/billing/PATCH/v1/billing/subscription) and cancelled with [`DELETE /v1/billing/subscription`](#tag/billing/DELETE/v1/billing/subscription). The invoices behind it are listed by [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices), and the saved payment methods by [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods).  Error codes: none specific.  **Response meta** - `meta` is empty. 
-     * Get current plan and add-ons
+     * Returns the billing state of the current tenant: its `status` (`free`, `trial`, `paid` or `overdue`), the seats it has bought and the seats in use, any seat reduction scheduled for the next renewal, the billing day and period, and when the trial ends. Use it to build the billing page, to show how many seats are still free before inviting someone, or to decide what the tenant may still do.  `free` has the basic features and one seat. `trial` has every feature for up to 3 seats. `paid` has every feature for the seats bought. `overdue` has dropped back to the basic features, with every user except the owner read-only, until the open invoice is paid. Which feature is basic or paid comes from [`GET /v1/features`](#tag/pricing/GET/v1/features). Seats are bought with [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription) and [`POST /v1/billing/seat-additions`](#tag/billing/POST/v1/billing/seat-additions), reduced with [`PATCH /v1/billing/subscription`](#tag/billing/PATCH/v1/billing/subscription), and the invoices behind them are listed by [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices). All dates follow Asia/Jakarta.  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Get seats and billing status
      */
     async getSubscription(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
         const response = await this.getSubscriptionRaw(initOverrides);
@@ -591,7 +931,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists the subscription invoices of the current tenant. Each one is the full invoice: its number, status (`open`, `paid` or `void`), billing period, due date, lines, PPN, total and a link to the PDF. Use it for the billing history page, or to find the invoice that has to be paid: filter with `status=open`.  A single invoice is returned by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) in the same shape as the items of this list. Pay an open one with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and see what was paid in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the subscription invoices of the current tenant. Each one is the full invoice: its number, kind (`subscription`, `renewal` or `seat_addition`), status (`open`, `paid`, `expired` or `void`), billing period, due date, lines, PPN, total, the credit applied and the amount still due, and a link to the PDF. Use it for the billing history page, or to find the invoice that has to be paid: filter with `status=open`.  A single invoice is returned by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) in the same shape as the items of this list. Pay an open one with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and see what was paid in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List subscription invoices
      */
     async listBillingInvoicesRaw(requestParameters: ListBillingInvoicesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BillingInvoiceListResponse>> {
@@ -602,7 +942,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists the subscription invoices of the current tenant. Each one is the full invoice: its number, status (`open`, `paid` or `void`), billing period, due date, lines, PPN, total and a link to the PDF. Use it for the billing history page, or to find the invoice that has to be paid: filter with `status=open`.  A single invoice is returned by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) in the same shape as the items of this list. Pay an open one with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and see what was paid in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the subscription invoices of the current tenant. Each one is the full invoice: its number, kind (`subscription`, `renewal` or `seat_addition`), status (`open`, `paid`, `expired` or `void`), billing period, due date, lines, PPN, total, the credit applied and the amount still due, and a link to the PDF. Use it for the billing history page, or to find the invoice that has to be paid: filter with `status=open`.  A single invoice is returned by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) in the same shape as the items of this list. Pay an open one with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and see what was paid in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List subscription invoices
      */
     async listBillingInvoices(requestParameters: ListBillingInvoicesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BillingInvoiceListResponse> {
@@ -658,7 +998,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists the payment attempts for subscription invoices, with their amount, how they were paid (`method` and `channel`), whether the person paid on the payment page or Zerpto charged a saved method (`source`), status (`pending`, `paid`, `expired` or `failed`) and time. One invoice can have several attempts, for example an expired payment page followed by a new one. Filter with `invoice_id` to see the attempts for one invoice.  Every attempt is created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and its status is updated when Xendit reports back through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). The invoice itself is shown by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the payment attempts for subscription invoices and credit top-ups, with their amount, how they were paid (`method` and `channel`), whether the person paid on the payment page or Zerpto charged a saved method (`source`), status (`pending`, `paid`, `expired` or `failed`) and time. One invoice can have several attempts, for example an expired payment page followed by a new one. Filter with `invoice_id` to see the attempts for one invoice; a top-up has no invoice.  Every attempt is created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and its status is updated when Xendit reports back through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). The invoice itself is shown by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List payment history
      */
     async listBillingPaymentsRaw(requestParameters: ListBillingPaymentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BillingPaymentListResponse>> {
@@ -669,11 +1009,137 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists the payment attempts for subscription invoices, with their amount, how they were paid (`method` and `channel`), whether the person paid on the payment page or Zerpto charged a saved method (`source`), status (`pending`, `paid`, `expired` or `failed`) and time. One invoice can have several attempts, for example an expired payment page followed by a new one. Filter with `invoice_id` to see the attempts for one invoice.  Every attempt is created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and its status is updated when Xendit reports back through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). The invoice itself is shown by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * Lists the payment attempts for subscription invoices and credit top-ups, with their amount, how they were paid (`method` and `channel`), whether the person paid on the payment page or Zerpto charged a saved method (`source`), status (`pending`, `paid`, `expired` or `failed`) and time. One invoice can have several attempts, for example an expired payment page followed by a new one. Filter with `invoice_id` to see the attempts for one invoice; a top-up has no invoice.  Every attempt is created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout), and its status is updated when Xendit reports back through [`POST /v1/billing/webhooks/xendit`](#tag/billing/POST/v1/billing/webhooks/xendit). The invoice itself is shown by [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
      * List payment history
      */
     async listBillingPayments(requestParameters: ListBillingPaymentsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BillingPaymentListResponse> {
         const response = await this.listBillingPaymentsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for listCreditEntries without sending the request
+     */
+    async listCreditEntriesRequestOpts(requestParameters: ListCreditEntriesRequest): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        if (requestParameters['perPage'] != null) {
+            queryParameters['per_page'] = requestParameters['perPage'];
+        }
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/billing/credit/ledger`;
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Lists every movement of the credit balance, newest first: top-ups, amounts applied to invoices, refunds and manual adjustments. The ledger is append-only, so an entry is never changed or removed, and the balance is always their sum. Use it for the credit history on the billing page.  Each entry links to the invoice or payment behind it. The current total is returned by [`GET /v1/billing/credit`](#tag/billing/GET/v1/billing/credit), and the invoices by [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * List credit movements
+     */
+    async listCreditEntriesRaw(requestParameters: ListCreditEntriesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreditEntryListResponse>> {
+        const requestOptions = await this.listCreditEntriesRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreditEntryListResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Lists every movement of the credit balance, newest first: top-ups, amounts applied to invoices, refunds and manual adjustments. The ledger is append-only, so an entry is never changed or removed, and the balance is always their sum. Use it for the credit history on the billing page.  Each entry links to the invoice or payment behind it. The current total is returned by [`GET /v1/billing/credit`](#tag/billing/GET/v1/billing/credit), and the invoices by [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices).  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * List credit movements
+     */
+    async listCreditEntries(requestParameters: ListCreditEntriesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreditEntryListResponse> {
+        const response = await this.listCreditEntriesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for listCreditRefunds without sending the request
+     */
+    async listCreditRefundsRequestOpts(requestParameters: ListCreditRefundsRequest): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        if (requestParameters['perPage'] != null) {
+            queryParameters['per_page'] = requestParameters['perPage'];
+        }
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/billing/credit/refunds`;
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Lists the refunds of credit balance that the owner requested, newest first, with their status. Use it to follow a refund from `pending` to `completed` or `failed`.  A refund is requested with [`POST /v1/billing/credit/refunds`](#tag/billing/POST/v1/billing/credit/refunds), and its movement shows in [`GET /v1/billing/credit/ledger`](#tag/billing/GET/v1/billing/credit/ledger) once it is sent.  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * List credit refunds
+     */
+    async listCreditRefundsRaw(requestParameters: ListCreditRefundsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreditRefundListResponse>> {
+        const requestOptions = await this.listCreditRefundsRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreditRefundListResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Lists the refunds of credit balance that the owner requested, newest first, with their status. Use it to follow a refund from `pending` to `completed` or `failed`.  A refund is requested with [`POST /v1/billing/credit/refunds`](#tag/billing/POST/v1/billing/credit/refunds), and its movement shows in [`GET /v1/billing/credit/ledger`](#tag/billing/GET/v1/billing/credit/ledger) once it is sent.  Error codes: none specific.  **Response meta** - `pagination`: `page`, `per_page`, `total_items`, `total_pages`, and the paging URLs `self`, `first`, `prev`, `next`, `last` (`prev` and `next` are null at the ends). Use `?page=` and `?per_page=`. 
+     * List credit refunds
+     */
+    async listCreditRefunds(requestParameters: ListCreditRefundsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreditRefundListResponse> {
+        const response = await this.listCreditRefundsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -781,7 +1247,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Receives payment events from Xendit. Xendit calls it when a payment page is completed or expires, when a saved payment method becomes active, fails or expires, and when an automatic renewal charge succeeds or fails. Zerpto then updates the payment, the invoice and the saved method, and moves the subscription to `active` when an invoice is paid. It is meant for Xendit only, not for your own code, and it is the only way a payment becomes `paid`. If Zerpto adds another payment provider, that provider gets its own endpoint next to this one.  Xendit reports on every payment page created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout) and on every automatic renewal charge, and the outcome shows up in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments), [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) and [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods). The call is not tenant-authenticated: the `X-CALLBACK-TOKEN` header carries the callback token set up in Xendit, and a wrong token is rejected with 401. Handling is idempotent on the Xendit ids, so duplicate, late and out-of-order calls are safe, and any verified call gets 200 even when nothing changes, so that Xendit stops retrying.  Error codes: none specific.  **Response meta** - No response body, so no meta. 
+     * Receives payment events from Xendit. Xendit calls it when a payment page is completed or expires, when a credit refund is sent or fails, and when a saved payment method becomes active, fails or expires. Zerpto then updates the payment, the invoice, the credit balance and the saved method. When an invoice is paid it activates the new seats, sets the billing day on the first payment, and brings an `overdue` tenant back to `paid` with everything restored. It is meant for Xendit only, not for your own code, and it is the only way a payment becomes `paid`. If Zerpto adds another payment provider, that provider gets its own endpoint next to this one.  Xendit reports on every payment page created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout) or [`POST /v1/billing/credit/top-ups`](#tag/billing/POST/v1/billing/credit/top-ups), and on every refund from [`POST /v1/billing/credit/refunds`](#tag/billing/POST/v1/billing/credit/refunds), and the outcome shows up in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments), [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) and [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods). The call is not tenant-authenticated: the `X-CALLBACK-TOKEN` header carries the callback token set up in Xendit, and a wrong token is rejected with 401. Handling is idempotent on the Xendit ids, so duplicate, late and out-of-order calls are safe, and any verified call gets 200 even when nothing changes, so that Xendit stops retrying.  Error codes: none specific.  **Response meta** - No response body, so no meta. 
      * Receive Xendit payment events
      */
     async receiveXenditWebhookRaw(requestParameters: ReceiveXenditWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -792,11 +1258,70 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Receives payment events from Xendit. Xendit calls it when a payment page is completed or expires, when a saved payment method becomes active, fails or expires, and when an automatic renewal charge succeeds or fails. Zerpto then updates the payment, the invoice and the saved method, and moves the subscription to `active` when an invoice is paid. It is meant for Xendit only, not for your own code, and it is the only way a payment becomes `paid`. If Zerpto adds another payment provider, that provider gets its own endpoint next to this one.  Xendit reports on every payment page created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout) and on every automatic renewal charge, and the outcome shows up in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments), [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) and [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods). The call is not tenant-authenticated: the `X-CALLBACK-TOKEN` header carries the callback token set up in Xendit, and a wrong token is rejected with 401. Handling is idempotent on the Xendit ids, so duplicate, late and out-of-order calls are safe, and any verified call gets 200 even when nothing changes, so that Xendit stops retrying.  Error codes: none specific.  **Response meta** - No response body, so no meta. 
+     * Receives payment events from Xendit. Xendit calls it when a payment page is completed or expires, when a credit refund is sent or fails, and when a saved payment method becomes active, fails or expires. Zerpto then updates the payment, the invoice, the credit balance and the saved method. When an invoice is paid it activates the new seats, sets the billing day on the first payment, and brings an `overdue` tenant back to `paid` with everything restored. It is meant for Xendit only, not for your own code, and it is the only way a payment becomes `paid`. If Zerpto adds another payment provider, that provider gets its own endpoint next to this one.  Xendit reports on every payment page created by [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout) or [`POST /v1/billing/credit/top-ups`](#tag/billing/POST/v1/billing/credit/top-ups), and on every refund from [`POST /v1/billing/credit/refunds`](#tag/billing/POST/v1/billing/credit/refunds), and the outcome shows up in [`GET /v1/billing/payments`](#tag/billing/GET/v1/billing/payments), [`GET /v1/billing/invoices/{id}`](#tag/billing/GET/v1/billing/invoices/{id}) and [`GET /v1/billing/payment-methods`](#tag/billing/GET/v1/billing/payment-methods). The call is not tenant-authenticated: the `X-CALLBACK-TOKEN` header carries the callback token set up in Xendit, and a wrong token is rejected with 401. Handling is idempotent on the Xendit ids, so duplicate, late and out-of-order calls are safe, and any verified call gets 200 even when nothing changes, so that Xendit stops retrying.  Error codes: none specific.  **Response meta** - No response body, so no meta. 
      * Receive Xendit payment events
      */
     async receiveXenditWebhook(requestParameters: ReceiveXenditWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.receiveXenditWebhookRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Creates request options for startTrial without sending the request
+     */
+    async startTrialRequestOpts(requestParameters: StartTrialRequest): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/billing/trial`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Starts the 30-day free trial for the current tenant. During the trial every feature is unlocked for up to 3 seats, counting the owner and pending invites, and no card is taken. Only the owner can start it. Use it when an owner wants to try all the features without paying. The trial belongs to the person: each user gets one, whichever tenant they start it in, and the phone number they verified can be used for one trial only.  The owner first verifies a phone number with [`POST /v1/auth/phone/code`](#tag/authentication/POST/v1/auth/phone/code) and [`POST /v1/auth/phone/verify`](#tag/authentication/POST/v1/auth/phone/verify); `trial_available` and `phone_verified` in [`GET /v1/auth/me`](#tag/authentication/GET/v1/auth/me) say whether the button can be offered. The result is read with [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription), where `status` is `trial` and `trial_ends_at` shows the end. Reminders go out 7, 3 and 1 days before it ends. When it ends without a subscription the tenant returns to `free`: invited users stay read-only, the owner can still edit all data, and the audit log keeps showing who did what. To keep every feature, subscribe at any time with [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription). Send an `Idempotency-Key` header so a retry does not start it twice.  Error codes: `phone_not_verified`, `phone_already_used`, `trial_used`, `subscription_exists`.  **Response meta** - `meta` is empty. 
+     * Start the free trial
+     */
+    async startTrialRaw(requestParameters: StartTrialRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
+        const requestOptions = await this.startTrialRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SubscriptionResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Starts the 30-day free trial for the current tenant. During the trial every feature is unlocked for up to 3 seats, counting the owner and pending invites, and no card is taken. Only the owner can start it. Use it when an owner wants to try all the features without paying. The trial belongs to the person: each user gets one, whichever tenant they start it in, and the phone number they verified can be used for one trial only.  The owner first verifies a phone number with [`POST /v1/auth/phone/code`](#tag/authentication/POST/v1/auth/phone/code) and [`POST /v1/auth/phone/verify`](#tag/authentication/POST/v1/auth/phone/verify); `trial_available` and `phone_verified` in [`GET /v1/auth/me`](#tag/authentication/GET/v1/auth/me) say whether the button can be offered. The result is read with [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription), where `status` is `trial` and `trial_ends_at` shows the end. Reminders go out 7, 3 and 1 days before it ends. When it ends without a subscription the tenant returns to `free`: invited users stay read-only, the owner can still edit all data, and the audit log keeps showing who did what. To keep every feature, subscribe at any time with [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription). Send an `Idempotency-Key` header so a retry does not start it twice.  Error codes: `phone_not_verified`, `phone_already_used`, `trial_used`, `subscription_exists`.  **Response meta** - `meta` is empty. 
+     * Start the free trial
+     */
+    async startTrial(requestParameters: StartTrialRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
+        const response = await this.startTrialRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
@@ -845,8 +1370,8 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Changes the plan, billing cycle, number of seats or paid API access of the current subscription. Send only the fields you want to change. Use it when a team grows, moves to a bigger plan, or switches between monthly and annual. A change that costs more produces an invoice for the difference. During the trial, 3 users are included whatever the plan; every seat above that is paid, so raising `seats` over 3 produces an invoice that is due now, not at the end of the trial.  Plans and prices come from [`GET /v1/plans`](#tag/plans/GET/v1/plans). An invoice created by a change shows up in [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices) and is paid with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). To stop the subscription instead of changing it, call [`DELETE /v1/billing/subscription`](#tag/billing/DELETE/v1/billing/subscription).  Error codes: `unknown_plan`, `subscription_not_active`.  **Response meta** - `meta` is empty. 
-     * Change plan, seats or add-on
+     * Sets how many seats to bill at the next renewal, so a team that shrinks can reduce its seats without losing anything now. The seats already paid for stay usable until the period ends, and the renewal bills the larger of `scheduled_seats` and the seats in use at that time. Send `null` to clear a schedule. Use it when fewer people need access from the next period.  The current schedule is shown by [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) as `scheduled_seats`. To add seats instead, call [`POST /v1/billing/seat-additions`](#tag/billing/POST/v1/billing/seat-additions); to stop renewing altogether, call [`DELETE /v1/billing/subscription`](#tag/billing/DELETE/v1/billing/subscription). Seats are never refunded, and a user removed with [`DELETE /v1/users/{{id}}/activate`](#tag/users/DELETE/v1/users/{{id}}/activate) frees a seat that another person can take at no cost.  Error codes: `subscription_not_paid`.  **Response meta** - `meta` is empty. 
+     * Schedule fewer seats
      */
     async updateSubscriptionRaw(requestParameters: UpdateSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
         const requestOptions = await this.updateSubscriptionRequestOpts(requestParameters);
@@ -856,8 +1381,8 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Changes the plan, billing cycle, number of seats or paid API access of the current subscription. Send only the fields you want to change. Use it when a team grows, moves to a bigger plan, or switches between monthly and annual. A change that costs more produces an invoice for the difference. During the trial, 3 users are included whatever the plan; every seat above that is paid, so raising `seats` over 3 produces an invoice that is due now, not at the end of the trial.  Plans and prices come from [`GET /v1/plans`](#tag/plans/GET/v1/plans). An invoice created by a change shows up in [`GET /v1/billing/invoices`](#tag/billing/GET/v1/billing/invoices) and is paid with [`POST /v1/billing/checkout`](#tag/billing/POST/v1/billing/checkout). To stop the subscription instead of changing it, call [`DELETE /v1/billing/subscription`](#tag/billing/DELETE/v1/billing/subscription).  Error codes: `unknown_plan`, `subscription_not_active`.  **Response meta** - `meta` is empty. 
-     * Change plan, seats or add-on
+     * Sets how many seats to bill at the next renewal, so a team that shrinks can reduce its seats without losing anything now. The seats already paid for stay usable until the period ends, and the renewal bills the larger of `scheduled_seats` and the seats in use at that time. Send `null` to clear a schedule. Use it when fewer people need access from the next period.  The current schedule is shown by [`GET /v1/billing/subscription`](#tag/billing/GET/v1/billing/subscription) as `scheduled_seats`. To add seats instead, call [`POST /v1/billing/seat-additions`](#tag/billing/POST/v1/billing/seat-additions); to stop renewing altogether, call [`DELETE /v1/billing/subscription`](#tag/billing/DELETE/v1/billing/subscription). Seats are never refunded, and a user removed with [`DELETE /v1/users/{{id}}/activate`](#tag/users/DELETE/v1/users/{{id}}/activate) frees a seat that another person can take at no cost.  Error codes: `subscription_not_paid`.  **Response meta** - `meta` is empty. 
+     * Schedule fewer seats
      */
     async updateSubscription(requestParameters: UpdateSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
         const response = await this.updateSubscriptionRaw(requestParameters, initOverrides);
@@ -872,6 +1397,7 @@ export class BillingApi extends runtime.BaseAPI {
 export const ListBillingInvoicesStatusEnum = {
     Open: 'open',
     Paid: 'paid',
+    Expired: 'expired',
     Void: 'void',
 } as const;
 export type ListBillingInvoicesStatusEnum = typeof ListBillingInvoicesStatusEnum[keyof typeof ListBillingInvoicesStatusEnum];

@@ -7,6 +7,7 @@
 Name | Type
 ------------ | -------------
 `id` | string
+`purpose` | string
 `invoiceId` | string
 `amount` | [Money](Money.md)
 `method` | string
@@ -25,6 +26,7 @@ import type { BillingPayment } from '@zerpto/sdk'
 // TODO: Update the object below with actual values
 const example = {
   "id": null,
+  "purpose": null,
   "invoiceId": null,
   "amount": null,
   "method": null,

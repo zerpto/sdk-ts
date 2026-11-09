@@ -28,13 +28,17 @@ import {
  */
 export interface BillingInvoice {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID (`sinv`).
      */
     readonly id: string;
     /**
      * 
      */
     number: string;
+    /**
+     * `subscription` is the first invoice, `renewal` is created 7 days before each due date, and `seat_addition` is a prorated charge for seats added mid-period.
+     */
+    kind: BillingInvoiceKindEnum;
     /**
      * 
      */
@@ -46,7 +50,19 @@ export interface BillingInvoice {
     /**
      * 
      */
+    creditApplied: Money;
+    /**
+     * 
+     */
+    amountDue: Money;
+    /**
+     * `expired` means a seat-addition or first invoice was not paid within 24 hours, so no seats activated.
+     */
     status: BillingInvoiceStatusEnum;
+    /**
+     * When an unpaid first or seat-addition invoice expires, in UTC with `Z`. Null for a renewal invoice.
+     */
+    expiresAt?: Date | null;
     /**
      * 
      */
@@ -57,9 +73,20 @@ export interface BillingInvoice {
 /**
  * @export
  */
+export const BillingInvoiceKindEnum = {
+    Subscription: 'subscription',
+    Renewal: 'renewal',
+    SeatAddition: 'seat_addition',
+} as const;
+export type BillingInvoiceKindEnum = typeof BillingInvoiceKindEnum[keyof typeof BillingInvoiceKindEnum];
+
+/**
+ * @export
+ */
 export const BillingInvoiceStatusEnum = {
     Open: 'open',
     Paid: 'paid',
+    Expired: 'expired',
     Void: 'void',
 } as const;
 export type BillingInvoiceStatusEnum = typeof BillingInvoiceStatusEnum[keyof typeof BillingInvoiceStatusEnum];
@@ -71,8 +98,11 @@ export type BillingInvoiceStatusEnum = typeof BillingInvoiceStatusEnum[keyof typ
 export function instanceOfBillingInvoice(value: object): value is BillingInvoice {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('number' in value) || value['number'] === undefined) return false;
+    if (!('kind' in value) || value['kind'] === undefined) return false;
     if (!('date' in value) || value['date'] === undefined) return false;
     if (!('total' in value) || value['total'] === undefined) return false;
+    if ((!('creditApplied' in (value as Record<string, any>)) && !('credit_applied' in (value as Record<string, any>))) || ((value as Record<string, any>)['creditApplied'] === undefined && (value as Record<string, any>)['credit_applied'] === undefined)) return false;
+    if ((!('amountDue' in (value as Record<string, any>)) && !('amount_due' in (value as Record<string, any>))) || ((value as Record<string, any>)['amountDue'] === undefined && (value as Record<string, any>)['amount_due'] === undefined)) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     return true;
 }
@@ -89,9 +119,13 @@ export function BillingInvoiceFromJSONTyped(json: any, ignoreDiscriminator: bool
         
         'id': json['id'],
         'number': json['number'],
+        'kind': json['kind'],
         'date': (json['date'] == null ? json['date'] : parseDate(json['date'])),
         'total': MoneyFromJSON(json['total']),
+        'creditApplied': MoneyFromJSON(json['credit_applied']),
+        'amountDue': MoneyFromJSON(json['amount_due']),
         'status': json['status'],
+        'expiresAt': json['expires_at'] === undefined ? undefined : json['expires_at'] === null ? null : (parseDateTime(json['expires_at'])),
         'pdfUrl': json['pdf_url'] == null ? undefined : json['pdf_url'],
     };
 }
@@ -108,9 +142,13 @@ export function BillingInvoiceToJSONTyped(value?: Omit<BillingInvoice, 'id'> | n
     return {
         
         'number': value['number'],
+        'kind': value['kind'],
         'date': value['date'] == null ? value['date'] : serializeDate(value['date']),
         'total': MoneyToJSON(value['total']),
+        'credit_applied': MoneyToJSON(value['creditApplied']),
+        'amount_due': MoneyToJSON(value['amountDue']),
         'status': value['status'],
+        'expires_at': value['expiresAt'] == null ? value['expiresAt'] : serializeDateTime(value['expiresAt']),
         'pdf_url': value['pdfUrl'],
     };
 }

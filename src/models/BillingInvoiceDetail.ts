@@ -35,13 +35,17 @@ import {
  */
 export interface BillingInvoiceDetail {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID (`sinv`).
      */
     readonly id: string;
     /**
      * 
      */
     number: string;
+    /**
+     * `subscription` is the first invoice, `renewal` is created 7 days before each due date, and `seat_addition` is a prorated charge for seats added mid-period.
+     */
+    kind: BillingInvoiceDetailKindEnum;
     /**
      * 
      */
@@ -53,7 +57,19 @@ export interface BillingInvoiceDetail {
     /**
      * 
      */
+    creditApplied: Money;
+    /**
+     * 
+     */
+    amountDue: Money;
+    /**
+     * `expired` means a seat-addition or first invoice was not paid within 24 hours, so no seats activated.
+     */
     status: BillingInvoiceDetailStatusEnum;
+    /**
+     * When an unpaid first or seat-addition invoice expires, in UTC with `Z`. Null for a renewal invoice.
+     */
+    expiresAt?: Date | null;
     /**
      * 
      */
@@ -75,11 +91,11 @@ export interface BillingInvoiceDetail {
      */
     currency?: string;
     /**
-     * Decimal number as a string. Never a float.
+     * Base price before PPN. Shown for information, because the seat price already includes PPN.
      */
     subtotal: string;
     /**
-     * Decimal number as a string. Never a float.
+     * The PPN inside the total, shown for information.
      */
     taxTotal: string;
     /**
@@ -96,9 +112,20 @@ export interface BillingInvoiceDetail {
 /**
  * @export
  */
+export const BillingInvoiceDetailKindEnum = {
+    Subscription: 'subscription',
+    Renewal: 'renewal',
+    SeatAddition: 'seat_addition',
+} as const;
+export type BillingInvoiceDetailKindEnum = typeof BillingInvoiceDetailKindEnum[keyof typeof BillingInvoiceDetailKindEnum];
+
+/**
+ * @export
+ */
 export const BillingInvoiceDetailStatusEnum = {
     Open: 'open',
     Paid: 'paid',
+    Expired: 'expired',
     Void: 'void',
 } as const;
 export type BillingInvoiceDetailStatusEnum = typeof BillingInvoiceDetailStatusEnum[keyof typeof BillingInvoiceDetailStatusEnum];
@@ -110,8 +137,11 @@ export type BillingInvoiceDetailStatusEnum = typeof BillingInvoiceDetailStatusEn
 export function instanceOfBillingInvoiceDetail(value: object): value is BillingInvoiceDetail {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('number' in value) || value['number'] === undefined) return false;
+    if (!('kind' in value) || value['kind'] === undefined) return false;
     if (!('date' in value) || value['date'] === undefined) return false;
     if (!('total' in value) || value['total'] === undefined) return false;
+    if ((!('creditApplied' in (value as Record<string, any>)) && !('credit_applied' in (value as Record<string, any>))) || ((value as Record<string, any>)['creditApplied'] === undefined && (value as Record<string, any>)['credit_applied'] === undefined)) return false;
+    if ((!('amountDue' in (value as Record<string, any>)) && !('amount_due' in (value as Record<string, any>))) || ((value as Record<string, any>)['amountDue'] === undefined && (value as Record<string, any>)['amount_due'] === undefined)) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     if ((!('periodStart' in (value as Record<string, any>)) && !('period_start' in (value as Record<string, any>))) || ((value as Record<string, any>)['periodStart'] === undefined && (value as Record<string, any>)['period_start'] === undefined)) return false;
     if ((!('periodEnd' in (value as Record<string, any>)) && !('period_end' in (value as Record<string, any>))) || ((value as Record<string, any>)['periodEnd'] === undefined && (value as Record<string, any>)['period_end'] === undefined)) return false;
@@ -134,9 +164,13 @@ export function BillingInvoiceDetailFromJSONTyped(json: any, ignoreDiscriminator
         
         'id': json['id'],
         'number': json['number'],
+        'kind': json['kind'],
         'date': (json['date'] == null ? json['date'] : parseDate(json['date'])),
         'total': MoneyFromJSON(json['total']),
+        'creditApplied': MoneyFromJSON(json['credit_applied']),
+        'amountDue': MoneyFromJSON(json['amount_due']),
         'status': json['status'],
+        'expiresAt': json['expires_at'] === undefined ? undefined : json['expires_at'] === null ? null : (parseDateTime(json['expires_at'])),
         'pdfUrl': json['pdf_url'] == null ? undefined : json['pdf_url'],
         'periodStart': (json['period_start'] == null ? json['period_start'] : parseDate(json['period_start'])),
         'periodEnd': (json['period_end'] == null ? json['period_end'] : parseDate(json['period_end'])),
@@ -161,9 +195,13 @@ export function BillingInvoiceDetailToJSONTyped(value?: Omit<BillingInvoiceDetai
     return {
         
         'number': value['number'],
+        'kind': value['kind'],
         'date': value['date'] == null ? value['date'] : serializeDate(value['date']),
         'total': MoneyToJSON(value['total']),
+        'credit_applied': MoneyToJSON(value['creditApplied']),
+        'amount_due': MoneyToJSON(value['amountDue']),
         'status': value['status'],
+        'expires_at': value['expiresAt'] == null ? value['expiresAt'] : serializeDateTime(value['expiresAt']),
         'pdf_url': value['pdfUrl'],
         'period_start': value['periodStart'] == null ? value['periodStart'] : serializeDate(value['periodStart']),
         'period_end': value['periodEnd'] == null ? value['periodEnd'] : serializeDate(value['periodEnd']),

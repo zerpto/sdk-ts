@@ -20,37 +20,45 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface Subscription {
     /**
-     * 
-     */
-    plan: SubscriptionPlanEnum;
-    /**
-     * 
+     * `free` has the basic features and one seat. `trial` has every feature for up to 3 seats. `paid` has every feature for the seats bought. `overdue` has dropped back to the basic features, extra users are read-only and the owner can still edit all data. Only a confirmed payment moves a tenant from `overdue` back to `paid`, and it restores everything. Data is never deleted.
      */
     status: SubscriptionStatusEnum;
     /**
-     * Users included plus additional users. During a trial, 3 users are included; afterwards the plan's `included_seats`. Active and invited users count against it.
+     * How many seats the tenant may use. It is 1 when `free`, 3 during the trial, and the seats paid for when `paid`. Occupied seats can never exceed it.
      */
-    seats: number;
+    purchasedSeats: number;
     /**
-     * Paid API access enabled.
+     * Seats in use, which is the owner, every user who can work in the tenant, and every pending invite until it is cancelled.
      */
-    apiAddon: boolean;
+    readonly occupiedSeats: number;
     /**
-     * 
+     * Seats to bill at the next renewal after a reduction. Null when none is scheduled. The renewal bills the larger of this and the seats in use.
      */
-    currentPeriodEnd: Date;
+    scheduledSeats: number | null;
     /**
-     * 
+     * Day of the month that billing is due, taken from the day the first payment was confirmed in Asia/Jakarta. A shorter month uses its last day. Null until the first payment.
      */
-    billingCycle?: SubscriptionBillingCycleEnum;
+    anchorDay: number | null;
     /**
-     * True once cancellation is scheduled via `DELETE /v1/billing/subscription`.
+     * Start of the current billing period. Null when `free` or in trial.
      */
-    cancelAtPeriodEnd?: boolean;
+    currentPeriodStart: Date | null;
     /**
-     * When the 30-day trial ends, in UTC with `Z`. Null when there is no trial, either because the person who subscribed already had one in this or another tenant, or because the trial is over.
+     * The next due date, where the next period starts. Null when `free` or in trial.
      */
-    trialEndsAt?: Date | null;
+    currentPeriodEnd: Date | null;
+    /**
+     * True once cancellation is scheduled with `DELETE /v1/billing/subscription`.
+     */
+    cancelAtPeriodEnd: boolean;
+    /**
+     * When the 30-day trial ends, in UTC with `Z`. Null until a trial has been started. It keeps its value after the trial ends.
+     */
+    trialEndsAt: Date | null;
+    /**
+     * When the tenant becomes `overdue` if the open renewal invoice is still unpaid, in UTC with `Z`. That is 3 days after the due date at 00:00 Asia/Jakarta. Null when no renewal is waiting.
+     */
+    locksAt: Date | null;
     /**
      * The saved payment method charged for renewals. Null when there is none, and then each invoice is paid by hand with `POST /v1/billing/checkout`.
      */
@@ -61,43 +69,29 @@ export interface Subscription {
 /**
  * @export
  */
-export const SubscriptionPlanEnum = {
-    Starter: 'starter',
-    Growth: 'growth',
-    Business: 'business',
-} as const;
-export type SubscriptionPlanEnum = typeof SubscriptionPlanEnum[keyof typeof SubscriptionPlanEnum];
-
-/**
- * @export
- */
 export const SubscriptionStatusEnum = {
-    Trialing: 'trialing',
-    Active: 'active',
-    PastDue: 'past_due',
-    Canceled: 'canceled',
+    Free: 'free',
+    Trial: 'trial',
+    Paid: 'paid',
+    Overdue: 'overdue',
 } as const;
 export type SubscriptionStatusEnum = typeof SubscriptionStatusEnum[keyof typeof SubscriptionStatusEnum];
-
-/**
- * @export
- */
-export const SubscriptionBillingCycleEnum = {
-    Monthly: 'monthly',
-    Annual: 'annual',
-} as const;
-export type SubscriptionBillingCycleEnum = typeof SubscriptionBillingCycleEnum[keyof typeof SubscriptionBillingCycleEnum];
 
 
 /**
  * Check if a given object implements the Subscription interface.
  */
 export function instanceOfSubscription(value: object): value is Subscription {
-    if (!('plan' in value) || value['plan'] === undefined) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
-    if (!('seats' in value) || value['seats'] === undefined) return false;
-    if ((!('apiAddon' in (value as Record<string, any>)) && !('api_addon' in (value as Record<string, any>))) || ((value as Record<string, any>)['apiAddon'] === undefined && (value as Record<string, any>)['api_addon'] === undefined)) return false;
+    if ((!('purchasedSeats' in (value as Record<string, any>)) && !('purchased_seats' in (value as Record<string, any>))) || ((value as Record<string, any>)['purchasedSeats'] === undefined && (value as Record<string, any>)['purchased_seats'] === undefined)) return false;
+    if ((!('occupiedSeats' in (value as Record<string, any>)) && !('occupied_seats' in (value as Record<string, any>))) || ((value as Record<string, any>)['occupiedSeats'] === undefined && (value as Record<string, any>)['occupied_seats'] === undefined)) return false;
+    if ((!('scheduledSeats' in (value as Record<string, any>)) && !('scheduled_seats' in (value as Record<string, any>))) || ((value as Record<string, any>)['scheduledSeats'] === undefined && (value as Record<string, any>)['scheduled_seats'] === undefined)) return false;
+    if ((!('anchorDay' in (value as Record<string, any>)) && !('anchor_day' in (value as Record<string, any>))) || ((value as Record<string, any>)['anchorDay'] === undefined && (value as Record<string, any>)['anchor_day'] === undefined)) return false;
+    if ((!('currentPeriodStart' in (value as Record<string, any>)) && !('current_period_start' in (value as Record<string, any>))) || ((value as Record<string, any>)['currentPeriodStart'] === undefined && (value as Record<string, any>)['current_period_start'] === undefined)) return false;
     if ((!('currentPeriodEnd' in (value as Record<string, any>)) && !('current_period_end' in (value as Record<string, any>))) || ((value as Record<string, any>)['currentPeriodEnd'] === undefined && (value as Record<string, any>)['current_period_end'] === undefined)) return false;
+    if ((!('cancelAtPeriodEnd' in (value as Record<string, any>)) && !('cancel_at_period_end' in (value as Record<string, any>))) || ((value as Record<string, any>)['cancelAtPeriodEnd'] === undefined && (value as Record<string, any>)['cancel_at_period_end'] === undefined)) return false;
+    if ((!('trialEndsAt' in (value as Record<string, any>)) && !('trial_ends_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['trialEndsAt'] === undefined && (value as Record<string, any>)['trial_ends_at'] === undefined)) return false;
+    if ((!('locksAt' in (value as Record<string, any>)) && !('locks_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['locksAt'] === undefined && (value as Record<string, any>)['locks_at'] === undefined)) return false;
     return true;
 }
 
@@ -111,14 +105,16 @@ export function SubscriptionFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
-        'plan': json['plan'],
         'status': json['status'],
-        'seats': json['seats'],
-        'apiAddon': json['api_addon'],
-        'currentPeriodEnd': (json['current_period_end'] == null ? json['current_period_end'] : parseDate(json['current_period_end'])),
-        'billingCycle': json['billing_cycle'] == null ? undefined : json['billing_cycle'],
-        'cancelAtPeriodEnd': json['cancel_at_period_end'] == null ? undefined : json['cancel_at_period_end'],
-        'trialEndsAt': json['trial_ends_at'] === undefined ? undefined : json['trial_ends_at'] === null ? null : (parseDateTime(json['trial_ends_at'])),
+        'purchasedSeats': json['purchased_seats'],
+        'occupiedSeats': json['occupied_seats'],
+        'scheduledSeats': json['scheduled_seats'],
+        'anchorDay': json['anchor_day'],
+        'currentPeriodStart': (json['current_period_start'] == null ? null : parseDate(json['current_period_start'])),
+        'currentPeriodEnd': (json['current_period_end'] == null ? null : parseDate(json['current_period_end'])),
+        'cancelAtPeriodEnd': json['cancel_at_period_end'],
+        'trialEndsAt': (json['trial_ends_at'] == null ? null : parseDateTime(json['trial_ends_at'])),
+        'locksAt': (json['locks_at'] == null ? null : parseDateTime(json['locks_at'])),
         'paymentMethodId': json['payment_method_id'] === undefined ? undefined : json['payment_method_id'] === null ? null : json['payment_method_id'],
     };
 }
@@ -127,21 +123,22 @@ export function SubscriptionToJSON(json: any): Subscription {
     return SubscriptionToJSONTyped(json, false);
 }
 
-export function SubscriptionToJSONTyped(value?: Subscription | null, ignoreDiscriminator: boolean = false): any {
+export function SubscriptionToJSONTyped(value?: Omit<Subscription, 'occupiedSeats'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'plan': value['plan'],
         'status': value['status'],
-        'seats': value['seats'],
-        'api_addon': value['apiAddon'],
+        'purchased_seats': value['purchasedSeats'],
+        'scheduled_seats': value['scheduledSeats'],
+        'anchor_day': value['anchorDay'],
+        'current_period_start': value['currentPeriodStart'] == null ? value['currentPeriodStart'] : serializeDate(value['currentPeriodStart']),
         'current_period_end': value['currentPeriodEnd'] == null ? value['currentPeriodEnd'] : serializeDate(value['currentPeriodEnd']),
-        'billing_cycle': value['billingCycle'],
         'cancel_at_period_end': value['cancelAtPeriodEnd'],
         'trial_ends_at': value['trialEndsAt'] == null ? value['trialEndsAt'] : serializeDateTime(value['trialEndsAt']),
+        'locks_at': value['locksAt'] == null ? value['locksAt'] : serializeDateTime(value['locksAt']),
         'payment_method_id': value['paymentMethodId'],
     };
 }

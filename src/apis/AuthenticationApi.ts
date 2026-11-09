@@ -49,6 +49,16 @@ import {
     MeResponseToJSON,
 } from '../models/MeResponse';
 import {
+    type PhoneCodeInput,
+    PhoneCodeInputFromJSON,
+    PhoneCodeInputToJSON,
+} from '../models/PhoneCodeInput';
+import {
+    type PhoneVerifyInput,
+    PhoneVerifyInputFromJSON,
+    PhoneVerifyInputToJSON,
+} from '../models/PhoneVerifyInput';
+import {
     type RefreshInput,
     RefreshInputFromJSON,
     RefreshInputToJSON,
@@ -133,11 +143,25 @@ export interface RegisterRequest {
     registerInput: RegisterInput;
 }
 
+export interface SendPhoneCodeRequest {
+    /**
+     * 
+     */
+    phoneCodeInput: PhoneCodeInput;
+}
+
 export interface VerifyEmailRequest {
     /**
      * 
      */
     verifyEmailInput: VerifyEmailInput;
+}
+
+export interface VerifyPhoneCodeRequest {
+    /**
+     * 
+     */
+    phoneVerifyInput: PhoneVerifyInput;
 }
 
 /**
@@ -335,7 +359,7 @@ export class AuthenticationApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns the person who is signed in, together with their roles and their effective permissions in the current tenant. Use it when the web app starts, to decide which menus and buttons to show. The permissions are the sum of the user\'s roles and any permissions granted to them directly. It also says whether this person can still start a free trial.  Roles are managed with the role endpoints, starting at [`GET /v1/roles`](#tag/platform/GET/v1/roles), and a user\'s direct permissions with [`PUT /v1/users/{id}/permissions`](#tag/platform/PUT/v1/users/{id}/permissions). Switching tenant with [`POST /v1/auth/switch-tenant`](#tag/tenant/POST/v1/auth/switch-tenant) changes what this returns. Use `trial_available` to choose between a \"start free trial\" and a \"subscribe\" button before calling [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription), which starts the trial.  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns the person who is signed in, together with their roles and their effective permissions in the current tenant. Use it when the web app starts, to decide which menus and buttons to show. The permissions are the sum of the user\'s roles and any permissions granted to them directly. It also says whether this person can still start a free trial.  Roles are managed with the role endpoints, starting at [`GET /v1/roles`](#tag/platform/GET/v1/roles), and a user\'s direct permissions with [`PUT /v1/users/{id}/permissions`](#tag/platform/PUT/v1/users/{id}/permissions). Switching tenant with [`POST /v1/auth/switch-tenant`](#tag/tenant/POST/v1/auth/switch-tenant) changes what this returns. Use `trial_available` to decide whether to offer a \"start free trial\" button, which calls [`POST /v1/billing/trial`](#tag/billing/POST/v1/billing/trial); the \"subscribe\" button, which calls [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription), is always offered.  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Current user and permissions
      */
     async getMeRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MeResponse>> {
@@ -346,7 +370,7 @@ export class AuthenticationApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns the person who is signed in, together with their roles and their effective permissions in the current tenant. Use it when the web app starts, to decide which menus and buttons to show. The permissions are the sum of the user\'s roles and any permissions granted to them directly. It also says whether this person can still start a free trial.  Roles are managed with the role endpoints, starting at [`GET /v1/roles`](#tag/platform/GET/v1/roles), and a user\'s direct permissions with [`PUT /v1/users/{id}/permissions`](#tag/platform/PUT/v1/users/{id}/permissions). Switching tenant with [`POST /v1/auth/switch-tenant`](#tag/tenant/POST/v1/auth/switch-tenant) changes what this returns. Use `trial_available` to choose between a \"start free trial\" and a \"subscribe\" button before calling [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription), which starts the trial.  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Returns the person who is signed in, together with their roles and their effective permissions in the current tenant. Use it when the web app starts, to decide which menus and buttons to show. The permissions are the sum of the user\'s roles and any permissions granted to them directly. It also says whether this person can still start a free trial.  Roles are managed with the role endpoints, starting at [`GET /v1/roles`](#tag/platform/GET/v1/roles), and a user\'s direct permissions with [`PUT /v1/users/{id}/permissions`](#tag/platform/PUT/v1/users/{id}/permissions). Switching tenant with [`POST /v1/auth/switch-tenant`](#tag/tenant/POST/v1/auth/switch-tenant) changes what this returns. Use `trial_available` to decide whether to offer a \"start free trial\" button, which calls [`POST /v1/billing/trial`](#tag/billing/POST/v1/billing/trial); the \"subscribe\" button, which calls [`POST /v1/billing/subscription`](#tag/billing/POST/v1/billing/subscription), is always offered.  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Current user and permissions
      */
     async getMe(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MeResponse> {
@@ -597,6 +621,62 @@ export class AuthenticationApi extends runtime.BaseAPI {
     }
 
     /**
+     * Creates request options for sendPhoneCode without sending the request
+     */
+    async sendPhoneCodeRequestOpts(requestParameters: SendPhoneCodeRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['phoneCodeInput'] == null) {
+            throw new runtime.RequiredError(
+                'phoneCodeInput',
+                'Required parameter "phoneCodeInput" was null or undefined when calling sendPhoneCode().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/auth/phone/code`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: PhoneCodeInputToJSON(requestParameters['phoneCodeInput']),
+        };
+    }
+
+    /**
+     * Sends a 6-digit code to a phone number by WhatsApp or SMS, to prove that the signed-in person owns that number. Use it before starting a free trial, which needs a verified phone number. The code works for a few minutes, and asking again replaces the previous one.  The code is checked by [`POST /v1/auth/phone/verify`](#tag/authentication/POST/v1/auth/phone/verify). Once the number is verified, `phone_verified` in [`GET /v1/auth/me`](#tag/authentication/GET/v1/auth/me) is true and [`POST /v1/billing/trial`](#tag/billing/POST/v1/billing/trial) can be called. Sending is rate limited per person and per number.  Error codes: `invalid_phone`, `too_many_codes`.  **Response meta** - No response body, so no meta. 
+     * Send a phone code
+     */
+    async sendPhoneCodeRaw(requestParameters: SendPhoneCodeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.sendPhoneCodeRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Sends a 6-digit code to a phone number by WhatsApp or SMS, to prove that the signed-in person owns that number. Use it before starting a free trial, which needs a verified phone number. The code works for a few minutes, and asking again replaces the previous one.  The code is checked by [`POST /v1/auth/phone/verify`](#tag/authentication/POST/v1/auth/phone/verify). Once the number is verified, `phone_verified` in [`GET /v1/auth/me`](#tag/authentication/GET/v1/auth/me) is true and [`POST /v1/billing/trial`](#tag/billing/POST/v1/billing/trial) can be called. Sending is rate limited per person and per number.  Error codes: `invalid_phone`, `too_many_codes`.  **Response meta** - No response body, so no meta. 
+     * Send a phone code
+     */
+    async sendPhoneCode(requestParameters: SendPhoneCodeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.sendPhoneCodeRaw(requestParameters, initOverrides);
+    }
+
+    /**
      * Creates request options for verifyEmail without sending the request
      */
     async verifyEmailRequestOpts(requestParameters: VerifyEmailRequest): Promise<runtime.RequestOpts> {
@@ -643,6 +723,62 @@ export class AuthenticationApi extends runtime.BaseAPI {
     async verifyEmail(requestParameters: VerifyEmailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<VerifyEmailResponse> {
         const response = await this.verifyEmailRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Creates request options for verifyPhoneCode without sending the request
+     */
+    async verifyPhoneCodeRequestOpts(requestParameters: VerifyPhoneCodeRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['phoneVerifyInput'] == null) {
+            throw new runtime.RequiredError(
+                'phoneVerifyInput',
+                'Required parameter "phoneVerifyInput" was null or undefined when calling verifyPhoneCode().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/auth/phone/verify`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: PhoneVerifyInputToJSON(requestParameters['phoneVerifyInput']),
+        };
+    }
+
+    /**
+     * Checks the code that was sent to a phone number and marks the number as verified for the signed-in person. Use it right after the person types the code they received. A number can start only one free trial, across all tenants.  The code comes from [`POST /v1/auth/phone/code`](#tag/authentication/POST/v1/auth/phone/code). After success, `phone_verified` in [`GET /v1/auth/me`](#tag/authentication/GET/v1/auth/me) is true. Wrong guesses are limited, and after too many the person has to ask for a new code.  Error codes: `invalid_code`, `code_expired`, `too_many_attempts`.  **Response meta** - No response body, so no meta. 
+     * Verify a phone code
+     */
+    async verifyPhoneCodeRaw(requestParameters: VerifyPhoneCodeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.verifyPhoneCodeRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Checks the code that was sent to a phone number and marks the number as verified for the signed-in person. Use it right after the person types the code they received. A number can start only one free trial, across all tenants.  The code comes from [`POST /v1/auth/phone/code`](#tag/authentication/POST/v1/auth/phone/code). After success, `phone_verified` in [`GET /v1/auth/me`](#tag/authentication/GET/v1/auth/me) is true. Wrong guesses are limited, and after too many the person has to ask for a new code.  Error codes: `invalid_code`, `code_expired`, `too_many_attempts`.  **Response meta** - No response body, so no meta. 
+     * Verify a phone code
+     */
+    async verifyPhoneCode(requestParameters: VerifyPhoneCodeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.verifyPhoneCodeRaw(requestParameters, initOverrides);
     }
 
 }

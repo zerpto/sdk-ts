@@ -14,54 +14,22 @@
 
 import { mapValues } from '../runtime';
 /**
- * All fields optional; only those sent are changed.
+ * 
  * @export
  * @interface SubscriptionUpdate
  */
 export interface SubscriptionUpdate {
     /**
-     * 
+     * Seats to bill at the next renewal. Send null to clear a schedule.
      */
-    plan?: SubscriptionUpdatePlanEnum;
-    /**
-     * 
-     */
-    billingCycle?: SubscriptionUpdateBillingCycleEnum;
-    /**
-     * 
-     */
-    seats?: number;
-    /**
-     * 
-     */
-    apiAddon?: boolean;
+    scheduledSeats: number | null;
 }
-
-
-/**
- * @export
- */
-export const SubscriptionUpdatePlanEnum = {
-    Starter: 'starter',
-    Growth: 'growth',
-    Business: 'business',
-} as const;
-export type SubscriptionUpdatePlanEnum = typeof SubscriptionUpdatePlanEnum[keyof typeof SubscriptionUpdatePlanEnum];
-
-/**
- * @export
- */
-export const SubscriptionUpdateBillingCycleEnum = {
-    Monthly: 'monthly',
-    Annual: 'annual',
-} as const;
-export type SubscriptionUpdateBillingCycleEnum = typeof SubscriptionUpdateBillingCycleEnum[keyof typeof SubscriptionUpdateBillingCycleEnum];
-
 
 /**
  * Check if a given object implements the SubscriptionUpdate interface.
  */
 export function instanceOfSubscriptionUpdate(value: object): value is SubscriptionUpdate {
+    if ((!('scheduledSeats' in (value as Record<string, any>)) && !('scheduled_seats' in (value as Record<string, any>))) || ((value as Record<string, any>)['scheduledSeats'] === undefined && (value as Record<string, any>)['scheduled_seats'] === undefined)) return false;
     return true;
 }
 
@@ -75,10 +43,7 @@ export function SubscriptionUpdateFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'plan': json['plan'] == null ? undefined : json['plan'],
-        'billingCycle': json['billing_cycle'] == null ? undefined : json['billing_cycle'],
-        'seats': json['seats'] == null ? undefined : json['seats'],
-        'apiAddon': json['api_addon'] == null ? undefined : json['api_addon'],
+        'scheduledSeats': json['scheduled_seats'],
     };
 }
 
@@ -93,10 +58,7 @@ export function SubscriptionUpdateToJSONTyped(value?: SubscriptionUpdate | null,
 
     return {
         
-        'plan': value['plan'],
-        'billing_cycle': value['billingCycle'],
-        'seats': value['seats'],
-        'api_addon': value['apiAddon'],
+        'scheduled_seats': value['scheduledSeats'],
     };
 }
 

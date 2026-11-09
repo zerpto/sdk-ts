@@ -20,36 +20,16 @@ import { mapValues } from '../runtime';
  */
 export interface SubscribeInput {
     /**
-     * Plan id from `GET /v1/plans`.
+     * Seats to buy. At least the seats in use, and at least 1.
      */
-    plan: string;
-    /**
-     * 
-     */
-    billingCycle: SubscribeInputBillingCycleEnum;
-    /**
-     * Defaults to the number of active users or, if higher, to the seats included: 3 during the trial, the plan's `included_seats` otherwise. Seats above the 3 of the trial are paid at once.
-     */
-    seats?: number;
+    seats: number;
 }
-
-
-/**
- * @export
- */
-export const SubscribeInputBillingCycleEnum = {
-    Monthly: 'monthly',
-    Annual: 'annual',
-} as const;
-export type SubscribeInputBillingCycleEnum = typeof SubscribeInputBillingCycleEnum[keyof typeof SubscribeInputBillingCycleEnum];
-
 
 /**
  * Check if a given object implements the SubscribeInput interface.
  */
 export function instanceOfSubscribeInput(value: object): value is SubscribeInput {
-    if (!('plan' in value) || value['plan'] === undefined) return false;
-    if ((!('billingCycle' in (value as Record<string, any>)) && !('billing_cycle' in (value as Record<string, any>))) || ((value as Record<string, any>)['billingCycle'] === undefined && (value as Record<string, any>)['billing_cycle'] === undefined)) return false;
+    if (!('seats' in value) || value['seats'] === undefined) return false;
     return true;
 }
 
@@ -63,9 +43,7 @@ export function SubscribeInputFromJSONTyped(json: any, ignoreDiscriminator: bool
     }
     return {
         
-        'plan': json['plan'],
-        'billingCycle': json['billing_cycle'],
-        'seats': json['seats'] == null ? undefined : json['seats'],
+        'seats': json['seats'],
     };
 }
 
@@ -80,8 +58,6 @@ export function SubscribeInputToJSONTyped(value?: SubscribeInput | null, ignoreD
 
     return {
         
-        'plan': value['plan'],
-        'billing_cycle': value['billingCycle'],
         'seats': value['seats'],
     };
 }

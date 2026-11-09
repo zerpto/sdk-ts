@@ -1,16 +1,12 @@
 
 # SubscriptionUpdate
 
-All fields optional; only those sent are changed.
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`plan` | string
-`billingCycle` | string
-`seats` | number
-`apiAddon` | boolean
+`scheduledSeats` | number
 
 ## Example
 
@@ -19,10 +15,7 @@ import type { SubscriptionUpdate } from '@zerpto/sdk'
 
 // TODO: Update the object below with actual values
 const example = {
-  "plan": null,
-  "billingCycle": null,
-  "seats": null,
-  "apiAddon": null,
+  "scheduledSeats": null,
 } satisfies SubscriptionUpdate
 
 console.log(example)

@@ -10,6 +10,8 @@ Name | Type
 `quantity` | string
 `unitPrice` | string
 `amount` | string
+`daysRemaining` | number
+`daysInCycle` | number
 
 ## Example
 
@@ -22,6 +24,8 @@ const example = {
   "quantity": 1500000.00,
   "unitPrice": 1500000.00,
   "amount": 1500000.00,
+  "daysRemaining": null,
+  "daysInCycle": null,
 } satisfies BillingInvoiceLine
 
 console.log(example)

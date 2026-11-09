@@ -9,6 +9,8 @@ Name | Type
 `user` | [AuthUser](AuthUser.md)
 `tenant` | [TenantSummary](TenantSummary.md)
 `permissions` | Array&lt;string&gt;
+`access` | string
+`phoneVerified` | boolean
 `trialAvailable` | boolean
 
 ## Example
@@ -21,6 +23,8 @@ const example = {
   "user": null,
   "tenant": null,
   "permissions": null,
+  "access": null,
+  "phoneVerified": null,
   "trialAvailable": null,
 } satisfies Me
 

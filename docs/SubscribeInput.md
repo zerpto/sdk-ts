@@ -6,8 +6,6 @@
 
 Name | Type
 ------------ | -------------
-`plan` | string
-`billingCycle` | string
 `seats` | number
 
 ## Example
@@ -17,8 +15,6 @@ import type { SubscribeInput } from '@zerpto/sdk'
 
 // TODO: Update the object below with actual values
 const example = {
-  "plan": null,
-  "billingCycle": null,
   "seats": null,
 } satisfies SubscribeInput
 

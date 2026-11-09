@@ -7,6 +7,7 @@
 Name | Type
 ------------ | -------------
 `paymentId` | string
+`purpose` | string
 `invoiceId` | string
 `paymentUrl` | string
 `expiresAt` | Date
@@ -19,6 +20,7 @@ import type { Checkout } from '@zerpto/sdk'
 // TODO: Update the object below with actual values
 const example = {
   "paymentId": null,
+  "purpose": null,
   "invoiceId": null,
   "paymentUrl": null,
   "expiresAt": null,

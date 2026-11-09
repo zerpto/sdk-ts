@@ -11,6 +11,7 @@ Name | Type
 `name` | string
 `roleIds` | Array&lt;string&gt;
 `status` | string
+`access` | string
 `createdAt` | Date
 
 ## Example
@@ -25,6 +26,7 @@ const example = {
   "name": null,
   "roleIds": null,
   "status": null,
+  "access": null,
   "createdAt": null,
 } satisfies User
 

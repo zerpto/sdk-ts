@@ -26,7 +26,11 @@ export interface Checkout {
     /**
      * 
      */
-    invoiceId: string;
+    purpose: CheckoutPurposeEnum;
+    /**
+     * The invoice being paid. Null for a credit top-up.
+     */
+    invoiceId: string | null;
     /**
      * Gateway-hosted payment page.
      */
@@ -37,11 +41,23 @@ export interface Checkout {
     expiresAt: Date;
 }
 
+
+/**
+ * @export
+ */
+export const CheckoutPurposeEnum = {
+    Invoice: 'invoice',
+    TopUp: 'top_up',
+} as const;
+export type CheckoutPurposeEnum = typeof CheckoutPurposeEnum[keyof typeof CheckoutPurposeEnum];
+
+
 /**
  * Check if a given object implements the Checkout interface.
  */
 export function instanceOfCheckout(value: object): value is Checkout {
     if ((!('paymentId' in (value as Record<string, any>)) && !('payment_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['paymentId'] === undefined && (value as Record<string, any>)['payment_id'] === undefined)) return false;
+    if (!('purpose' in value) || value['purpose'] === undefined) return false;
     if ((!('invoiceId' in (value as Record<string, any>)) && !('invoice_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['invoiceId'] === undefined && (value as Record<string, any>)['invoice_id'] === undefined)) return false;
     if ((!('paymentUrl' in (value as Record<string, any>)) && !('payment_url' in (value as Record<string, any>))) || ((value as Record<string, any>)['paymentUrl'] === undefined && (value as Record<string, any>)['payment_url'] === undefined)) return false;
     if ((!('expiresAt' in (value as Record<string, any>)) && !('expires_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['expiresAt'] === undefined && (value as Record<string, any>)['expires_at'] === undefined)) return false;
@@ -59,6 +75,7 @@ export function CheckoutFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     return {
         
         'paymentId': json['payment_id'],
+        'purpose': json['purpose'],
         'invoiceId': json['invoice_id'],
         'paymentUrl': json['payment_url'],
         'expiresAt': (json['expires_at'] == null ? json['expires_at'] : parseDateTime(json['expires_at'])),
@@ -77,6 +94,7 @@ export function CheckoutToJSONTyped(value?: Checkout | null, ignoreDiscriminator
     return {
         
         'payment_id': value['paymentId'],
+        'purpose': value['purpose'],
         'invoice_id': value['invoiceId'],
         'payment_url': value['paymentUrl'],
         'expires_at': value['expiresAt'] == null ? value['expiresAt'] : serializeDateTime(value['expiresAt']),

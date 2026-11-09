@@ -100,21 +100,30 @@ All URIs are relative to *https://api.zerpto.com*
 *AuthenticationApi* | [**logout**](docs/AuthenticationApi.md#logout) | **DELETE** /v1/auth/sign-out | Log out of the session
 *AuthenticationApi* | [**refreshToken**](docs/AuthenticationApi.md#refreshtoken) | **POST** /v1/auth/refresh | Refresh the access token
 *AuthenticationApi* | [**register**](docs/AuthenticationApi.md#register) | **POST** /v1/auth/sign-up | Register a new account
+*AuthenticationApi* | [**sendPhoneCode**](docs/AuthenticationApi.md#sendphonecode) | **POST** /v1/auth/phone/code | Send a phone code
 *AuthenticationApi* | [**verifyEmail**](docs/AuthenticationApi.md#verifyemail) | **POST** /v1/auth/verify-email | Confirm an email address
+*AuthenticationApi* | [**verifyPhoneCode**](docs/AuthenticationApi.md#verifyphonecode) | **POST** /v1/auth/phone/verify | Verify a phone code
 *BankReconciliationApi* | [**completeBankReconciliation**](docs/BankReconciliationApi.md#completebankreconciliation) | **POST** /v1/bank/reconciliations/{id}/complete | Complete a reconciliation
 *BankReconciliationApi* | [**createBankReconciliation**](docs/BankReconciliationApi.md#createbankreconciliation) | **POST** /v1/bank/reconciliations | Start a reconciliation
 *BankReconciliationApi* | [**listBankReconciliations**](docs/BankReconciliationApi.md#listbankreconciliations) | **GET** /v1/bank/reconciliations | List reconciliations
+*BillingApi* | [**addSeats**](docs/BillingApi.md#addseats) | **POST** /v1/billing/seat-additions | Add seats now
 *BillingApi* | [**cancelSubscription**](docs/BillingApi.md#cancelsubscription) | **DELETE** /v1/billing/subscription | Cancel at period end
 *BillingApi* | [**createCheckout**](docs/BillingApi.md#createcheckout) | **POST** /v1/billing/checkout | Pay an invoice on Xendit
-*BillingApi* | [**createSubscription**](docs/BillingApi.md#createsubscription) | **POST** /v1/billing/subscription | Subscribe to a plan
+*BillingApi* | [**createCreditRefund**](docs/BillingApi.md#createcreditrefund) | **POST** /v1/billing/credit/refunds | Refund the credit
+*BillingApi* | [**createCreditTopUp**](docs/BillingApi.md#createcredittopup) | **POST** /v1/billing/credit/top-ups | Top up the credit
+*BillingApi* | [**createSubscription**](docs/BillingApi.md#createsubscription) | **POST** /v1/billing/subscription | Subscribe with seats
 *BillingApi* | [**deletePaymentMethod**](docs/BillingApi.md#deletepaymentmethod) | **DELETE** /v1/billing/payment-methods/{id} | Remove a saved method
 *BillingApi* | [**getBillingInvoice**](docs/BillingApi.md#getbillinginvoice) | **GET** /v1/billing/invoices/{id} | Get subscription invoice
-*BillingApi* | [**getSubscription**](docs/BillingApi.md#getsubscription) | **GET** /v1/billing/subscription | Get current plan and add-ons
+*BillingApi* | [**getCreditBalance**](docs/BillingApi.md#getcreditbalance) | **GET** /v1/billing/credit | Get the credit balance
+*BillingApi* | [**getSubscription**](docs/BillingApi.md#getsubscription) | **GET** /v1/billing/subscription | Get seats and billing status
 *BillingApi* | [**listBillingInvoices**](docs/BillingApi.md#listbillinginvoices) | **GET** /v1/billing/invoices | List subscription invoices
 *BillingApi* | [**listBillingPayments**](docs/BillingApi.md#listbillingpayments) | **GET** /v1/billing/payments | List payment history
+*BillingApi* | [**listCreditEntries**](docs/BillingApi.md#listcreditentries) | **GET** /v1/billing/credit/ledger | List credit movements
+*BillingApi* | [**listCreditRefunds**](docs/BillingApi.md#listcreditrefunds) | **GET** /v1/billing/credit/refunds | List credit refunds
 *BillingApi* | [**listPaymentMethods**](docs/BillingApi.md#listpaymentmethods) | **GET** /v1/billing/payment-methods | List saved payment methods
 *BillingApi* | [**receiveXenditWebhook**](docs/BillingApi.md#receivexenditwebhook) | **POST** /v1/billing/webhooks/xendit | Receive Xendit payment events
-*BillingApi* | [**updateSubscription**](docs/BillingApi.md#updatesubscription) | **PATCH** /v1/billing/subscription | Change plan, seats or add-on
+*BillingApi* | [**startTrial**](docs/BillingApi.md#starttrial) | **POST** /v1/billing/trial | Start the free trial
+*BillingApi* | [**updateSubscription**](docs/BillingApi.md#updatesubscription) | **PATCH** /v1/billing/subscription | Schedule fewer seats
 *CashAccountApi* | [**createCashAccount**](docs/CashAccountApi.md#createcashaccount) | **POST** /v1/cash/accounts | Create cash account
 *CashAccountApi* | [**getCashAccount**](docs/CashAccountApi.md#getcashaccount) | **GET** /v1/cash/accounts/{id} | Get cash account
 *CashAccountApi* | [**listCashAccounts**](docs/CashAccountApi.md#listcashaccounts) | **GET** /v1/cash/accounts | List cash accounts
@@ -233,8 +242,9 @@ All URIs are relative to *https://api.zerpto.com*
 *PaymentApi* | [**removeApPaymentAllocation**](docs/PaymentApi.md#removeappaymentallocation) | **DELETE** /v1/ap/payments/{id}/allocations/{invoice_id} | Remove a payment allocation
 *PaymentApi* | [**updateApPayment**](docs/PaymentApi.md#updateappayment) | **PATCH** /v1/ap/payments/{id} | Update payment
 *PaymentApi* | [**voidApPayment**](docs/PaymentApi.md#voidappayment) | **POST** /v1/ap/payments/{id}/void | Void payment
-*PlansApi* | [**listPlans**](docs/PlansApi.md#listplans) | **GET** /v1/plans | List plans and prices
 *PlatformApi* | [**getHealth**](docs/PlatformApi.md#gethealth) | **GET** /v1/health | Health check
+*PricingApi* | [**getPricing**](docs/PricingApi.md#getpricing) | **GET** /v1/pricing | Get the seat price
+*PricingApi* | [**listFeatures**](docs/PricingApi.md#listfeatures) | **GET** /v1/features | List basic and paid features
 *ProductItemsApi* | [**archiveItem**](docs/ProductItemsApi.md#archiveitem) | **DELETE** /v1/items/{id} | Archive an item
 *ProductItemsApi* | [**createItem**](docs/ProductItemsApi.md#createitem) | **POST** /v1/items | Create item
 *ProductItemsApi* | [**getItem**](docs/ProductItemsApi.md#getitem) | **GET** /v1/items/{id} | Get an item
@@ -465,6 +475,8 @@ All URIs are relative to *https://api.zerpto.com*
 - [Checkout](docs/Checkout.md)
 - [CheckoutInput](docs/CheckoutInput.md)
 - [CheckoutResponse](docs/CheckoutResponse.md)
+- [CreditBalance](docs/CreditBalance.md)
+- [CreditBalanceResponse](docs/CreditBalanceResponse.md)
 - [CreditCard](docs/CreditCard.md)
 - [CreditCardInput](docs/CreditCardInput.md)
 - [CreditCardListResponse](docs/CreditCardListResponse.md)
@@ -475,6 +487,12 @@ All URIs are relative to *https://api.zerpto.com*
 - [CreditCardPaymentUpdate](docs/CreditCardPaymentUpdate.md)
 - [CreditCardResponse](docs/CreditCardResponse.md)
 - [CreditCardUpdate](docs/CreditCardUpdate.md)
+- [CreditEntry](docs/CreditEntry.md)
+- [CreditEntryListResponse](docs/CreditEntryListResponse.md)
+- [CreditRefund](docs/CreditRefund.md)
+- [CreditRefundListResponse](docs/CreditRefundListResponse.md)
+- [CreditRefundResponse](docs/CreditRefundResponse.md)
+- [CreditTopUpInput](docs/CreditTopUpInput.md)
 - [Currency](docs/Currency.md)
 - [CurrencyListResponse](docs/CurrencyListResponse.md)
 - [CursorListMeta](docs/CursorListMeta.md)
@@ -502,6 +520,8 @@ All URIs are relative to *https://api.zerpto.com*
 - [ExpenseListResponse](docs/ExpenseListResponse.md)
 - [ExpenseResponse](docs/ExpenseResponse.md)
 - [ExpenseUpdate](docs/ExpenseUpdate.md)
+- [Feature](docs/Feature.md)
+- [FeatureListResponse](docs/FeatureListResponse.md)
 - [FileAttachment](docs/FileAttachment.md)
 - [ForgotPasswordInput](docs/ForgotPasswordInput.md)
 - [GoodsReceipt](docs/GoodsReceipt.md)
@@ -565,9 +585,8 @@ All URIs are relative to *https://api.zerpto.com*
 - [PeriodResponse](docs/PeriodResponse.md)
 - [Permission](docs/Permission.md)
 - [PermissionListResponse](docs/PermissionListResponse.md)
-- [Plan](docs/Plan.md)
-- [PlanListResponse](docs/PlanListResponse.md)
-- [PlanPrice](docs/PlanPrice.md)
+- [PhoneCodeInput](docs/PhoneCodeInput.md)
+- [PhoneVerifyInput](docs/PhoneVerifyInput.md)
 - [PpnReport](docs/PpnReport.md)
 - [PpnReportLinesInner](docs/PpnReportLinesInner.md)
 - [PpnReportResponse](docs/PpnReportResponse.md)
@@ -619,6 +638,9 @@ All URIs are relative to *https://api.zerpto.com*
 - [SalesOrderListResponse](docs/SalesOrderListResponse.md)
 - [SalesOrderResponse](docs/SalesOrderResponse.md)
 - [SalesOrderUpdate](docs/SalesOrderUpdate.md)
+- [SeatAdditionInput](docs/SeatAdditionInput.md)
+- [SeatPrice](docs/SeatPrice.md)
+- [SeatPriceListResponse](docs/SeatPriceListResponse.md)
 - [StockAdjustment](docs/StockAdjustment.md)
 - [StockAdjustmentInput](docs/StockAdjustmentInput.md)
 - [StockAdjustmentInputLinesInner](docs/StockAdjustmentInputLinesInner.md)

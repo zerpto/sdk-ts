@@ -35,6 +35,14 @@ export interface BillingInvoiceLine {
      * Decimal number as a string. Never a float.
      */
     amount: string;
+    /**
+     * For a `seat_addition` line, the days left in the period, counted up to but not including the next due date.
+     */
+    daysRemaining?: number | null;
+    /**
+     * For a `seat_addition` line, the days in the current period, from this due date to the next. Always 28 to 31.
+     */
+    daysInCycle?: number | null;
 }
 
 /**
@@ -62,6 +70,8 @@ export function BillingInvoiceLineFromJSONTyped(json: any, ignoreDiscriminator: 
         'quantity': json['quantity'],
         'unitPrice': json['unit_price'],
         'amount': json['amount'],
+        'daysRemaining': json['days_remaining'] === undefined ? undefined : json['days_remaining'] === null ? null : json['days_remaining'],
+        'daysInCycle': json['days_in_cycle'] === undefined ? undefined : json['days_in_cycle'] === null ? null : json['days_in_cycle'],
     };
 }
 
@@ -80,6 +90,8 @@ export function BillingInvoiceLineToJSONTyped(value?: BillingInvoiceLine | null,
         'quantity': value['quantity'],
         'unit_price': value['unitPrice'],
         'amount': value['amount'],
+        'days_remaining': value['daysRemaining'],
+        'days_in_cycle': value['daysInCycle'],
     };
 }
 

@@ -28,13 +28,17 @@ import {
  */
 export interface BillingPayment {
     /**
-     * Prefixed resource ID.
+     * Prefixed resource ID (`spy`).
      */
     readonly id: string;
     /**
      * 
      */
-    invoiceId: string;
+    purpose: BillingPaymentPurposeEnum;
+    /**
+     * The invoice this pays. Null for a credit top-up.
+     */
+    invoiceId: string | null;
     /**
      * 
      */
@@ -69,6 +73,15 @@ export interface BillingPayment {
     paidAt?: Date | null;
 }
 
+
+/**
+ * @export
+ */
+export const BillingPaymentPurposeEnum = {
+    Invoice: 'invoice',
+    TopUp: 'top_up',
+} as const;
+export type BillingPaymentPurposeEnum = typeof BillingPaymentPurposeEnum[keyof typeof BillingPaymentPurposeEnum];
 
 /**
  * @export
@@ -109,6 +122,7 @@ export type BillingPaymentStatusEnum = typeof BillingPaymentStatusEnum[keyof typ
  */
 export function instanceOfBillingPayment(value: object): value is BillingPayment {
     if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('purpose' in value) || value['purpose'] === undefined) return false;
     if ((!('invoiceId' in (value as Record<string, any>)) && !('invoice_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['invoiceId'] === undefined && (value as Record<string, any>)['invoice_id'] === undefined)) return false;
     if (!('amount' in value) || value['amount'] === undefined) return false;
     if (!('source' in value) || value['source'] === undefined) return false;
@@ -128,6 +142,7 @@ export function BillingPaymentFromJSONTyped(json: any, ignoreDiscriminator: bool
     return {
         
         'id': json['id'],
+        'purpose': json['purpose'],
         'invoiceId': json['invoice_id'],
         'amount': MoneyFromJSON(json['amount']),
         'method': json['method'] == null ? undefined : json['method'],
@@ -151,6 +166,7 @@ export function BillingPaymentToJSONTyped(value?: Omit<BillingPayment, 'id'|'cre
 
     return {
         
+        'purpose': value['purpose'],
         'invoice_id': value['invoiceId'],
         'amount': MoneyToJSON(value['amount']),
         'method': value['method'],

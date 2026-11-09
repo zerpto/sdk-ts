@@ -8,9 +8,13 @@ Name | Type
 ------------ | -------------
 `id` | string
 `number` | string
+`kind` | string
 `date` | Date
 `total` | [Money](Money.md)
+`creditApplied` | [Money](Money.md)
+`amountDue` | [Money](Money.md)
 `status` | string
+`expiresAt` | Date
 `pdfUrl` | string
 `periodStart` | Date
 `periodEnd` | Date
@@ -30,9 +34,13 @@ import type { BillingInvoiceDetail } from '@zerpto/sdk'
 const example = {
   "id": null,
   "number": null,
+  "kind": null,
   "date": null,
   "total": null,
+  "creditApplied": null,
+  "amountDue": null,
   "status": null,
+  "expiresAt": null,
   "pdfUrl": null,
   "periodStart": null,
   "periodEnd": null,

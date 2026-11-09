@@ -47,10 +47,29 @@ export interface Me {
      */
     permissions: Array<string>;
     /**
-     * True while this person has never had a free trial in any tenant, so subscribing starts one. False once they have had one; it is about the person, not the current tenant, and stays false after they switch tenant.
+     * `read_only` when the tenant has dropped to the free plan or is overdue and this person is not the owner. Write calls are then refused with 403 `read_only_access`, even if the permissions below would allow them.
+     */
+    access: MeAccessEnum;
+    /**
+     * True once this person has verified a phone number with `POST /v1/auth/phone/verify`. A trial needs it.
+     */
+    phoneVerified: boolean;
+    /**
+     * True while this person has never started a free trial in any tenant, so `POST /v1/billing/trial` works. False once they have started one; it is about the person, not the current tenant, and stays false after they switch tenant.
      */
     trialAvailable: boolean;
 }
+
+
+/**
+ * @export
+ */
+export const MeAccessEnum = {
+    Full: 'full',
+    ReadOnly: 'read_only',
+} as const;
+export type MeAccessEnum = typeof MeAccessEnum[keyof typeof MeAccessEnum];
+
 
 /**
  * Check if a given object implements the Me interface.
@@ -59,6 +78,8 @@ export function instanceOfMe(value: object): value is Me {
     if (!('user' in value) || value['user'] === undefined) return false;
     if (!('tenant' in value) || value['tenant'] === undefined) return false;
     if (!('permissions' in value) || value['permissions'] === undefined) return false;
+    if (!('access' in value) || value['access'] === undefined) return false;
+    if ((!('phoneVerified' in (value as Record<string, any>)) && !('phone_verified' in (value as Record<string, any>))) || ((value as Record<string, any>)['phoneVerified'] === undefined && (value as Record<string, any>)['phone_verified'] === undefined)) return false;
     if ((!('trialAvailable' in (value as Record<string, any>)) && !('trial_available' in (value as Record<string, any>))) || ((value as Record<string, any>)['trialAvailable'] === undefined && (value as Record<string, any>)['trial_available'] === undefined)) return false;
     return true;
 }
@@ -76,6 +97,8 @@ export function MeFromJSONTyped(json: any, ignoreDiscriminator: boolean): Me {
         'user': AuthUserFromJSON(json['user']),
         'tenant': TenantSummaryFromJSON(json['tenant']),
         'permissions': json['permissions'],
+        'access': json['access'],
+        'phoneVerified': json['phone_verified'],
         'trialAvailable': json['trial_available'],
     };
 }
@@ -94,6 +117,8 @@ export function MeToJSONTyped(value?: Me | null, ignoreDiscriminator: boolean = 
         'user': AuthUserToJSON(value['user']),
         'tenant': TenantSummaryToJSON(value['tenant']),
         'permissions': value['permissions'],
+        'access': value['access'],
+        'phone_verified': value['phoneVerified'],
         'trial_available': value['trialAvailable'],
     };
 }

@@ -40,6 +40,10 @@ export interface User {
      */
     status: UserStatusEnum;
     /**
+     * `read_only` when the tenant has dropped to the free plan or is overdue and this user is not the owner: they can read everything but write calls are refused with 403 `read_only_access`. The owner is always `full`.
+     */
+    access: UserAccessEnum;
+    /**
      * 
      */
     readonly createdAt?: Date;
@@ -56,6 +60,15 @@ export const UserStatusEnum = {
 } as const;
 export type UserStatusEnum = typeof UserStatusEnum[keyof typeof UserStatusEnum];
 
+/**
+ * @export
+ */
+export const UserAccessEnum = {
+    Full: 'full',
+    ReadOnly: 'read_only',
+} as const;
+export type UserAccessEnum = typeof UserAccessEnum[keyof typeof UserAccessEnum];
+
 
 /**
  * Check if a given object implements the User interface.
@@ -66,6 +79,7 @@ export function instanceOfUser(value: object): value is User {
     if (!('name' in value) || value['name'] === undefined) return false;
     if ((!('roleIds' in (value as Record<string, any>)) && !('role_ids' in (value as Record<string, any>))) || ((value as Record<string, any>)['roleIds'] === undefined && (value as Record<string, any>)['role_ids'] === undefined)) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
+    if (!('access' in value) || value['access'] === undefined) return false;
     return true;
 }
 
@@ -84,6 +98,7 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
         'name': json['name'],
         'roleIds': json['role_ids'],
         'status': json['status'],
+        'access': json['access'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
     };
 }
@@ -102,6 +117,7 @@ export function UserToJSONTyped(value?: Omit<User, 'id'|'name'|'createdAt'> | nu
         'email': value['email'],
         'role_ids': value['roleIds'],
         'status': value['status'],
+        'access': value['access'],
     };
 }
 

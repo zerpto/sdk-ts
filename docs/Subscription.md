@@ -6,14 +6,16 @@
 
 Name | Type
 ------------ | -------------
-`plan` | string
 `status` | string
-`seats` | number
-`apiAddon` | boolean
+`purchasedSeats` | number
+`occupiedSeats` | number
+`scheduledSeats` | number
+`anchorDay` | number
+`currentPeriodStart` | Date
 `currentPeriodEnd` | Date
-`billingCycle` | string
 `cancelAtPeriodEnd` | boolean
 `trialEndsAt` | Date
+`locksAt` | Date
 `paymentMethodId` | string
 
 ## Example
@@ -23,14 +25,16 @@ import type { Subscription } from '@zerpto/sdk'
 
 // TODO: Update the object below with actual values
 const example = {
-  "plan": null,
   "status": null,
-  "seats": null,
-  "apiAddon": null,
+  "purchasedSeats": null,
+  "occupiedSeats": null,
+  "scheduledSeats": null,
+  "anchorDay": null,
+  "currentPeriodStart": null,
   "currentPeriodEnd": null,
-  "billingCycle": null,
   "cancelAtPeriodEnd": null,
   "trialEndsAt": null,
+  "locksAt": null,
   "paymentMethodId": pmt-0192f3a1-5d2c-7e44-8b1f-3c9a6e0d7b25,
 } satisfies Subscription
 

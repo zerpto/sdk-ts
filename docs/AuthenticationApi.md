@@ -13,7 +13,9 @@ All URIs are relative to *https://api.zerpto.com*
 | [**logout**](AuthenticationApi.md#logout) | **DELETE** /v1/auth/sign-out | Log out of the session |
 | [**refreshToken**](AuthenticationApi.md#refreshtoken) | **POST** /v1/auth/refresh | Refresh the access token |
 | [**register**](AuthenticationApi.md#register) | **POST** /v1/auth/sign-up | Register a new account |
+| [**sendPhoneCode**](AuthenticationApi.md#sendphonecode) | **POST** /v1/auth/phone/code | Send a phone code |
 | [**verifyEmail**](AuthenticationApi.md#verifyemail) | **POST** /v1/auth/verify-email | Confirm an email address |
+| [**verifyPhoneCode**](AuthenticationApi.md#verifyphonecode) | **POST** /v1/auth/phone/verify | Verify a phone code |
 
 
 
@@ -244,7 +246,7 @@ example().catch(console.error);
 
 Current user and permissions
 
-Returns the person who is signed in, together with their roles and their effective permissions in the current tenant. Use it when the web app starts, to decide which menus and buttons to show. The permissions are the sum of the user\&#39;s roles and any permissions granted to them directly. It also says whether this person can still start a free trial.  Roles are managed with the role endpoints, starting at [&#x60;GET /v1/roles&#x60;](#tag/platform/GET/v1/roles), and a user\&#39;s direct permissions with [&#x60;PUT /v1/users/{id}/permissions&#x60;](#tag/platform/PUT/v1/users/{id}/permissions). Switching tenant with [&#x60;POST /v1/auth/switch-tenant&#x60;](#tag/tenant/POST/v1/auth/switch-tenant) changes what this returns. Use &#x60;trial_available&#x60; to choose between a \&quot;start free trial\&quot; and a \&quot;subscribe\&quot; button before calling [&#x60;POST /v1/billing/subscription&#x60;](#tag/billing/POST/v1/billing/subscription), which starts the trial.  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
+Returns the person who is signed in, together with their roles and their effective permissions in the current tenant. Use it when the web app starts, to decide which menus and buttons to show. The permissions are the sum of the user\&#39;s roles and any permissions granted to them directly. It also says whether this person can still start a free trial.  Roles are managed with the role endpoints, starting at [&#x60;GET /v1/roles&#x60;](#tag/platform/GET/v1/roles), and a user\&#39;s direct permissions with [&#x60;PUT /v1/users/{id}/permissions&#x60;](#tag/platform/PUT/v1/users/{id}/permissions). Switching tenant with [&#x60;POST /v1/auth/switch-tenant&#x60;](#tag/tenant/POST/v1/auth/switch-tenant) changes what this returns. Use &#x60;trial_available&#x60; to decide whether to offer a \&quot;start free trial\&quot; button, which calls [&#x60;POST /v1/billing/trial&#x60;](#tag/billing/POST/v1/billing/trial); the \&quot;subscribe\&quot; button, which calls [&#x60;POST /v1/billing/subscription&#x60;](#tag/billing/POST/v1/billing/subscription), is always offered.  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -648,6 +650,81 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
+## sendPhoneCode
+
+> sendPhoneCode(phoneCodeInput)
+
+Send a phone code
+
+Sends a 6-digit code to a phone number by WhatsApp or SMS, to prove that the signed-in person owns that number. Use it before starting a free trial, which needs a verified phone number. The code works for a few minutes, and asking again replaces the previous one.  The code is checked by [&#x60;POST /v1/auth/phone/verify&#x60;](#tag/authentication/POST/v1/auth/phone/verify). Once the number is verified, &#x60;phone_verified&#x60; in [&#x60;GET /v1/auth/me&#x60;](#tag/authentication/GET/v1/auth/me) is true and [&#x60;POST /v1/billing/trial&#x60;](#tag/billing/POST/v1/billing/trial) can be called. Sending is rate limited per person and per number.  Error codes: &#x60;invalid_phone&#x60;, &#x60;too_many_codes&#x60;.  **Response meta** - No response body, so no meta. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  AuthenticationApi,
+} from '@zerpto/sdk';
+import type { SendPhoneCodeRequest } from '@zerpto/sdk';
+
+async function example() {
+  console.log("🚀 Testing @zerpto/sdk SDK...");
+  const config = new Configuration({ 
+    // Configure HTTP bearer authorization: UserJWT
+    accessToken: "YOUR BEARER TOKEN",
+  });
+  const api = new AuthenticationApi(config);
+
+  const body = {
+    // PhoneCodeInput
+    phoneCodeInput: ...,
+  } satisfies SendPhoneCodeRequest;
+
+  try {
+    const data = await api.sendPhoneCode(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **phoneCodeInput** | [PhoneCodeInput](PhoneCodeInput.md) |  | |
+
+### Return type
+
+`void` (Empty response body)
+
+### Authorization
+
+[UserJWT](../README.md#UserJWT)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **204** | Code sent |  -  |
+| **400** | Malformed request or invalid parameter. |  -  |
+| **401** | Missing, invalid or revoked API key. |  -  |
+| **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
+| **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
 ## verifyEmail
 
 > VerifyEmailResponse verifyEmail(verifyEmailInput)
@@ -712,6 +789,81 @@ No authorization required
 |-------------|-------------|------------------|
 | **200** | Email confirmed. The account can now log in. |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
+| **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
+| **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## verifyPhoneCode
+
+> verifyPhoneCode(phoneVerifyInput)
+
+Verify a phone code
+
+Checks the code that was sent to a phone number and marks the number as verified for the signed-in person. Use it right after the person types the code they received. A number can start only one free trial, across all tenants.  The code comes from [&#x60;POST /v1/auth/phone/code&#x60;](#tag/authentication/POST/v1/auth/phone/code). After success, &#x60;phone_verified&#x60; in [&#x60;GET /v1/auth/me&#x60;](#tag/authentication/GET/v1/auth/me) is true. Wrong guesses are limited, and after too many the person has to ask for a new code.  Error codes: &#x60;invalid_code&#x60;, &#x60;code_expired&#x60;, &#x60;too_many_attempts&#x60;.  **Response meta** - No response body, so no meta. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  AuthenticationApi,
+} from '@zerpto/sdk';
+import type { VerifyPhoneCodeRequest } from '@zerpto/sdk';
+
+async function example() {
+  console.log("🚀 Testing @zerpto/sdk SDK...");
+  const config = new Configuration({ 
+    // Configure HTTP bearer authorization: UserJWT
+    accessToken: "YOUR BEARER TOKEN",
+  });
+  const api = new AuthenticationApi(config);
+
+  const body = {
+    // PhoneVerifyInput
+    phoneVerifyInput: ...,
+  } satisfies VerifyPhoneCodeRequest;
+
+  try {
+    const data = await api.verifyPhoneCode(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **phoneVerifyInput** | [PhoneVerifyInput](PhoneVerifyInput.md) |  | |
+
+### Return type
+
+`void` (Empty response body)
+
+### Authorization
+
+[UserJWT](../README.md#UserJWT)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **204** | Phone verified |  -  |
+| **400** | Malformed request or invalid parameter. |  -  |
+| **401** | Missing, invalid or revoked API key. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
 
