@@ -99,7 +99,7 @@ example().catch(console.error);
 | **201** | Invoice created |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
@@ -177,7 +177,7 @@ example().catch(console.error);
 |-------------|-------------|------------------|
 | **200** | Cancellation scheduled |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
 
@@ -258,7 +258,7 @@ example().catch(console.error);
 | **201** | Payment created |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **404** | Resource not found in this tenant. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
@@ -337,7 +337,7 @@ example().catch(console.error);
 |-------------|-------------|------------------|
 | **201** | Refund requested |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
 
@@ -418,7 +418,7 @@ example().catch(console.error);
 | **201** | Payment created |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
 
@@ -499,7 +499,7 @@ example().catch(console.error);
 | **201** | Invoice created |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
@@ -577,7 +577,7 @@ example().catch(console.error);
 |-------------|-------------|------------------|
 | **204** | No content |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **404** | Resource not found in this tenant. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
 
@@ -733,7 +733,7 @@ This endpoint does not need any parameter.
 
 Get seats and billing status
 
-Returns the billing state of the current tenant: its &#x60;status&#x60; (&#x60;free&#x60;, &#x60;trial&#x60;, &#x60;paid&#x60; or &#x60;overdue&#x60;), the seats it has bought and the seats in use, any seat reduction scheduled for the next renewal, the billing day and period, and when the trial ends. Use it to build the billing page, to show how many seats are still free before inviting someone, or to decide what the tenant may still do.  &#x60;free&#x60; has the basic features and one seat. &#x60;trial&#x60; has every feature for up to 3 seats. &#x60;paid&#x60; has every feature for the seats bought. &#x60;overdue&#x60; has dropped back to the basic features, with every user except the owner read-only, until the open invoice is paid. Which feature is basic or paid comes from [&#x60;GET /v1/features&#x60;](#tag/pricing/GET/v1/features). Seats are bought with [&#x60;POST /v1/billing/subscription&#x60;](#tag/billing/POST/v1/billing/subscription) and [&#x60;POST /v1/billing/seat-additions&#x60;](#tag/billing/POST/v1/billing/seat-additions), reduced with [&#x60;PATCH /v1/billing/subscription&#x60;](#tag/billing/PATCH/v1/billing/subscription), and the invoices behind them are listed by [&#x60;GET /v1/billing/invoices&#x60;](#tag/billing/GET/v1/billing/invoices). All dates follow Asia/Jakarta.  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
+Returns the billing state of the current tenant: its &#x60;status&#x60; (&#x60;free&#x60;, &#x60;trial&#x60;, &#x60;paid&#x60; or &#x60;overdue&#x60;), the seats it has bought and the seats in use, any seat reduction scheduled for the next renewal, the billing day and period, and when the trial ends. Use it to build the billing page, to show how many seats are still free before inviting someone, or to decide what the tenant may still do.  &#x60;free&#x60; has the free features and one seat. &#x60;trial&#x60; has every feature for up to 3 seats. &#x60;paid&#x60; has every feature for the seats bought. &#x60;overdue&#x60; has dropped back to the free features, with every user except the owner read-only, until the open invoice is paid. Which feature is basic or paid comes from [&#x60;GET /v1/features&#x60;](#tag/pricing/GET/v1/features). Seats are bought with [&#x60;POST /v1/billing/subscription&#x60;](#tag/billing/POST/v1/billing/subscription) and [&#x60;POST /v1/billing/seat-additions&#x60;](#tag/billing/POST/v1/billing/seat-additions), reduced with [&#x60;PATCH /v1/billing/subscription&#x60;](#tag/billing/PATCH/v1/billing/subscription), and the invoices behind them are listed by [&#x60;GET /v1/billing/invoices&#x60;](#tag/billing/GET/v1/billing/invoices). All dates follow Asia/Jakarta.  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -1337,7 +1337,7 @@ example().catch(console.error);
 |-------------|-------------|------------------|
 | **201** | Trial started |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
 
@@ -1415,7 +1415,7 @@ example().catch(console.error);
 | **200** | Success |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |

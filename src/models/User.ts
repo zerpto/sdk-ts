@@ -40,7 +40,7 @@ export interface User {
      */
     status: UserStatusEnum;
     /**
-     * `read_only` when the tenant has dropped to the free plan or is overdue and this user is not the owner: they can read everything but write calls are refused with 403 `read_only_access`. The owner is always `full`.
+     * `read_only` when the tenant has dropped to the free plan or is overdue and this user is not the owner: they can read everything but write calls are refused with 403 `read_only_user`. The owner is always `full`.
      */
     access: UserAccessEnum;
     /**

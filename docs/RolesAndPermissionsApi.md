@@ -86,7 +86,7 @@ example().catch(console.error);
 | **201** | Success |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
@@ -164,7 +164,7 @@ example().catch(console.error);
 |-------------|-------------|------------------|
 | **204** | No content |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **404** | Resource not found in this tenant. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
@@ -254,7 +254,7 @@ example().catch(console.error);
 
 Get a user\&#39;s permissions
 
-Returns what one user is allowed to do, in two lists. &#x60;direct&#x60; holds the grants made to this user alone, with who gave them and when they expire. &#x60;effective&#x60; is the final answer: the union of the permissions of all the user\&#39;s roles and their unexpired direct grants. Use it to explain why someone can or cannot do something.  The id comes from [&#x60;GET /v1/users&#x60;](#tag/users/GET/v1/users). Roles are changed with [&#x60;PATCH /v1/users/{id}&#x60;](#tag/users/PATCH/v1/users/{id}), and direct grants with [&#x60;PUT /v1/users/{id}/permissions&#x60;](#tag/roles-and-permissions/PUT/v1/users/{id}/permissions).  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
+Returns what one user is allowed to do, in two lists. &#x60;direct&#x60; holds the grants made to this user alone, with who gave them and when they expire. &#x60;effective&#x60; is the final answer: the union of the permissions of all the user\&#39;s roles and their unexpired direct grants, without the permissions the tenant\&#39;s plan does not include and, for a read-only user, without every write. Use it to explain why someone can or cannot do something.  The id comes from [&#x60;GET /v1/users&#x60;](#tag/users/GET/v1/users). Roles are changed with [&#x60;PATCH /v1/users/{id}&#x60;](#tag/users/PATCH/v1/users/{id}), and direct grants with [&#x60;PUT /v1/users/{id}/permissions&#x60;](#tag/roles-and-permissions/PUT/v1/users/{id}/permissions).  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -330,7 +330,7 @@ example().catch(console.error);
 
 List the permission catalogue
 
-Lists every permission the system enforces, each with its key (such as &#x60;ar.invoices.post&#x60;), the module it belongs to and a short description. Use it to build a role editor or a permission picker. The list is fixed, custom permission names are not supported, and the result is not paginated.  These keys are what you send in &#x60;permissions&#x60; to [&#x60;POST /v1/roles&#x60;](#tag/roles-and-permissions/POST/v1/roles) and [&#x60;PATCH /v1/roles/{id}&#x60;](#tag/roles-and-permissions/PATCH/v1/roles/{id}), and in &#x60;grants&#x60; to [&#x60;PUT /v1/users/{id}/permissions&#x60;](#tag/roles-and-permissions/PUT/v1/users/{id}/permissions). To see what a user ends up with, call [&#x60;GET /v1/users/{id}/permissions&#x60;](#tag/roles-and-permissions/GET/v1/users/{id}/permissions).  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
+Lists every permission the system enforces, each with its key (such as &#x60;ar.invoices.post&#x60;), the module it belongs to, whether it only reads or also writes, the lowest plan that includes it, and a short description. Use it to build a role editor or a permission picker, greying out the ones that are &#x60;locked&#x60; for this tenant with a \&quot;paid plan\&quot; label. A role keeps a locked permission, which simply has no effect until the plan includes it, so upgrading restores everything with no role edits. The list is fixed, custom permission names are not supported, and the result is not paginated.  These keys are what you send in &#x60;permissions&#x60; to [&#x60;POST /v1/roles&#x60;](#tag/roles-and-permissions/POST/v1/roles) and [&#x60;PATCH /v1/roles/{id}&#x60;](#tag/roles-and-permissions/PATCH/v1/roles/{id}), and in &#x60;grants&#x60; to [&#x60;PUT /v1/users/{id}/permissions&#x60;](#tag/roles-and-permissions/PUT/v1/users/{id}/permissions). To see what a user ends up with, call [&#x60;GET /v1/users/{id}/permissions&#x60;](#tag/roles-and-permissions/GET/v1/users/{id}/permissions).  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -546,7 +546,7 @@ example().catch(console.error);
 | **200** | Success |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **404** | Resource not found in this tenant. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
@@ -628,7 +628,7 @@ example().catch(console.error);
 | **200** | Success |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **404** | Resource not found in this tenant. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |

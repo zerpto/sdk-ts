@@ -158,7 +158,7 @@ example().catch(console.error);
 | **200** | Joined the tenant |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
 
@@ -246,7 +246,7 @@ example().catch(console.error);
 
 Current user and permissions
 
-Returns the person who is signed in, together with their roles and their effective permissions in the current tenant. Use it when the web app starts, to decide which menus and buttons to show. The permissions are the sum of the user\&#39;s roles and any permissions granted to them directly. It also says whether this person can still start a free trial.  Roles are managed with the role endpoints, starting at [&#x60;GET /v1/roles&#x60;](#tag/platform/GET/v1/roles), and a user\&#39;s direct permissions with [&#x60;PUT /v1/users/{id}/permissions&#x60;](#tag/platform/PUT/v1/users/{id}/permissions). Switching tenant with [&#x60;POST /v1/auth/switch-tenant&#x60;](#tag/tenant/POST/v1/auth/switch-tenant) changes what this returns. Use &#x60;trial_available&#x60; to decide whether to offer a \&quot;start free trial\&quot; button, which calls [&#x60;POST /v1/billing/trial&#x60;](#tag/billing/POST/v1/billing/trial); the \&quot;subscribe\&quot; button, which calls [&#x60;POST /v1/billing/subscription&#x60;](#tag/billing/POST/v1/billing/subscription), is always offered.  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
+Returns the person who is signed in, together with their roles and their effective permissions in the current tenant. Use it when the web app starts, to decide which menus and buttons to show. The permissions are what the user may really do: the sum of the user\&#39;s roles and any permissions granted to them directly, limited to the features the tenant\&#39;s plan includes and, for a read-only user, to reading. It also says whether this person can still start a free trial.  Roles are managed with the role endpoints, starting at [&#x60;GET /v1/roles&#x60;](#tag/platform/GET/v1/roles), and a user\&#39;s direct permissions with [&#x60;PUT /v1/users/{id}/permissions&#x60;](#tag/platform/PUT/v1/users/{id}/permissions). Switching tenant with [&#x60;POST /v1/auth/switch-tenant&#x60;](#tag/tenant/POST/v1/auth/switch-tenant) changes what this returns. Use &#x60;trial_available&#x60; to decide whether to offer a \&quot;start free trial\&quot; button, which calls [&#x60;POST /v1/billing/trial&#x60;](#tag/billing/POST/v1/billing/trial); the \&quot;subscribe\&quot; button, which calls [&#x60;POST /v1/billing/subscription&#x60;](#tag/billing/POST/v1/billing/subscription), is always offered.  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 

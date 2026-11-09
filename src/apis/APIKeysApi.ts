@@ -117,7 +117,7 @@ export class APIKeysApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates an API key so that another system can call the API for this tenant. Choose a name and a mode: `live` for real data, `test` for trying things out. The full `secret` is shown once, in this response, and cannot be retrieved later, so store it safely straight away.  If the secret is lost, call [`POST /v1/api-keys/{id}/rotate`](#tag/api-keys/POST/v1/api-keys/{id}/rotate) to get a new one. The secret is never shown again, and [`GET /v1/api-keys`](#tag/api-keys/GET/v1/api-keys) lists the key with only its prefix and last four characters.  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Creates an API key so that another system can call the API for this tenant. The key can use the same features as the tenant, but only the free ones while the tenant is `free` or `overdue`: a paid scope is refused with 403 `plan_required` until the plan includes it, and the key keeps working for everything else. Choose a name and a mode: `live` for real data, `test` for trying things out. The full `secret` is shown once, in this response, and cannot be retrieved later, so store it safely straight away.  If the secret is lost, call [`POST /v1/api-keys/{id}/rotate`](#tag/api-keys/POST/v1/api-keys/{id}/rotate) to get a new one. The secret is never shown again, and [`GET /v1/api-keys`](#tag/api-keys/GET/v1/api-keys) lists the key with only its prefix and last four characters.  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Create API key
      */
     async createApiKeyRaw(requestParameters: CreateApiKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiKeyWithSecretResponse>> {
@@ -128,7 +128,7 @@ export class APIKeysApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates an API key so that another system can call the API for this tenant. Choose a name and a mode: `live` for real data, `test` for trying things out. The full `secret` is shown once, in this response, and cannot be retrieved later, so store it safely straight away.  If the secret is lost, call [`POST /v1/api-keys/{id}/rotate`](#tag/api-keys/POST/v1/api-keys/{id}/rotate) to get a new one. The secret is never shown again, and [`GET /v1/api-keys`](#tag/api-keys/GET/v1/api-keys) lists the key with only its prefix and last four characters.  Error codes: none specific.  **Response meta** - `meta` is empty. 
+     * Creates an API key so that another system can call the API for this tenant. The key can use the same features as the tenant, but only the free ones while the tenant is `free` or `overdue`: a paid scope is refused with 403 `plan_required` until the plan includes it, and the key keeps working for everything else. Choose a name and a mode: `live` for real data, `test` for trying things out. The full `secret` is shown once, in this response, and cannot be retrieved later, so store it safely straight away.  If the secret is lost, call [`POST /v1/api-keys/{id}/rotate`](#tag/api-keys/POST/v1/api-keys/{id}/rotate) to get a new one. The secret is never shown again, and [`GET /v1/api-keys`](#tag/api-keys/GET/v1/api-keys) lists the key with only its prefix and last four characters.  Error codes: none specific.  **Response meta** - `meta` is empty. 
      * Create API key
      */
     async createApiKey(requestParameters: CreateApiKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApiKeyWithSecretResponse> {

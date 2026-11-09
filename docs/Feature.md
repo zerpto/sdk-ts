@@ -9,7 +9,9 @@ Name | Type
 `key` | string
 `name` | string
 `description` | string
-`tier` | string
+`minimumPlan` | string
+`thirdPartyCost` | boolean
+`apiScope` | string
 
 ## Example
 
@@ -21,7 +23,9 @@ const example = {
   "key": null,
   "name": null,
   "description": null,
-  "tier": null,
+  "minimumPlan": null,
+  "thirdPartyCost": null,
+  "apiScope": null,
 } satisfies Feature
 
 console.log(example)

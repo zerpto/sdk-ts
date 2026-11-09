@@ -244,7 +244,7 @@ All URIs are relative to *https://api.zerpto.com*
 *PaymentApi* | [**voidApPayment**](docs/PaymentApi.md#voidappayment) | **POST** /v1/ap/payments/{id}/void | Void payment
 *PlatformApi* | [**getHealth**](docs/PlatformApi.md#gethealth) | **GET** /v1/health | Health check
 *PricingApi* | [**getPricing**](docs/PricingApi.md#getpricing) | **GET** /v1/pricing | Get the seat price
-*PricingApi* | [**listFeatures**](docs/PricingApi.md#listfeatures) | **GET** /v1/features | List basic and paid features
+*PricingApi* | [**listFeatures**](docs/PricingApi.md#listfeatures) | **GET** /v1/features | List free and paid features
 *ProductItemsApi* | [**archiveItem**](docs/ProductItemsApi.md#archiveitem) | **DELETE** /v1/items/{id} | Archive an item
 *ProductItemsApi* | [**createItem**](docs/ProductItemsApi.md#createitem) | **POST** /v1/items | Create item
 *ProductItemsApi* | [**getItem**](docs/ProductItemsApi.md#getitem) | **GET** /v1/items/{id} | Get an item

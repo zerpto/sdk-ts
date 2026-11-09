@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface Feature {
     /**
-     * Stable identifier, named in the `feature_locked` error.
+     * The permission key, the same one the role editor uses in `GET /v1/permissions`. Named in the `plan_required` error.
      */
     key: string;
     /**
@@ -32,20 +32,28 @@ export interface Feature {
      */
     description: string;
     /**
-     * `basic` works for every tenant. `paid` is locked when `free` or `overdue` and unlocked during a trial and while `paid`.
+     * The lowest plan that includes the feature. `free` works for every tenant. `paid` is locked when the tenant is `free` or `overdue` and unlocked during a trial and while `paid`.
      */
-    tier: FeatureTierEnum;
+    minimumPlan: FeatureMinimumPlanEnum;
+    /**
+     * True for a feature that costs Zerpto per use from a third party, such as storage. Such a feature is always `paid`.
+     */
+    thirdPartyCost: boolean;
+    /**
+     * The scope an API key needs to use the feature, derived from `key` so the web app and the API stay in step.
+     */
+    apiScope: string;
 }
 
 
 /**
  * @export
  */
-export const FeatureTierEnum = {
-    Basic: 'basic',
+export const FeatureMinimumPlanEnum = {
+    Free: 'free',
     Paid: 'paid',
 } as const;
-export type FeatureTierEnum = typeof FeatureTierEnum[keyof typeof FeatureTierEnum];
+export type FeatureMinimumPlanEnum = typeof FeatureMinimumPlanEnum[keyof typeof FeatureMinimumPlanEnum];
 
 
 /**
@@ -55,7 +63,9 @@ export function instanceOfFeature(value: object): value is Feature {
     if (!('key' in value) || value['key'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
-    if (!('tier' in value) || value['tier'] === undefined) return false;
+    if ((!('minimumPlan' in (value as Record<string, any>)) && !('minimum_plan' in (value as Record<string, any>))) || ((value as Record<string, any>)['minimumPlan'] === undefined && (value as Record<string, any>)['minimum_plan'] === undefined)) return false;
+    if ((!('thirdPartyCost' in (value as Record<string, any>)) && !('third_party_cost' in (value as Record<string, any>))) || ((value as Record<string, any>)['thirdPartyCost'] === undefined && (value as Record<string, any>)['third_party_cost'] === undefined)) return false;
+    if ((!('apiScope' in (value as Record<string, any>)) && !('api_scope' in (value as Record<string, any>))) || ((value as Record<string, any>)['apiScope'] === undefined && (value as Record<string, any>)['api_scope'] === undefined)) return false;
     return true;
 }
 
@@ -72,7 +82,9 @@ export function FeatureFromJSONTyped(json: any, ignoreDiscriminator: boolean): F
         'key': json['key'],
         'name': json['name'],
         'description': json['description'],
-        'tier': json['tier'],
+        'minimumPlan': json['minimum_plan'],
+        'thirdPartyCost': json['third_party_cost'],
+        'apiScope': json['api_scope'],
     };
 }
 
@@ -90,7 +102,9 @@ export function FeatureToJSONTyped(value?: Feature | null, ignoreDiscriminator: 
         'key': value['key'],
         'name': value['name'],
         'description': value['description'],
-        'tier': value['tier'],
+        'minimum_plan': value['minimumPlan'],
+        'third_party_cost': value['thirdPartyCost'],
+        'api_scope': value['apiScope'],
     };
 }
 

@@ -28,10 +28,42 @@ export interface Permission {
      */
     module: string;
     /**
+     * `read` only views data. `write` creates or changes it, and is the part a read-only user loses.
+     */
+    kind: PermissionKindEnum;
+    /**
+     * The lowest plan that includes the permission, as in `GET /v1/features`.
+     */
+    minimumPlan: PermissionMinimumPlanEnum;
+    /**
+     * True when the tenant's current plan does not include the permission, so it has no effect even if a role grants it.
+     */
+    locked: boolean;
+    /**
      * 
      */
     description: string;
 }
+
+
+/**
+ * @export
+ */
+export const PermissionKindEnum = {
+    Read: 'read',
+    Write: 'write',
+} as const;
+export type PermissionKindEnum = typeof PermissionKindEnum[keyof typeof PermissionKindEnum];
+
+/**
+ * @export
+ */
+export const PermissionMinimumPlanEnum = {
+    Free: 'free',
+    Paid: 'paid',
+} as const;
+export type PermissionMinimumPlanEnum = typeof PermissionMinimumPlanEnum[keyof typeof PermissionMinimumPlanEnum];
+
 
 /**
  * Check if a given object implements the Permission interface.
@@ -39,6 +71,9 @@ export interface Permission {
 export function instanceOfPermission(value: object): value is Permission {
     if (!('key' in value) || value['key'] === undefined) return false;
     if (!('module' in value) || value['module'] === undefined) return false;
+    if (!('kind' in value) || value['kind'] === undefined) return false;
+    if ((!('minimumPlan' in (value as Record<string, any>)) && !('minimum_plan' in (value as Record<string, any>))) || ((value as Record<string, any>)['minimumPlan'] === undefined && (value as Record<string, any>)['minimum_plan'] === undefined)) return false;
+    if (!('locked' in value) || value['locked'] === undefined) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
     return true;
 }
@@ -55,6 +90,9 @@ export function PermissionFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         
         'key': json['key'],
         'module': json['module'],
+        'kind': json['kind'],
+        'minimumPlan': json['minimum_plan'],
+        'locked': json['locked'],
         'description': json['description'],
     };
 }
@@ -72,6 +110,9 @@ export function PermissionToJSONTyped(value?: Permission | null, ignoreDiscrimin
         
         'key': value['key'],
         'module': value['module'],
+        'kind': value['kind'],
+        'minimum_plan': value['minimumPlan'],
+        'locked': value['locked'],
         'description': value['description'],
     };
 }

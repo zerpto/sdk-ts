@@ -43,11 +43,11 @@ export interface Me {
      */
     tenant: TenantSummary;
     /**
-     * Effective permissions, the union of all roles and unexpired direct grants.
+     * Effective permissions. The union of all roles and unexpired direct grants, without the permissions the tenant's plan does not include and, when `access` is `read_only`, without every write.
      */
     permissions: Array<string>;
     /**
-     * `read_only` when the tenant has dropped to the free plan or is overdue and this person is not the owner. Write calls are then refused with 403 `read_only_access`, even if the permissions below would allow them.
+     * `read_only` when the tenant has dropped to the free plan or is overdue and this person is not the owner. Write calls are then refused with 403 `read_only_user`, and the write permissions below are left out.
      */
     access: MeAccessEnum;
     /**

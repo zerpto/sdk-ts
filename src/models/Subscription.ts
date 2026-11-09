@@ -20,7 +20,7 @@ import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime }
  */
 export interface Subscription {
     /**
-     * `free` has the basic features and one seat. `trial` has every feature for up to 3 seats. `paid` has every feature for the seats bought. `overdue` has dropped back to the basic features, extra users are read-only and the owner can still edit all data. Only a confirmed payment moves a tenant from `overdue` back to `paid`, and it restores everything. Data is never deleted.
+     * `free` has the free features and one seat. `trial` has every feature for up to 3 seats. `paid` has every feature for the seats bought. `overdue` has dropped back to the free features, extra users are read-only and the owner can still edit all data. Only a confirmed payment moves a tenant from `overdue` back to `paid`, and it restores everything. Data is never deleted.
      */
     status: SubscriptionStatusEnum;
     /**

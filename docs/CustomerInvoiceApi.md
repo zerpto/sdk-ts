@@ -87,7 +87,7 @@ example().catch(console.error);
 | **201** | Success |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
 | **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
@@ -341,7 +341,7 @@ example().catch(console.error);
 |-------------|-------------|------------------|
 | **200** | Success |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **404** | Resource not found in this tenant. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
@@ -424,7 +424,7 @@ example().catch(console.error);
 | **200** | Success |  -  |
 | **400** | Malformed request or invalid parameter. |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **404** | Resource not found in this tenant. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
@@ -506,7 +506,7 @@ example().catch(console.error);
 |-------------|-------------|------------------|
 | **200** | Success |  -  |
 | **401** | Missing, invalid or revoked API key. |  -  |
-| **403** | The key or user lacks permission for this action. |  -  |
+| **403** | The key or user may not do this. The error &#x60;code&#x60; says why: &#x60;permission_denied&#x60; when the role or key lacks the permission, &#x60;plan_required&#x60; when the tenant\&#39;s plan does not include the feature (the &#x60;message&#x60; names the feature key), and &#x60;read_only_user&#x60; when the user is read-only and the call writes. |  -  |
 | **404** | Resource not found in this tenant. |  -  |
 | **409** | State conflict, e.g. duplicate code, or editing a posted document. |  -  |
 | **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |

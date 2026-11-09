@@ -5,7 +5,7 @@ All URIs are relative to *https://api.zerpto.com*
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
 | [**getPricing**](PricingApi.md#getpricing) | **GET** /v1/pricing | Get the seat price |
-| [**listFeatures**](PricingApi.md#listfeatures) | **GET** /v1/features | List basic and paid features |
+| [**listFeatures**](PricingApi.md#listfeatures) | **GET** /v1/features | List free and paid features |
 
 
 
@@ -73,9 +73,9 @@ No authorization required
 
 > FeatureListResponse listFeatures()
 
-List basic and paid features
+List free and paid features
 
-Public catalogue of the features, each marked &#x60;basic&#x60; or &#x60;paid&#x60;. Basic features work for every tenant. Paid features unlock during the free trial and while a subscription is paid. Use it to build the pricing page or to show a lock next to a paid feature. Zerpto can move a feature between the two tiers without a new API version, so read the list instead of hard-coding it.  Whether a tenant has the paid features follows the &#x60;status&#x60; from [&#x60;GET /v1/billing/subscription&#x60;](#tag/billing/GET/v1/billing/subscription): &#x60;free&#x60; and &#x60;overdue&#x60; lock them, &#x60;trial&#x60; and &#x60;paid&#x60; unlock them. A call to a locked paid feature is refused with 403 &#x60;feature_locked&#x60;, and the &#x60;message&#x60; names the feature &#x60;key&#x60;. Unlock them with [&#x60;POST /v1/billing/trial&#x60;](#tag/billing/POST/v1/billing/trial) or [&#x60;POST /v1/billing/subscription&#x60;](#tag/billing/POST/v1/billing/subscription), and see the seat price in [&#x60;GET /v1/pricing&#x60;](#tag/pricing/GET/v1/pricing).  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
+Public catalogue of the features, each with the lowest plan that includes it: &#x60;free&#x60; or &#x60;paid&#x60;. Free features work for every tenant. Paid features unlock during the free trial and while the subscription is paid. A feature that costs Zerpto per use from a third party, such as file storage, is always &#x60;paid&#x60;. Use it to build the pricing page or to show a lock next to a paid feature. Zerpto can move a feature between the two plans without a new API version, so read the list instead of hard-coding it.  Each &#x60;key&#x60; is the permission key that the role editor uses in [&#x60;GET /v1/permissions&#x60;](#tag/roles-and-permissions/GET/v1/permissions). A user may do something only when both the role and the plan allow it: the role grants the permission, and the plan decides whether the tenant has the feature. The plan follows the &#x60;status&#x60; from [&#x60;GET /v1/billing/subscription&#x60;](#tag/billing/GET/v1/billing/subscription): &#x60;free&#x60; and &#x60;overdue&#x60; have the free features, &#x60;trial&#x60; and &#x60;paid&#x60; have all of them. A call to a feature the plan lacks is refused with 403 &#x60;plan_required&#x60;, and the &#x60;message&#x60; names the feature &#x60;key&#x60;. Unlock them with [&#x60;POST /v1/billing/trial&#x60;](#tag/billing/POST/v1/billing/trial) or [&#x60;POST /v1/billing/subscription&#x60;](#tag/billing/POST/v1/billing/subscription), and see the seat price in [&#x60;GET /v1/pricing&#x60;](#tag/pricing/GET/v1/pricing).  Error codes: none specific.  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 

@@ -8,6 +8,9 @@ Name | Type
 ------------ | -------------
 `key` | string
 `module` | string
+`kind` | string
+`minimumPlan` | string
+`locked` | boolean
 `description` | string
 
 ## Example
@@ -19,6 +22,9 @@ import type { Permission } from '@zerpto/sdk'
 const example = {
   "key": ar.invoices.post,
   "module": ar,
+  "kind": null,
+  "minimumPlan": null,
+  "locked": null,
   "description": null,
 } satisfies Permission
 
