@@ -13,8 +13,30 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RfqQuoteDelivery } from './RfqQuoteDelivery';
+import {
+    RfqQuoteDeliveryFromJSON,
+    RfqQuoteDeliveryFromJSONTyped,
+    RfqQuoteDeliveryToJSON,
+    RfqQuoteDeliveryToJSONTyped,
+} from './RfqQuoteDelivery';
+import type { RfqQuoteLineWarning } from './RfqQuoteLineWarning';
+import {
+    RfqQuoteLineWarningFromJSON,
+    RfqQuoteLineWarningFromJSONTyped,
+    RfqQuoteLineWarningToJSON,
+    RfqQuoteLineWarningToJSONTyped,
+} from './RfqQuoteLineWarning';
+import type { RfqPriceBreak } from './RfqPriceBreak';
+import {
+    RfqPriceBreakFromJSON,
+    RfqPriceBreakFromJSONTyped,
+    RfqPriceBreakToJSON,
+    RfqPriceBreakToJSONTyped,
+} from './RfqPriceBreak';
+
 /**
- * 
+ * The price a vendor gave for one request line, with the deliveries it offers. Price is per line because volume discounts depend on the total quantity.
  * @export
  * @interface RfqQuoteLine
  */
@@ -28,25 +50,89 @@ export interface RfqQuoteLine {
      */
     rfqLineId: string;
     /**
-     * Price per unit with the vendor's tax excluded. Null when the vendor does not offer this line.
+     * The price per unit exactly as the vendor stated it. Read it with `tax_included`: gross when true, net when false. Null when the vendor does not offer this line. To use a price downstream, such as in a purchase order, use `unit_price_ex_tax`.
      */
     unitPrice: string | null;
     /**
-     * 
+     * The tax rate the vendor applies, from `GET /v1/tax-rates`. Null means an untaxed line.
      */
     taxRateId: string | null;
     /**
-     * Decimal number as a string. Never a float.
+     * True when `unit_price` and the `price_breaks` prices already contain the tax of `tax_rate_id`. Applies to the base price and all price breaks.
      */
-    lineSubtotal: string | null;
+    taxIncluded: boolean;
     /**
-     * Decimal number as a string. Never a float.
+     * The vendor's minimum order quantity, in the line unit. Informational: it is compared with `total_offered_quantity` and sets `below_moq`, and never blocks a call.
      */
-    lineTax: string | null;
+    moq: string | null;
     /**
-     * Decimal number as a string. Never a float.
+     * Overrides the quote `lead_time_days` for this line. Calendar days from order confirmation. Null means not stated and 0 means ex-stock.
      */
-    lineTotal: string | null;
+    leadTimeDays: number | null;
+    /**
+     * The line `lead_time_days`, else the quote `lead_time_days`, else null. Worked out when read, the header value is never copied into the line.
+     */
+    readonly effectiveLeadTimeDays: number | null;
+    /**
+     * Volume tiers, all-units: when the total offered quantity of the line reaches a tier, that tier price applies to every unit, not only to the units above it. The tiers belong to the quote and change only when the quote is updated.
+     */
+    priceBreaks: Array<RfqPriceBreak>;
+    /**
+     * The answer to each requested delivery. A delivery the vendor did not answer is returned with `not_quoted: true`, never left out.
+     */
+    deliveries: Array<RfqQuoteDelivery>;
+    /**
+     * The sum of `quantity_offered` over the deliveries.
+     */
+    readonly totalOfferedQuantity: string;
+    /**
+     * The `min_quantity` of the tier that applies. Null when the base price applies.
+     */
+    readonly appliedPriceBreakMinQuantity: string | null;
+    /**
+     * The stated price that applies at `total_offered_quantity`: the highest tier whose `min_quantity` is reached, otherwise `unit_price`. Read it with `tax_included`.
+     */
+    readonly effectiveUnitPrice: string | null;
+    /**
+     * `line_net_total` divided by `total_offered_quantity`. Up to 6 decimals.
+     */
+    readonly effectiveUnitPriceExTax: string | null;
+    /**
+     * `line_gross_total` divided by `total_offered_quantity`. Up to 6 decimals.
+     */
+    readonly effectiveUnitPriceIncTax: string | null;
+    /**
+     * The base `unit_price` without tax. Up to 6 decimals.
+     */
+    readonly unitPriceExTax: string | null;
+    /**
+     * The base `unit_price` with tax. Up to 6 decimals.
+     */
+    readonly unitPriceIncTax: string | null;
+    /**
+     * The percentage of `tax_rate_id` at the time the quote was saved, for example `11.00`. It does not change if the tax rate is edited later. Null for an untaxed line.
+     */
+    readonly appliedTaxRate: string | null;
+    /**
+     * The line without tax. When `tax_included`, worked out from the gross total as the gross total divided by (1 + rate), rounded to 2 decimals.
+     */
+    readonly lineNetTotal: string | null;
+    /**
+     * The gross total minus the net total.
+     */
+    readonly lineTaxTotal: string | null;
+    /**
+     * The line with tax.
+     */
+    readonly lineGrossTotal: string | null;
+    /**
+     * True when `moq` is set and `total_offered_quantity` is less than it.
+     */
+    readonly belowMoq: boolean;
+    /**
+     * Problems worth showing that do not block saving. Worked out on every read.
+     */
+    readonly warnings: Array<RfqQuoteLineWarning>;
 }
 
 /**
@@ -57,9 +143,25 @@ export function instanceOfRfqQuoteLine(value: object): value is RfqQuoteLine {
     if ((!('rfqLineId' in (value as Record<string, any>)) && !('rfq_line_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['rfqLineId'] === undefined && (value as Record<string, any>)['rfq_line_id'] === undefined)) return false;
     if ((!('unitPrice' in (value as Record<string, any>)) && !('unit_price' in (value as Record<string, any>))) || ((value as Record<string, any>)['unitPrice'] === undefined && (value as Record<string, any>)['unit_price'] === undefined)) return false;
     if ((!('taxRateId' in (value as Record<string, any>)) && !('tax_rate_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['taxRateId'] === undefined && (value as Record<string, any>)['tax_rate_id'] === undefined)) return false;
-    if ((!('lineSubtotal' in (value as Record<string, any>)) && !('line_subtotal' in (value as Record<string, any>))) || ((value as Record<string, any>)['lineSubtotal'] === undefined && (value as Record<string, any>)['line_subtotal'] === undefined)) return false;
-    if ((!('lineTax' in (value as Record<string, any>)) && !('line_tax' in (value as Record<string, any>))) || ((value as Record<string, any>)['lineTax'] === undefined && (value as Record<string, any>)['line_tax'] === undefined)) return false;
-    if ((!('lineTotal' in (value as Record<string, any>)) && !('line_total' in (value as Record<string, any>))) || ((value as Record<string, any>)['lineTotal'] === undefined && (value as Record<string, any>)['line_total'] === undefined)) return false;
+    if ((!('taxIncluded' in (value as Record<string, any>)) && !('tax_included' in (value as Record<string, any>))) || ((value as Record<string, any>)['taxIncluded'] === undefined && (value as Record<string, any>)['tax_included'] === undefined)) return false;
+    if (!('moq' in value) || value['moq'] === undefined) return false;
+    if ((!('leadTimeDays' in (value as Record<string, any>)) && !('lead_time_days' in (value as Record<string, any>))) || ((value as Record<string, any>)['leadTimeDays'] === undefined && (value as Record<string, any>)['lead_time_days'] === undefined)) return false;
+    if ((!('effectiveLeadTimeDays' in (value as Record<string, any>)) && !('effective_lead_time_days' in (value as Record<string, any>))) || ((value as Record<string, any>)['effectiveLeadTimeDays'] === undefined && (value as Record<string, any>)['effective_lead_time_days'] === undefined)) return false;
+    if ((!('priceBreaks' in (value as Record<string, any>)) && !('price_breaks' in (value as Record<string, any>))) || ((value as Record<string, any>)['priceBreaks'] === undefined && (value as Record<string, any>)['price_breaks'] === undefined)) return false;
+    if (!('deliveries' in value) || value['deliveries'] === undefined) return false;
+    if ((!('totalOfferedQuantity' in (value as Record<string, any>)) && !('total_offered_quantity' in (value as Record<string, any>))) || ((value as Record<string, any>)['totalOfferedQuantity'] === undefined && (value as Record<string, any>)['total_offered_quantity'] === undefined)) return false;
+    if ((!('appliedPriceBreakMinQuantity' in (value as Record<string, any>)) && !('applied_price_break_min_quantity' in (value as Record<string, any>))) || ((value as Record<string, any>)['appliedPriceBreakMinQuantity'] === undefined && (value as Record<string, any>)['applied_price_break_min_quantity'] === undefined)) return false;
+    if ((!('effectiveUnitPrice' in (value as Record<string, any>)) && !('effective_unit_price' in (value as Record<string, any>))) || ((value as Record<string, any>)['effectiveUnitPrice'] === undefined && (value as Record<string, any>)['effective_unit_price'] === undefined)) return false;
+    if ((!('effectiveUnitPriceExTax' in (value as Record<string, any>)) && !('effective_unit_price_ex_tax' in (value as Record<string, any>))) || ((value as Record<string, any>)['effectiveUnitPriceExTax'] === undefined && (value as Record<string, any>)['effective_unit_price_ex_tax'] === undefined)) return false;
+    if ((!('effectiveUnitPriceIncTax' in (value as Record<string, any>)) && !('effective_unit_price_inc_tax' in (value as Record<string, any>))) || ((value as Record<string, any>)['effectiveUnitPriceIncTax'] === undefined && (value as Record<string, any>)['effective_unit_price_inc_tax'] === undefined)) return false;
+    if ((!('unitPriceExTax' in (value as Record<string, any>)) && !('unit_price_ex_tax' in (value as Record<string, any>))) || ((value as Record<string, any>)['unitPriceExTax'] === undefined && (value as Record<string, any>)['unit_price_ex_tax'] === undefined)) return false;
+    if ((!('unitPriceIncTax' in (value as Record<string, any>)) && !('unit_price_inc_tax' in (value as Record<string, any>))) || ((value as Record<string, any>)['unitPriceIncTax'] === undefined && (value as Record<string, any>)['unit_price_inc_tax'] === undefined)) return false;
+    if ((!('appliedTaxRate' in (value as Record<string, any>)) && !('applied_tax_rate' in (value as Record<string, any>))) || ((value as Record<string, any>)['appliedTaxRate'] === undefined && (value as Record<string, any>)['applied_tax_rate'] === undefined)) return false;
+    if ((!('lineNetTotal' in (value as Record<string, any>)) && !('line_net_total' in (value as Record<string, any>))) || ((value as Record<string, any>)['lineNetTotal'] === undefined && (value as Record<string, any>)['line_net_total'] === undefined)) return false;
+    if ((!('lineTaxTotal' in (value as Record<string, any>)) && !('line_tax_total' in (value as Record<string, any>))) || ((value as Record<string, any>)['lineTaxTotal'] === undefined && (value as Record<string, any>)['line_tax_total'] === undefined)) return false;
+    if ((!('lineGrossTotal' in (value as Record<string, any>)) && !('line_gross_total' in (value as Record<string, any>))) || ((value as Record<string, any>)['lineGrossTotal'] === undefined && (value as Record<string, any>)['line_gross_total'] === undefined)) return false;
+    if ((!('belowMoq' in (value as Record<string, any>)) && !('below_moq' in (value as Record<string, any>))) || ((value as Record<string, any>)['belowMoq'] === undefined && (value as Record<string, any>)['below_moq'] === undefined)) return false;
+    if (!('warnings' in value) || value['warnings'] === undefined) return false;
     return true;
 }
 
@@ -77,9 +179,25 @@ export function RfqQuoteLineFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'rfqLineId': json['rfq_line_id'],
         'unitPrice': json['unit_price'],
         'taxRateId': json['tax_rate_id'],
-        'lineSubtotal': json['line_subtotal'],
-        'lineTax': json['line_tax'],
-        'lineTotal': json['line_total'],
+        'taxIncluded': json['tax_included'],
+        'moq': json['moq'],
+        'leadTimeDays': json['lead_time_days'],
+        'effectiveLeadTimeDays': json['effective_lead_time_days'],
+        'priceBreaks': ((json['price_breaks'] as Array<any>).map(RfqPriceBreakFromJSON)),
+        'deliveries': ((json['deliveries'] as Array<any>).map(RfqQuoteDeliveryFromJSON)),
+        'totalOfferedQuantity': json['total_offered_quantity'],
+        'appliedPriceBreakMinQuantity': json['applied_price_break_min_quantity'],
+        'effectiveUnitPrice': json['effective_unit_price'],
+        'effectiveUnitPriceExTax': json['effective_unit_price_ex_tax'],
+        'effectiveUnitPriceIncTax': json['effective_unit_price_inc_tax'],
+        'unitPriceExTax': json['unit_price_ex_tax'],
+        'unitPriceIncTax': json['unit_price_inc_tax'],
+        'appliedTaxRate': json['applied_tax_rate'],
+        'lineNetTotal': json['line_net_total'],
+        'lineTaxTotal': json['line_tax_total'],
+        'lineGrossTotal': json['line_gross_total'],
+        'belowMoq': json['below_moq'],
+        'warnings': ((json['warnings'] as Array<any>).map(RfqQuoteLineWarningFromJSON)),
     };
 }
 
@@ -87,7 +205,7 @@ export function RfqQuoteLineToJSON(json: any): RfqQuoteLine {
     return RfqQuoteLineToJSONTyped(json, false);
 }
 
-export function RfqQuoteLineToJSONTyped(value?: Omit<RfqQuoteLine, 'id'> | null, ignoreDiscriminator: boolean = false): any {
+export function RfqQuoteLineToJSONTyped(value?: Omit<RfqQuoteLine, 'id'|'effectiveLeadTimeDays'|'totalOfferedQuantity'|'appliedPriceBreakMinQuantity'|'effectiveUnitPrice'|'effectiveUnitPriceExTax'|'effectiveUnitPriceIncTax'|'unitPriceExTax'|'unitPriceIncTax'|'appliedTaxRate'|'lineNetTotal'|'lineTaxTotal'|'lineGrossTotal'|'belowMoq'|'warnings'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -97,9 +215,11 @@ export function RfqQuoteLineToJSONTyped(value?: Omit<RfqQuoteLine, 'id'> | null,
         'rfq_line_id': value['rfqLineId'],
         'unit_price': value['unitPrice'],
         'tax_rate_id': value['taxRateId'],
-        'line_subtotal': value['lineSubtotal'],
-        'line_tax': value['lineTax'],
-        'line_total': value['lineTotal'],
+        'tax_included': value['taxIncluded'],
+        'moq': value['moq'],
+        'lead_time_days': value['leadTimeDays'],
+        'price_breaks': ((value['priceBreaks'] as Array<any>).map(RfqPriceBreakToJSON)),
+        'deliveries': ((value['deliveries'] as Array<any>).map(RfqQuoteDeliveryToJSON)),
     };
 }
 

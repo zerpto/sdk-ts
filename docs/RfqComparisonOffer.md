@@ -7,8 +7,9 @@
 Name | Type
 ------------ | -------------
 `quoteId` | string
-`unitPrice` | string
-`lineTotal` | string
+`unitPriceAtRequestedQty` | string
+`lineNetTotal` | string
+`belowMoq` | boolean
 `isLowest` | boolean
 
 ## Example
@@ -19,8 +20,9 @@ import type { RfqComparisonOffer } from '@zerpto/sdk'
 // TODO: Update the object below with actual values
 const example = {
   "quoteId": null,
-  "unitPrice": 1500000.00,
-  "lineTotal": 1500000.00,
+  "unitPriceAtRequestedQty": 1500000.00,
+  "lineNetTotal": 1500000.00,
+  "belowMoq": null,
   "isLowest": null,
 } satisfies RfqComparisonOffer
 

@@ -1,7 +1,7 @@
 
 # RfqComparison
 
-The quotes of a request lined up. `is_lowest_total` is set only among quotes that price every line, so a partial quote never wins on a smaller total.
+The quotes of a request lined up by request line, then by delivery, with one entry per vendor in the same order as `vendors`. Every quote is comparable: `is_lowest_total` ranks on `total_landed`, so check `quantity_variance` and `not_quoted` before choosing.
 
 ## Properties
 

@@ -8,9 +8,15 @@ Name | Type
 ------------ | -------------
 `quoteId` | string
 `vendorId` | string
-`total` | string
+`deliveryTerms` | string
 `leadTimeDays` | number
 `linesOffered` | number
+`total` | string
+`freightCost` | string
+`freightBundled` | boolean
+`freightNotStated` | boolean
+`landedCostExcludesBuyerTransport` | boolean
+`totalLanded` | string
 `isLowestTotal` | boolean
 
 ## Example
@@ -22,9 +28,15 @@ import type { RfqComparisonVendor } from '@zerpto/sdk'
 const example = {
   "quoteId": null,
   "vendorId": null,
-  "total": 1500000.00,
+  "deliveryTerms": null,
   "leadTimeDays": null,
   "linesOffered": null,
+  "total": 1500000.00,
+  "freightCost": null,
+  "freightBundled": null,
+  "freightNotStated": null,
+  "landedCostExcludesBuyerTransport": null,
+  "totalLanded": 1500000.00,
   "isLowestTotal": null,
 } satisfies RfqComparisonVendor
 

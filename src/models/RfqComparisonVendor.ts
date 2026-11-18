@@ -28,9 +28,9 @@ export interface RfqComparisonVendor {
      */
     vendorId: string;
     /**
-     * Decimal number as a string. Never a float.
+     * The terms the vendor offers.
      */
-    total: string;
+    deliveryTerms: RfqComparisonVendorDeliveryTermsEnum | null;
     /**
      * 
      */
@@ -40,10 +40,45 @@ export interface RfqComparisonVendor {
      */
     linesOffered: number;
     /**
-     * 
+     * Goods with tax, freight not included.
+     */
+    total: string;
+    /**
+     * The vendor's separate freight charge. Null when not stated or bundled.
+     */
+    freightCost: string | null;
+    /**
+     * True when freight is inside the goods prices (`freight_included_in_price`).
+     */
+    freightBundled: boolean;
+    /**
+     * True when `freight_cost` is null and freight is not bundled: the vendor has not said what freight costs.
+     */
+    freightNotStated: boolean;
+    /**
+     * True for `pickup`: `total_landed` leaves out the buyer own transport, which is never modelled.
+     */
+    landedCostExcludesBuyerTransport: boolean;
+    /**
+     * Goods plus freight plus tax on both, on the same basis for every vendor.
+     */
+    totalLanded: string;
+    /**
+     * True for the quote with the lowest `total_landed`.
      */
     isLowestTotal: boolean;
 }
+
+
+/**
+ * @export
+ */
+export const RfqComparisonVendorDeliveryTermsEnum = {
+    Delivered: 'delivered',
+    Pickup: 'pickup',
+} as const;
+export type RfqComparisonVendorDeliveryTermsEnum = typeof RfqComparisonVendorDeliveryTermsEnum[keyof typeof RfqComparisonVendorDeliveryTermsEnum];
+
 
 /**
  * Check if a given object implements the RfqComparisonVendor interface.
@@ -51,9 +86,15 @@ export interface RfqComparisonVendor {
 export function instanceOfRfqComparisonVendor(value: object): value is RfqComparisonVendor {
     if ((!('quoteId' in (value as Record<string, any>)) && !('quote_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['quoteId'] === undefined && (value as Record<string, any>)['quote_id'] === undefined)) return false;
     if ((!('vendorId' in (value as Record<string, any>)) && !('vendor_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['vendorId'] === undefined && (value as Record<string, any>)['vendor_id'] === undefined)) return false;
-    if (!('total' in value) || value['total'] === undefined) return false;
+    if ((!('deliveryTerms' in (value as Record<string, any>)) && !('delivery_terms' in (value as Record<string, any>))) || ((value as Record<string, any>)['deliveryTerms'] === undefined && (value as Record<string, any>)['delivery_terms'] === undefined)) return false;
     if ((!('leadTimeDays' in (value as Record<string, any>)) && !('lead_time_days' in (value as Record<string, any>))) || ((value as Record<string, any>)['leadTimeDays'] === undefined && (value as Record<string, any>)['lead_time_days'] === undefined)) return false;
     if ((!('linesOffered' in (value as Record<string, any>)) && !('lines_offered' in (value as Record<string, any>))) || ((value as Record<string, any>)['linesOffered'] === undefined && (value as Record<string, any>)['lines_offered'] === undefined)) return false;
+    if (!('total' in value) || value['total'] === undefined) return false;
+    if ((!('freightCost' in (value as Record<string, any>)) && !('freight_cost' in (value as Record<string, any>))) || ((value as Record<string, any>)['freightCost'] === undefined && (value as Record<string, any>)['freight_cost'] === undefined)) return false;
+    if ((!('freightBundled' in (value as Record<string, any>)) && !('freight_bundled' in (value as Record<string, any>))) || ((value as Record<string, any>)['freightBundled'] === undefined && (value as Record<string, any>)['freight_bundled'] === undefined)) return false;
+    if ((!('freightNotStated' in (value as Record<string, any>)) && !('freight_not_stated' in (value as Record<string, any>))) || ((value as Record<string, any>)['freightNotStated'] === undefined && (value as Record<string, any>)['freight_not_stated'] === undefined)) return false;
+    if ((!('landedCostExcludesBuyerTransport' in (value as Record<string, any>)) && !('landed_cost_excludes_buyer_transport' in (value as Record<string, any>))) || ((value as Record<string, any>)['landedCostExcludesBuyerTransport'] === undefined && (value as Record<string, any>)['landed_cost_excludes_buyer_transport'] === undefined)) return false;
+    if ((!('totalLanded' in (value as Record<string, any>)) && !('total_landed' in (value as Record<string, any>))) || ((value as Record<string, any>)['totalLanded'] === undefined && (value as Record<string, any>)['total_landed'] === undefined)) return false;
     if ((!('isLowestTotal' in (value as Record<string, any>)) && !('is_lowest_total' in (value as Record<string, any>))) || ((value as Record<string, any>)['isLowestTotal'] === undefined && (value as Record<string, any>)['is_lowest_total'] === undefined)) return false;
     return true;
 }
@@ -70,9 +111,15 @@ export function RfqComparisonVendorFromJSONTyped(json: any, ignoreDiscriminator:
         
         'quoteId': json['quote_id'],
         'vendorId': json['vendor_id'],
-        'total': json['total'],
+        'deliveryTerms': json['delivery_terms'],
         'leadTimeDays': json['lead_time_days'],
         'linesOffered': json['lines_offered'],
+        'total': json['total'],
+        'freightCost': json['freight_cost'],
+        'freightBundled': json['freight_bundled'],
+        'freightNotStated': json['freight_not_stated'],
+        'landedCostExcludesBuyerTransport': json['landed_cost_excludes_buyer_transport'],
+        'totalLanded': json['total_landed'],
         'isLowestTotal': json['is_lowest_total'],
     };
 }
@@ -90,9 +137,15 @@ export function RfqComparisonVendorToJSONTyped(value?: RfqComparisonVendor | nul
         
         'quote_id': value['quoteId'],
         'vendor_id': value['vendorId'],
-        'total': value['total'],
+        'delivery_terms': value['deliveryTerms'],
         'lead_time_days': value['leadTimeDays'],
         'lines_offered': value['linesOffered'],
+        'total': value['total'],
+        'freight_cost': value['freightCost'],
+        'freight_bundled': value['freightBundled'],
+        'freight_not_stated': value['freightNotStated'],
+        'landed_cost_excludes_buyer_transport': value['landedCostExcludesBuyerTransport'],
+        'total_landed': value['totalLanded'],
         'is_lowest_total': value['isLowestTotal'],
     };
 }

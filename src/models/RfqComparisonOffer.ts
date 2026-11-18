@@ -24,15 +24,19 @@ export interface RfqComparisonOffer {
      */
     quoteId: string;
     /**
-     * Decimal number as a string. Never a float.
+     * The vendor's unit price without tax, using the vendor's price breaks at the requested `total_quantity` of the line. Up to 6 decimals. Comparable across vendors whether their stated prices include tax or not.
      */
-    unitPrice: string;
+    unitPriceAtRequestedQty: string;
     /**
-     * Decimal number as a string. Never a float.
+     * The line without tax at the quantity the vendor offered.
      */
-    lineTotal: string;
+    lineNetTotal: string;
     /**
-     * 
+     * True when the quantity offered is under the vendor moq.
+     */
+    belowMoq: boolean;
+    /**
+     * True for the lowest `unit_price_at_requested_qty`.
      */
     isLowest: boolean;
 }
@@ -42,8 +46,9 @@ export interface RfqComparisonOffer {
  */
 export function instanceOfRfqComparisonOffer(value: object): value is RfqComparisonOffer {
     if ((!('quoteId' in (value as Record<string, any>)) && !('quote_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['quoteId'] === undefined && (value as Record<string, any>)['quote_id'] === undefined)) return false;
-    if ((!('unitPrice' in (value as Record<string, any>)) && !('unit_price' in (value as Record<string, any>))) || ((value as Record<string, any>)['unitPrice'] === undefined && (value as Record<string, any>)['unit_price'] === undefined)) return false;
-    if ((!('lineTotal' in (value as Record<string, any>)) && !('line_total' in (value as Record<string, any>))) || ((value as Record<string, any>)['lineTotal'] === undefined && (value as Record<string, any>)['line_total'] === undefined)) return false;
+    if ((!('unitPriceAtRequestedQty' in (value as Record<string, any>)) && !('unit_price_at_requested_qty' in (value as Record<string, any>))) || ((value as Record<string, any>)['unitPriceAtRequestedQty'] === undefined && (value as Record<string, any>)['unit_price_at_requested_qty'] === undefined)) return false;
+    if ((!('lineNetTotal' in (value as Record<string, any>)) && !('line_net_total' in (value as Record<string, any>))) || ((value as Record<string, any>)['lineNetTotal'] === undefined && (value as Record<string, any>)['line_net_total'] === undefined)) return false;
+    if ((!('belowMoq' in (value as Record<string, any>)) && !('below_moq' in (value as Record<string, any>))) || ((value as Record<string, any>)['belowMoq'] === undefined && (value as Record<string, any>)['below_moq'] === undefined)) return false;
     if ((!('isLowest' in (value as Record<string, any>)) && !('is_lowest' in (value as Record<string, any>))) || ((value as Record<string, any>)['isLowest'] === undefined && (value as Record<string, any>)['is_lowest'] === undefined)) return false;
     return true;
 }
@@ -59,8 +64,9 @@ export function RfqComparisonOfferFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'quoteId': json['quote_id'],
-        'unitPrice': json['unit_price'],
-        'lineTotal': json['line_total'],
+        'unitPriceAtRequestedQty': json['unit_price_at_requested_qty'],
+        'lineNetTotal': json['line_net_total'],
+        'belowMoq': json['below_moq'],
         'isLowest': json['is_lowest'],
     };
 }
@@ -77,8 +83,9 @@ export function RfqComparisonOfferToJSONTyped(value?: RfqComparisonOffer | null,
     return {
         
         'quote_id': value['quoteId'],
-        'unit_price': value['unitPrice'],
-        'line_total': value['lineTotal'],
+        'unit_price_at_requested_qty': value['unitPriceAtRequestedQty'],
+        'line_net_total': value['lineNetTotal'],
+        'below_moq': value['belowMoq'],
         'is_lowest': value['isLowest'],
     };
 }

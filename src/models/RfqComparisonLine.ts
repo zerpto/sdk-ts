@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RfqComparisonDelivery } from './RfqComparisonDelivery';
+import {
+    RfqComparisonDeliveryFromJSON,
+    RfqComparisonDeliveryFromJSONTyped,
+    RfqComparisonDeliveryToJSON,
+    RfqComparisonDeliveryToJSONTyped,
+} from './RfqComparisonDelivery';
 import type { RfqComparisonOffer } from './RfqComparisonOffer';
 import {
     RfqComparisonOfferFromJSON,
@@ -36,13 +43,21 @@ export interface RfqComparisonLine {
      */
     description: string;
     /**
-     * Decimal number as a string. Never a float.
+     * 
      */
-    quantity: string;
+    unit: string | null;
     /**
-     * One entry per quote that prices this line. A vendor that did not offer it has none.
+     * The requested quantity of the line, the sum of its deliveries.
+     */
+    totalQuantity: string;
+    /**
+     * The unit price per vendor. One entry per quote that prices this line. A vendor that did not offer it has none.
      */
     offers: Array<RfqComparisonOffer>;
+    /**
+     * The requested deliveries of this line, each with the answer of every vendor.
+     */
+    deliveries: Array<RfqComparisonDelivery>;
 }
 
 /**
@@ -51,8 +66,10 @@ export interface RfqComparisonLine {
 export function instanceOfRfqComparisonLine(value: object): value is RfqComparisonLine {
     if ((!('rfqLineId' in (value as Record<string, any>)) && !('rfq_line_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['rfqLineId'] === undefined && (value as Record<string, any>)['rfq_line_id'] === undefined)) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
-    if (!('quantity' in value) || value['quantity'] === undefined) return false;
+    if (!('unit' in value) || value['unit'] === undefined) return false;
+    if ((!('totalQuantity' in (value as Record<string, any>)) && !('total_quantity' in (value as Record<string, any>))) || ((value as Record<string, any>)['totalQuantity'] === undefined && (value as Record<string, any>)['total_quantity'] === undefined)) return false;
     if (!('offers' in value) || value['offers'] === undefined) return false;
+    if (!('deliveries' in value) || value['deliveries'] === undefined) return false;
     return true;
 }
 
@@ -68,8 +85,10 @@ export function RfqComparisonLineFromJSONTyped(json: any, ignoreDiscriminator: b
         
         'rfqLineId': json['rfq_line_id'],
         'description': json['description'],
-        'quantity': json['quantity'],
+        'unit': json['unit'],
+        'totalQuantity': json['total_quantity'],
         'offers': ((json['offers'] as Array<any>).map(RfqComparisonOfferFromJSON)),
+        'deliveries': ((json['deliveries'] as Array<any>).map(RfqComparisonDeliveryFromJSON)),
     };
 }
 
@@ -86,8 +105,10 @@ export function RfqComparisonLineToJSONTyped(value?: RfqComparisonLine | null, i
         
         'rfq_line_id': value['rfqLineId'],
         'description': value['description'],
-        'quantity': value['quantity'],
+        'unit': value['unit'],
+        'total_quantity': value['totalQuantity'],
         'offers': ((value['offers'] as Array<any>).map(RfqComparisonOfferToJSON)),
+        'deliveries': ((value['deliveries'] as Array<any>).map(RfqComparisonDeliveryToJSON)),
     };
 }
 

@@ -9,6 +9,11 @@ Name | Type
 `rfqLineId` | string
 `unitPrice` | string
 `taxRateId` | string
+`taxIncluded` | boolean
+`moq` | string
+`leadTimeDays` | number
+`priceBreaks` | [Array&lt;RfqPriceBreakInput&gt;](RfqPriceBreakInput.md)
+`deliveries` | [Array&lt;RfqQuoteDeliveryInput&gt;](RfqQuoteDeliveryInput.md)
 
 ## Example
 
@@ -18,8 +23,13 @@ import type { RfqQuoteLineInput } from '@zerpto/sdk'
 // TODO: Update the object below with actual values
 const example = {
   "rfqLineId": null,
-  "unitPrice": 1500000.00,
+  "unitPrice": null,
   "taxRateId": null,
+  "taxIncluded": null,
+  "moq": null,
+  "leadTimeDays": null,
+  "priceBreaks": null,
+  "deliveries": null,
 } satisfies RfqQuoteLineInput
 
 console.log(example)

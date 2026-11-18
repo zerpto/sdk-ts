@@ -1,6 +1,7 @@
 
 # RfqQuoteLine
 
+The price a vendor gave for one request line, with the deliveries it offers. Price is per line because volume discounts depend on the total quantity.
 
 ## Properties
 
@@ -10,9 +11,25 @@ Name | Type
 `rfqLineId` | string
 `unitPrice` | string
 `taxRateId` | string
-`lineSubtotal` | string
-`lineTax` | string
-`lineTotal` | string
+`taxIncluded` | boolean
+`moq` | string
+`leadTimeDays` | number
+`effectiveLeadTimeDays` | number
+`priceBreaks` | [Array&lt;RfqPriceBreak&gt;](RfqPriceBreak.md)
+`deliveries` | [Array&lt;RfqQuoteDelivery&gt;](RfqQuoteDelivery.md)
+`totalOfferedQuantity` | string
+`appliedPriceBreakMinQuantity` | string
+`effectiveUnitPrice` | string
+`effectiveUnitPriceExTax` | string
+`effectiveUnitPriceIncTax` | string
+`unitPriceExTax` | string
+`unitPriceIncTax` | string
+`appliedTaxRate` | string
+`lineNetTotal` | string
+`lineTaxTotal` | string
+`lineGrossTotal` | string
+`belowMoq` | boolean
+`warnings` | [Array&lt;RfqQuoteLineWarning&gt;](RfqQuoteLineWarning.md)
 
 ## Example
 
@@ -23,11 +40,27 @@ import type { RfqQuoteLine } from '@zerpto/sdk'
 const example = {
   "id": null,
   "rfqLineId": null,
-  "unitPrice": 1500000.00,
+  "unitPrice": null,
   "taxRateId": null,
-  "lineSubtotal": 1500000.00,
-  "lineTax": 1500000.00,
-  "lineTotal": 1500000.00,
+  "taxIncluded": null,
+  "moq": null,
+  "leadTimeDays": null,
+  "effectiveLeadTimeDays": null,
+  "priceBreaks": null,
+  "deliveries": null,
+  "totalOfferedQuantity": 1500000.00,
+  "appliedPriceBreakMinQuantity": null,
+  "effectiveUnitPrice": null,
+  "effectiveUnitPriceExTax": null,
+  "effectiveUnitPriceIncTax": null,
+  "unitPriceExTax": null,
+  "unitPriceIncTax": null,
+  "appliedTaxRate": null,
+  "lineNetTotal": null,
+  "lineTaxTotal": null,
+  "lineGrossTotal": null,
+  "belowMoq": null,
+  "warnings": null,
 } satisfies RfqQuoteLine
 
 console.log(example)

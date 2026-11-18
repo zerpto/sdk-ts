@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RfqDeliveryInput } from './RfqDeliveryInput';
+import {
+    RfqDeliveryInputFromJSON,
+    RfqDeliveryInputFromJSONTyped,
+    RfqDeliveryInputToJSON,
+    RfqDeliveryInputToJSONTyped,
+} from './RfqDeliveryInput';
+
 /**
  * 
  * @export
@@ -32,13 +40,17 @@ export interface RfqLineInput {
      */
     specification?: string | null;
     /**
-     * Decimal number as a string. Never a float.
-     */
-    quantity: string;
-    /**
-     * The unit `quantity` is counted in. With an `item_id`, it defaults to the item's base `unit` and must otherwise be one of the item's `units`, or the call returns 422 `invalid_line` (field `lines`). Without an `item_id` it is free text.
+     * The unit the quantities are counted in. With an `item_id`, it defaults to the item's base `unit` and must otherwise be one of the item's `units`, or the call returns 422 `invalid_line` (field `lines`). Without an `item_id` it is free text.
      */
     unit?: string | null;
+    /**
+     * Shorthand for a single delivery. Send it only when you send no `deliveries`: the server makes one delivery of this quantity from `default_warehouse_id` and `default_required_date`. Sending both, or neither, returns 422 `invalid_line` (field `lines`). It is never returned: read the `deliveries` instead.
+     */
+    quantity?: string | null;
+    /**
+     * The delivery schedule of this item. The same item may appear with different dates, different warehouses, or both. Item, warehouse and date are not required to be unique.
+     */
+    deliveries?: Array<RfqDeliveryInput>;
 }
 
 /**
@@ -46,7 +58,6 @@ export interface RfqLineInput {
  */
 export function instanceOfRfqLineInput(value: object): value is RfqLineInput {
     if (!('description' in value) || value['description'] === undefined) return false;
-    if (!('quantity' in value) || value['quantity'] === undefined) return false;
     return true;
 }
 
@@ -63,8 +74,9 @@ export function RfqLineInputFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'itemId': json['item_id'] === undefined ? undefined : json['item_id'] === null ? null : json['item_id'],
         'description': json['description'],
         'specification': json['specification'] === undefined ? undefined : json['specification'] === null ? null : json['specification'],
-        'quantity': json['quantity'],
         'unit': json['unit'] === undefined ? undefined : json['unit'] === null ? null : json['unit'],
+        'quantity': json['quantity'] === undefined ? undefined : json['quantity'] === null ? null : json['quantity'],
+        'deliveries': json['deliveries'] == null ? undefined : ((json['deliveries'] as Array<any>).map(RfqDeliveryInputFromJSON)),
     };
 }
 
@@ -82,8 +94,9 @@ export function RfqLineInputToJSONTyped(value?: RfqLineInput | null, ignoreDiscr
         'item_id': value['itemId'],
         'description': value['description'],
         'specification': value['specification'],
-        'quantity': value['quantity'],
         'unit': value['unit'],
+        'quantity': value['quantity'],
+        'deliveries': value['deliveries'] == null ? undefined : ((value['deliveries'] as Array<any>).map(RfqDeliveryInputToJSON)),
     };
 }
 

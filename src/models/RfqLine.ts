@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RfqDelivery } from './RfqDelivery';
+import {
+    RfqDeliveryFromJSON,
+    RfqDeliveryFromJSONTyped,
+    RfqDeliveryToJSON,
+    RfqDeliveryToJSONTyped,
+} from './RfqDelivery';
+
 /**
  * 
  * @export
@@ -36,13 +44,17 @@ export interface RfqLine {
      */
     specification: string | null;
     /**
-     * Decimal number as a string. Never a float.
-     */
-    quantity: string;
-    /**
-     * The unit `quantity` is counted in, as resolved by the server. Null only for a free-text line that gave none.
+     * The unit the quantities are counted in, as resolved by the server. Null only for a free-text line that gave none.
      */
     unit: string | null;
+    /**
+     * The sum of the quantity of its `deliveries`.
+     */
+    readonly totalQuantity: string;
+    /**
+     * The delivery schedule of this item. One item can have several deliveries on different dates, to different warehouses, or both.
+     */
+    deliveries: Array<RfqDelivery>;
 }
 
 /**
@@ -53,8 +65,9 @@ export function instanceOfRfqLine(value: object): value is RfqLine {
     if ((!('itemId' in (value as Record<string, any>)) && !('item_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['itemId'] === undefined && (value as Record<string, any>)['item_id'] === undefined)) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
     if (!('specification' in value) || value['specification'] === undefined) return false;
-    if (!('quantity' in value) || value['quantity'] === undefined) return false;
     if (!('unit' in value) || value['unit'] === undefined) return false;
+    if ((!('totalQuantity' in (value as Record<string, any>)) && !('total_quantity' in (value as Record<string, any>))) || ((value as Record<string, any>)['totalQuantity'] === undefined && (value as Record<string, any>)['total_quantity'] === undefined)) return false;
+    if (!('deliveries' in value) || value['deliveries'] === undefined) return false;
     return true;
 }
 
@@ -72,8 +85,9 @@ export function RfqLineFromJSONTyped(json: any, ignoreDiscriminator: boolean): R
         'itemId': json['item_id'],
         'description': json['description'],
         'specification': json['specification'],
-        'quantity': json['quantity'],
         'unit': json['unit'],
+        'totalQuantity': json['total_quantity'],
+        'deliveries': ((json['deliveries'] as Array<any>).map(RfqDeliveryFromJSON)),
     };
 }
 
@@ -81,7 +95,7 @@ export function RfqLineToJSON(json: any): RfqLine {
     return RfqLineToJSONTyped(json, false);
 }
 
-export function RfqLineToJSONTyped(value?: Omit<RfqLine, 'id'> | null, ignoreDiscriminator: boolean = false): any {
+export function RfqLineToJSONTyped(value?: Omit<RfqLine, 'id'|'totalQuantity'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -91,8 +105,8 @@ export function RfqLineToJSONTyped(value?: Omit<RfqLine, 'id'> | null, ignoreDis
         'item_id': value['itemId'],
         'description': value['description'],
         'specification': value['specification'],
-        'quantity': value['quantity'],
         'unit': value['unit'],
+        'deliveries': ((value['deliveries'] as Array<any>).map(RfqDeliveryToJSON)),
     };
 }
 

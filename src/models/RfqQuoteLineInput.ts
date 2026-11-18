@@ -13,6 +13,21 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RfqPriceBreakInput } from './RfqPriceBreakInput';
+import {
+    RfqPriceBreakInputFromJSON,
+    RfqPriceBreakInputFromJSONTyped,
+    RfqPriceBreakInputToJSON,
+    RfqPriceBreakInputToJSONTyped,
+} from './RfqPriceBreakInput';
+import type { RfqQuoteDeliveryInput } from './RfqQuoteDeliveryInput';
+import {
+    RfqQuoteDeliveryInputFromJSON,
+    RfqQuoteDeliveryInputFromJSONTyped,
+    RfqQuoteDeliveryInputToJSON,
+    RfqQuoteDeliveryInputToJSONTyped,
+} from './RfqQuoteDeliveryInput';
+
 /**
  * 
  * @export
@@ -24,13 +39,33 @@ export interface RfqQuoteLineInput {
      */
     rfqLineId: string;
     /**
-     * Send null for a line the vendor does not offer.
+     * The price per unit exactly as the vendor stated it, read with `tax_included`. Send null for a line the vendor does not offer.
      */
     unitPrice: string | null;
     /**
-     * 
+     * Null with `tax_included` true returns 422 `tax_rate_required`. Null with `tax_included` false is an untaxed line and gives the warning `line_untaxed`.
      */
     taxRateId?: string | null;
+    /**
+     * True when the stated prices already contain tax: the server takes out the net price. False when they are net.
+     */
+    taxIncluded: boolean;
+    /**
+     * The vendor's minimum order quantity. Informational.
+     */
+    moq?: string | null;
+    /**
+     * Overrides the quote `lead_time_days` for this line.
+     */
+    leadTimeDays?: number | null;
+    /**
+     * Volume tiers, all-units. Replaces the whole list.
+     */
+    priceBreaks?: Array<RfqPriceBreakInput>;
+    /**
+     * What the vendor offers for each requested delivery. A requested delivery you leave out is returned as `not_quoted`. When you send no `deliveries` for a priced line, the vendor is taken to offer every requested delivery in full, with no promised date.
+     */
+    deliveries?: Array<RfqQuoteDeliveryInput>;
 }
 
 /**
@@ -39,6 +74,7 @@ export interface RfqQuoteLineInput {
 export function instanceOfRfqQuoteLineInput(value: object): value is RfqQuoteLineInput {
     if ((!('rfqLineId' in (value as Record<string, any>)) && !('rfq_line_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['rfqLineId'] === undefined && (value as Record<string, any>)['rfq_line_id'] === undefined)) return false;
     if ((!('unitPrice' in (value as Record<string, any>)) && !('unit_price' in (value as Record<string, any>))) || ((value as Record<string, any>)['unitPrice'] === undefined && (value as Record<string, any>)['unit_price'] === undefined)) return false;
+    if ((!('taxIncluded' in (value as Record<string, any>)) && !('tax_included' in (value as Record<string, any>))) || ((value as Record<string, any>)['taxIncluded'] === undefined && (value as Record<string, any>)['tax_included'] === undefined)) return false;
     return true;
 }
 
@@ -55,6 +91,11 @@ export function RfqQuoteLineInputFromJSONTyped(json: any, ignoreDiscriminator: b
         'rfqLineId': json['rfq_line_id'],
         'unitPrice': json['unit_price'],
         'taxRateId': json['tax_rate_id'] === undefined ? undefined : json['tax_rate_id'] === null ? null : json['tax_rate_id'],
+        'taxIncluded': json['tax_included'],
+        'moq': json['moq'] === undefined ? undefined : json['moq'] === null ? null : json['moq'],
+        'leadTimeDays': json['lead_time_days'] === undefined ? undefined : json['lead_time_days'] === null ? null : json['lead_time_days'],
+        'priceBreaks': json['price_breaks'] == null ? undefined : ((json['price_breaks'] as Array<any>).map(RfqPriceBreakInputFromJSON)),
+        'deliveries': json['deliveries'] == null ? undefined : ((json['deliveries'] as Array<any>).map(RfqQuoteDeliveryInputFromJSON)),
     };
 }
 
@@ -72,6 +113,11 @@ export function RfqQuoteLineInputToJSONTyped(value?: RfqQuoteLineInput | null, i
         'rfq_line_id': value['rfqLineId'],
         'unit_price': value['unitPrice'],
         'tax_rate_id': value['taxRateId'],
+        'tax_included': value['taxIncluded'],
+        'moq': value['moq'],
+        'lead_time_days': value['leadTimeDays'],
+        'price_breaks': value['priceBreaks'] == null ? undefined : ((value['priceBreaks'] as Array<any>).map(RfqPriceBreakInputToJSON)),
+        'deliveries': value['deliveries'] == null ? undefined : ((value['deliveries'] as Array<any>).map(RfqQuoteDeliveryInputToJSON)),
     };
 }
 

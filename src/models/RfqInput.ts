@@ -44,25 +44,29 @@ export interface RfqInput {
      */
     notes?: string | null;
     /**
-     * A user of this tenant who is the buyer's contact person. Their name appears as the issuer on the document. When omitted on create, it is the user creating the request.
+     * A user of this tenant who is the buyer's contact person. Their name and email appear in the sign-off of the document. When omitted on create, it is the user creating the request.
      */
     contactUserId?: string | null;
     /**
-     * The date the goods are needed. Not before `rfq_date`.
+     * The date the goods are needed, used by a delivery that sends no `required_date` of its own. Not before `rfq_date`.
      */
-    requiredDate?: Date | null;
+    defaultRequiredDate?: Date | null;
     /**
-     * The warehouse to deliver to, from `GET /v1/inventory/warehouses`. Its address is the delivery address. It must be an active warehouse of this tenant.
+     * The warehouse to deliver to, used by a delivery that sends no `warehouse_id` of its own. From `GET /v1/inventory/warehouses`. Its address is the delivery address. It must be an active warehouse of this tenant.
      */
-    warehouseId?: string | null;
+    defaultWarehouseId?: string | null;
     /**
      * The payment term asked from the vendor, in days. 30 means Net 30.
      */
     paymentTermsDays?: number | null;
     /**
-     * `delivered` when the vendor delivers to the delivery address, `pickup` when the buyer collects from the vendor.
+     * `delivered` when the vendor delivers to the delivery address of each delivery, `pickup` when the buyer collects from the vendor, `either` when the vendor may quote both. The RFQ carries terms only, never a freight amount.
      */
     deliveryTerms?: RfqInputDeliveryTermsEnum | null;
+    /**
+     * When true, vendors are asked to state freight separately from the goods. The RFQ itself never holds a freight amount.
+     */
+    requestFreightBreakdown?: boolean;
     /**
      * 
      */
@@ -80,6 +84,7 @@ export interface RfqInput {
 export const RfqInputDeliveryTermsEnum = {
     Delivered: 'delivered',
     Pickup: 'pickup',
+    Either: 'either',
 } as const;
 export type RfqInputDeliveryTermsEnum = typeof RfqInputDeliveryTermsEnum[keyof typeof RfqInputDeliveryTermsEnum];
 
@@ -111,10 +116,11 @@ export function RfqInputFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'currency': json['currency'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
         'contactUserId': json['contact_user_id'] === undefined ? undefined : json['contact_user_id'] === null ? null : json['contact_user_id'],
-        'requiredDate': json['required_date'] === undefined ? undefined : json['required_date'] === null ? null : (parseDate(json['required_date'])),
-        'warehouseId': json['warehouse_id'] === undefined ? undefined : json['warehouse_id'] === null ? null : json['warehouse_id'],
+        'defaultRequiredDate': json['default_required_date'] === undefined ? undefined : json['default_required_date'] === null ? null : (parseDate(json['default_required_date'])),
+        'defaultWarehouseId': json['default_warehouse_id'] === undefined ? undefined : json['default_warehouse_id'] === null ? null : json['default_warehouse_id'],
         'paymentTermsDays': json['payment_terms_days'] === undefined ? undefined : json['payment_terms_days'] === null ? null : json['payment_terms_days'],
         'deliveryTerms': json['delivery_terms'] === undefined ? undefined : json['delivery_terms'] === null ? null : json['delivery_terms'],
+        'requestFreightBreakdown': json['request_freight_breakdown'] == null ? undefined : json['request_freight_breakdown'],
         'vendorIds': json['vendor_ids'],
         'lines': ((json['lines'] as Array<any>).map(RfqLineInputFromJSON)),
     };
@@ -136,10 +142,11 @@ export function RfqInputToJSONTyped(value?: RfqInput | null, ignoreDiscriminator
         'currency': value['currency'],
         'notes': value['notes'],
         'contact_user_id': value['contactUserId'],
-        'required_date': value['requiredDate'] == null ? value['requiredDate'] : serializeDate(value['requiredDate']),
-        'warehouse_id': value['warehouseId'],
+        'default_required_date': value['defaultRequiredDate'] == null ? value['defaultRequiredDate'] : serializeDate(value['defaultRequiredDate']),
+        'default_warehouse_id': value['defaultWarehouseId'],
         'payment_terms_days': value['paymentTermsDays'],
         'delivery_terms': value['deliveryTerms'],
+        'request_freight_breakdown': value['requestFreightBreakdown'],
         'vendor_ids': value['vendorIds'],
         'lines': ((value['lines'] as Array<any>).map(RfqLineInputToJSON)),
     };

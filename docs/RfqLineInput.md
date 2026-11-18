@@ -9,8 +9,9 @@ Name | Type
 `itemId` | string
 `description` | string
 `specification` | string
-`quantity` | string
 `unit` | string
+`quantity` | string
+`deliveries` | [Array&lt;RfqDeliveryInput&gt;](RfqDeliveryInput.md)
 
 ## Example
 
@@ -22,8 +23,9 @@ const example = {
   "itemId": null,
   "description": null,
   "specification": null,
-  "quantity": 1500000.00,
   "unit": null,
+  "quantity": null,
+  "deliveries": null,
 } satisfies RfqLineInput
 
 console.log(example)

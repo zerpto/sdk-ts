@@ -36,18 +36,49 @@ export interface RfqQuoteUpdate {
      */
     validUntil?: Date | null;
     /**
-     * 
+     * Calendar days from order confirmation, the default for every line. Null means not stated and 0 means ex-stock.
      */
     leadTimeDays?: number | null;
+    /**
+     * The terms the vendor offers. `pickup` requires `freight_included_in_price` false.
+     */
+    deliveryTerms?: RfqQuoteUpdateDeliveryTermsEnum | null;
     /**
      * 
      */
     notes?: string | null;
     /**
-     * 
+     * The vendor's separate freight charge on top of the goods. Null means not stated, `0.00` means free.
+     */
+    freightCost?: string | null;
+    /**
+     * True when freight is inside the goods prices. Then `freight_cost`, `freight_tax_included` and `freight_tax_rate_id` must be null, or the call returns 422 `freight_included_conflict`.
+     */
+    freightIncludedInPrice?: boolean;
+    /**
+     * True when `freight_cost` already contains tax. Requires `freight_tax_rate_id`, or the call returns 422 `tax_rate_required`.
+     */
+    freightTaxIncluded?: boolean | null;
+    /**
+     * The tax rate (PPN) on freight, from `GET /v1/tax-rates`.
+     */
+    freightTaxRateId?: string | null;
+    /**
+     * Replaces the whole list.
      */
     lines?: Array<RfqQuoteLineInput>;
 }
+
+
+/**
+ * @export
+ */
+export const RfqQuoteUpdateDeliveryTermsEnum = {
+    Delivered: 'delivered',
+    Pickup: 'pickup',
+} as const;
+export type RfqQuoteUpdateDeliveryTermsEnum = typeof RfqQuoteUpdateDeliveryTermsEnum[keyof typeof RfqQuoteUpdateDeliveryTermsEnum];
+
 
 /**
  * Check if a given object implements the RfqQuoteUpdate interface.
@@ -69,7 +100,12 @@ export function RfqQuoteUpdateFromJSONTyped(json: any, ignoreDiscriminator: bool
         'quoteDate': json['quote_date'] == null ? undefined : (parseDate(json['quote_date'])),
         'validUntil': json['valid_until'] === undefined ? undefined : json['valid_until'] === null ? null : (parseDate(json['valid_until'])),
         'leadTimeDays': json['lead_time_days'] === undefined ? undefined : json['lead_time_days'] === null ? null : json['lead_time_days'],
+        'deliveryTerms': json['delivery_terms'] === undefined ? undefined : json['delivery_terms'] === null ? null : json['delivery_terms'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
+        'freightCost': json['freight_cost'] === undefined ? undefined : json['freight_cost'] === null ? null : json['freight_cost'],
+        'freightIncludedInPrice': json['freight_included_in_price'] == null ? undefined : json['freight_included_in_price'],
+        'freightTaxIncluded': json['freight_tax_included'] === undefined ? undefined : json['freight_tax_included'] === null ? null : json['freight_tax_included'],
+        'freightTaxRateId': json['freight_tax_rate_id'] === undefined ? undefined : json['freight_tax_rate_id'] === null ? null : json['freight_tax_rate_id'],
         'lines': json['lines'] == null ? undefined : ((json['lines'] as Array<any>).map(RfqQuoteLineInputFromJSON)),
     };
 }
@@ -88,7 +124,12 @@ export function RfqQuoteUpdateToJSONTyped(value?: RfqQuoteUpdate | null, ignoreD
         'quote_date': value['quoteDate'] == null ? value['quoteDate'] : serializeDate(value['quoteDate']),
         'valid_until': value['validUntil'] == null ? value['validUntil'] : serializeDate(value['validUntil']),
         'lead_time_days': value['leadTimeDays'],
+        'delivery_terms': value['deliveryTerms'],
         'notes': value['notes'],
+        'freight_cost': value['freightCost'],
+        'freight_included_in_price': value['freightIncludedInPrice'],
+        'freight_tax_included': value['freightTaxIncluded'],
+        'freight_tax_rate_id': value['freightTaxRateId'],
         'lines': value['lines'] == null ? undefined : ((value['lines'] as Array<any>).map(RfqQuoteLineInputToJSON)),
     };
 }

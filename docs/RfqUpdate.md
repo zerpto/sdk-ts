@@ -12,10 +12,11 @@ Name | Type
 `currency` | string
 `notes` | string
 `contactUserId` | string
-`requiredDate` | Date
-`warehouseId` | string
+`defaultRequiredDate` | Date
+`defaultWarehouseId` | string
 `paymentTermsDays` | number
 `deliveryTerms` | string
+`requestFreightBreakdown` | boolean
 `vendorIds` | Array&lt;string&gt;
 `lines` | [Array&lt;RfqLineInput&gt;](RfqLineInput.md)
 
@@ -31,10 +32,11 @@ const example = {
   "currency": IDR,
   "notes": null,
   "contactUserId": null,
-  "requiredDate": null,
-  "warehouseId": null,
+  "defaultRequiredDate": null,
+  "defaultWarehouseId": null,
   "paymentTermsDays": null,
   "deliveryTerms": null,
+  "requestFreightBreakdown": null,
   "vendorIds": null,
   "lines": null,
 } satisfies RfqUpdate

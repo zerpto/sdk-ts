@@ -10,7 +10,12 @@ Name | Type
 `quoteDate` | Date
 `validUntil` | Date
 `leadTimeDays` | number
+`deliveryTerms` | string
 `notes` | string
+`freightCost` | string
+`freightIncludedInPrice` | boolean
+`freightTaxIncluded` | boolean
+`freightTaxRateId` | string
 `lines` | [Array&lt;RfqQuoteLineInput&gt;](RfqQuoteLineInput.md)
 
 ## Example
@@ -24,7 +29,12 @@ const example = {
   "quoteDate": null,
   "validUntil": null,
   "leadTimeDays": null,
+  "deliveryTerms": null,
   "notes": null,
+  "freightCost": null,
+  "freightIncludedInPrice": null,
+  "freightTaxIncluded": null,
+  "freightTaxRateId": null,
   "lines": null,
 } satisfies RfqQuoteInput
 

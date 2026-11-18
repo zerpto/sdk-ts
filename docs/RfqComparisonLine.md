@@ -8,8 +8,10 @@ Name | Type
 ------------ | -------------
 `rfqLineId` | string
 `description` | string
-`quantity` | string
+`unit` | string
+`totalQuantity` | string
 `offers` | [Array&lt;RfqComparisonOffer&gt;](RfqComparisonOffer.md)
+`deliveries` | [Array&lt;RfqComparisonDelivery&gt;](RfqComparisonDelivery.md)
 
 ## Example
 
@@ -20,8 +22,10 @@ import type { RfqComparisonLine } from '@zerpto/sdk'
 const example = {
   "rfqLineId": null,
   "description": null,
-  "quantity": 1500000.00,
+  "unit": null,
+  "totalQuantity": 1500000.00,
   "offers": null,
+  "deliveries": null,
 } satisfies RfqComparisonLine
 
 console.log(example)

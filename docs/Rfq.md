@@ -1,7 +1,7 @@
 
 # Rfq
 
-A request for quotation, sent to several vendors to price the same lines.
+A request for quotation, sent to several vendors to price the same items. Each line has a delivery schedule.
 
 ## Properties
 
@@ -15,10 +15,11 @@ Name | Type
 `currency` | string
 `notes` | string
 `contactUserId` | string
-`requiredDate` | Date
-`warehouseId` | string
+`defaultRequiredDate` | Date
+`defaultWarehouseId` | string
 `paymentTermsDays` | number
 `deliveryTerms` | string
+`requestFreightBreakdown` | boolean
 `contactUser` | [AuthUser](AuthUser.md)
 `vendorIds` | Array&lt;string&gt;
 `lines` | [Array&lt;RfqLine&gt;](RfqLine.md)
@@ -43,10 +44,11 @@ const example = {
   "currency": IDR,
   "notes": null,
   "contactUserId": null,
-  "requiredDate": null,
-  "warehouseId": null,
+  "defaultRequiredDate": null,
+  "defaultWarehouseId": null,
   "paymentTermsDays": null,
   "deliveryTerms": null,
+  "requestFreightBreakdown": null,
   "contactUser": null,
   "vendorIds": null,
   "lines": null,
