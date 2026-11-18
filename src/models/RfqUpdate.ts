@@ -44,6 +44,26 @@ export interface RfqUpdate {
      */
     notes?: string | null;
     /**
+     * A user of this tenant who is the buyer's contact person. Their name appears as the issuer on the document. When omitted on create, it is the user creating the request.
+     */
+    contactUserId?: string | null;
+    /**
+     * The date the goods are needed. Not before `rfq_date`.
+     */
+    requiredDate?: Date | null;
+    /**
+     * The warehouse to deliver to, from `GET /v1/inventory/warehouses`. Its address is the delivery address. It must be an active warehouse of this tenant.
+     */
+    warehouseId?: string | null;
+    /**
+     * The payment term asked from the vendor, in days. 30 means Net 30.
+     */
+    paymentTermsDays?: number | null;
+    /**
+     * `delivered` when the vendor delivers to the delivery address, `pickup` when the buyer collects from the vendor.
+     */
+    deliveryTerms?: RfqUpdateDeliveryTermsEnum | null;
+    /**
      * 
      */
     vendorIds?: Array<string>;
@@ -52,6 +72,17 @@ export interface RfqUpdate {
      */
     lines?: Array<RfqLineInput>;
 }
+
+
+/**
+ * @export
+ */
+export const RfqUpdateDeliveryTermsEnum = {
+    Delivered: 'delivered',
+    Pickup: 'pickup',
+} as const;
+export type RfqUpdateDeliveryTermsEnum = typeof RfqUpdateDeliveryTermsEnum[keyof typeof RfqUpdateDeliveryTermsEnum];
+
 
 /**
  * Check if a given object implements the RfqUpdate interface.
@@ -74,6 +105,11 @@ export function RfqUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'replyBy': json['reply_by'] == null ? undefined : (parseDate(json['reply_by'])),
         'currency': json['currency'] == null ? undefined : json['currency'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
+        'contactUserId': json['contact_user_id'] === undefined ? undefined : json['contact_user_id'] === null ? null : json['contact_user_id'],
+        'requiredDate': json['required_date'] === undefined ? undefined : json['required_date'] === null ? null : (parseDate(json['required_date'])),
+        'warehouseId': json['warehouse_id'] === undefined ? undefined : json['warehouse_id'] === null ? null : json['warehouse_id'],
+        'paymentTermsDays': json['payment_terms_days'] === undefined ? undefined : json['payment_terms_days'] === null ? null : json['payment_terms_days'],
+        'deliveryTerms': json['delivery_terms'] === undefined ? undefined : json['delivery_terms'] === null ? null : json['delivery_terms'],
         'vendorIds': json['vendor_ids'] == null ? undefined : json['vendor_ids'],
         'lines': json['lines'] == null ? undefined : ((json['lines'] as Array<any>).map(RfqLineInputFromJSON)),
     };
@@ -94,6 +130,11 @@ export function RfqUpdateToJSONTyped(value?: RfqUpdate | null, ignoreDiscriminat
         'reply_by': value['replyBy'] == null ? value['replyBy'] : serializeDate(value['replyBy']),
         'currency': value['currency'],
         'notes': value['notes'],
+        'contact_user_id': value['contactUserId'],
+        'required_date': value['requiredDate'] == null ? value['requiredDate'] : serializeDate(value['requiredDate']),
+        'warehouse_id': value['warehouseId'],
+        'payment_terms_days': value['paymentTermsDays'],
+        'delivery_terms': value['deliveryTerms'],
         'vendor_ids': value['vendorIds'],
         'lines': value['lines'] == null ? undefined : ((value['lines'] as Array<any>).map(RfqLineInputToJSON)),
     };

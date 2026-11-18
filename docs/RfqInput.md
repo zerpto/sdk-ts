@@ -10,6 +10,11 @@ Name | Type
 `replyBy` | Date
 `currency` | string
 `notes` | string
+`contactUserId` | string
+`requiredDate` | Date
+`warehouseId` | string
+`paymentTermsDays` | number
+`deliveryTerms` | string
 `vendorIds` | Array&lt;string&gt;
 `lines` | [Array&lt;RfqLineInput&gt;](RfqLineInput.md)
 
@@ -24,6 +29,11 @@ const example = {
   "replyBy": null,
   "currency": IDR,
   "notes": null,
+  "contactUserId": null,
+  "requiredDate": null,
+  "warehouseId": null,
+  "paymentTermsDays": null,
+  "deliveryTerms": null,
   "vendorIds": null,
   "lines": null,
 } satisfies RfqInput

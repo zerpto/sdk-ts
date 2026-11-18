@@ -32,9 +32,17 @@ export interface RfqLine {
      */
     description: string;
     /**
+     * Free-text specification of the item, such as size, brand or grade.
+     */
+    specification: string | null;
+    /**
      * Decimal number as a string. Never a float.
      */
     quantity: string;
+    /**
+     * The unit `quantity` is counted in, as resolved by the server. Null only for a free-text line that gave none.
+     */
+    unit: string | null;
 }
 
 /**
@@ -44,7 +52,9 @@ export function instanceOfRfqLine(value: object): value is RfqLine {
     if (!('id' in value) || value['id'] === undefined) return false;
     if ((!('itemId' in (value as Record<string, any>)) && !('item_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['itemId'] === undefined && (value as Record<string, any>)['item_id'] === undefined)) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
+    if (!('specification' in value) || value['specification'] === undefined) return false;
     if (!('quantity' in value) || value['quantity'] === undefined) return false;
+    if (!('unit' in value) || value['unit'] === undefined) return false;
     return true;
 }
 
@@ -61,7 +71,9 @@ export function RfqLineFromJSONTyped(json: any, ignoreDiscriminator: boolean): R
         'id': json['id'],
         'itemId': json['item_id'],
         'description': json['description'],
+        'specification': json['specification'],
         'quantity': json['quantity'],
+        'unit': json['unit'],
     };
 }
 
@@ -78,7 +90,9 @@ export function RfqLineToJSONTyped(value?: Omit<RfqLine, 'id'> | null, ignoreDis
         
         'item_id': value['itemId'],
         'description': value['description'],
+        'specification': value['specification'],
         'quantity': value['quantity'],
+        'unit': value['unit'],
     };
 }
 

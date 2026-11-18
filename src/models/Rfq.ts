@@ -27,6 +27,13 @@ import {
     RfqLineToJSON,
     RfqLineToJSONTyped,
 } from './RfqLine';
+import type { AuthUser } from './AuthUser';
+import {
+    AuthUserFromJSON,
+    AuthUserFromJSONTyped,
+    AuthUserToJSON,
+    AuthUserToJSONTyped,
+} from './AuthUser';
 
 /**
  * A request for quotation, sent to several vendors to price the same lines.
@@ -62,6 +69,30 @@ export interface Rfq {
      * 
      */
     notes?: string | null;
+    /**
+     * A user of this tenant who is the buyer's contact person. Their name appears as the issuer on the document. When omitted on create, it is the user creating the request.
+     */
+    contactUserId: string | null;
+    /**
+     * The date the goods are needed. Not before `rfq_date`.
+     */
+    requiredDate: Date | null;
+    /**
+     * The warehouse to deliver to, from `GET /v1/inventory/warehouses`. Its address is the delivery address. It must be an active warehouse of this tenant.
+     */
+    warehouseId: string | null;
+    /**
+     * The payment term asked from the vendor, in days. 30 means Net 30.
+     */
+    paymentTermsDays: number | null;
+    /**
+     * `delivered` when the vendor delivers to the delivery address, `pickup` when the buyer collects from the vendor.
+     */
+    deliveryTerms: RfqDeliveryTermsEnum | null;
+    /**
+     * The contact person, so a client needs no second request. Null when `contact_user_id` is null.
+     */
+    readonly contactUser: AuthUser | null;
     /**
      * The vendors invited. Each may have one quote.
      */
@@ -105,6 +136,15 @@ export const RfqStatusEnum = {
 } as const;
 export type RfqStatusEnum = typeof RfqStatusEnum[keyof typeof RfqStatusEnum];
 
+/**
+ * @export
+ */
+export const RfqDeliveryTermsEnum = {
+    Delivered: 'delivered',
+    Pickup: 'pickup',
+} as const;
+export type RfqDeliveryTermsEnum = typeof RfqDeliveryTermsEnum[keyof typeof RfqDeliveryTermsEnum];
+
 
 /**
  * Check if a given object implements the Rfq interface.
@@ -116,6 +156,12 @@ export function instanceOfRfq(value: object): value is Rfq {
     if ((!('rfqDate' in (value as Record<string, any>)) && !('rfq_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['rfqDate'] === undefined && (value as Record<string, any>)['rfq_date'] === undefined)) return false;
     if ((!('replyBy' in (value as Record<string, any>)) && !('reply_by' in (value as Record<string, any>))) || ((value as Record<string, any>)['replyBy'] === undefined && (value as Record<string, any>)['reply_by'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
+    if ((!('contactUserId' in (value as Record<string, any>)) && !('contact_user_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['contactUserId'] === undefined && (value as Record<string, any>)['contact_user_id'] === undefined)) return false;
+    if ((!('requiredDate' in (value as Record<string, any>)) && !('required_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['requiredDate'] === undefined && (value as Record<string, any>)['required_date'] === undefined)) return false;
+    if ((!('warehouseId' in (value as Record<string, any>)) && !('warehouse_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['warehouseId'] === undefined && (value as Record<string, any>)['warehouse_id'] === undefined)) return false;
+    if ((!('paymentTermsDays' in (value as Record<string, any>)) && !('payment_terms_days' in (value as Record<string, any>))) || ((value as Record<string, any>)['paymentTermsDays'] === undefined && (value as Record<string, any>)['payment_terms_days'] === undefined)) return false;
+    if ((!('deliveryTerms' in (value as Record<string, any>)) && !('delivery_terms' in (value as Record<string, any>))) || ((value as Record<string, any>)['deliveryTerms'] === undefined && (value as Record<string, any>)['delivery_terms'] === undefined)) return false;
+    if ((!('contactUser' in (value as Record<string, any>)) && !('contact_user' in (value as Record<string, any>))) || ((value as Record<string, any>)['contactUser'] === undefined && (value as Record<string, any>)['contact_user'] === undefined)) return false;
     if ((!('vendorIds' in (value as Record<string, any>)) && !('vendor_ids' in (value as Record<string, any>))) || ((value as Record<string, any>)['vendorIds'] === undefined && (value as Record<string, any>)['vendor_ids'] === undefined)) return false;
     if (!('lines' in value) || value['lines'] === undefined) return false;
     if (!('quotes' in value) || value['quotes'] === undefined) return false;
@@ -141,6 +187,12 @@ export function RfqFromJSONTyped(json: any, ignoreDiscriminator: boolean): Rfq {
         'replyBy': (json['reply_by'] == null ? json['reply_by'] : parseDate(json['reply_by'])),
         'currency': json['currency'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
+        'contactUserId': json['contact_user_id'],
+        'requiredDate': (json['required_date'] == null ? null : parseDate(json['required_date'])),
+        'warehouseId': json['warehouse_id'],
+        'paymentTermsDays': json['payment_terms_days'],
+        'deliveryTerms': json['delivery_terms'],
+        'contactUser': AuthUserFromJSON(json['contact_user']),
         'vendorIds': json['vendor_ids'],
         'lines': ((json['lines'] as Array<any>).map(RfqLineFromJSON)),
         'quotes': ((json['quotes'] as Array<any>).map(RfqQuoteFromJSON)),
@@ -155,7 +207,7 @@ export function RfqToJSON(json: any): Rfq {
     return RfqToJSONTyped(json, false);
 }
 
-export function RfqToJSONTyped(value?: Omit<Rfq, 'id'|'number'|'createdAt'|'updatedAt'> | null, ignoreDiscriminator: boolean = false): any {
+export function RfqToJSONTyped(value?: Omit<Rfq, 'id'|'number'|'contactUser'|'createdAt'|'updatedAt'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -167,6 +219,11 @@ export function RfqToJSONTyped(value?: Omit<Rfq, 'id'|'number'|'createdAt'|'upda
         'reply_by': value['replyBy'] == null ? value['replyBy'] : serializeDate(value['replyBy']),
         'currency': value['currency'],
         'notes': value['notes'],
+        'contact_user_id': value['contactUserId'],
+        'required_date': value['requiredDate'] == null ? value['requiredDate'] : serializeDate(value['requiredDate']),
+        'warehouse_id': value['warehouseId'],
+        'payment_terms_days': value['paymentTermsDays'],
+        'delivery_terms': value['deliveryTerms'],
         'vendor_ids': value['vendorIds'],
         'lines': ((value['lines'] as Array<any>).map(RfqLineToJSON)),
         'quotes': ((value['quotes'] as Array<any>).map(RfqQuoteToJSON)),

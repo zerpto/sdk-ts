@@ -9,7 +9,9 @@ Name | Type
 `id` | string
 `itemId` | string
 `description` | string
+`specification` | string
 `quantity` | string
+`unit` | string
 
 ## Example
 
@@ -21,7 +23,9 @@ const example = {
   "id": null,
   "itemId": null,
   "description": null,
+  "specification": null,
   "quantity": 1500000.00,
+  "unit": null,
 } satisfies RfqLine
 
 console.log(example)

@@ -14,6 +14,12 @@ Name | Type
 `replyBy` | Date
 `currency` | string
 `notes` | string
+`contactUserId` | string
+`requiredDate` | Date
+`warehouseId` | string
+`paymentTermsDays` | number
+`deliveryTerms` | string
+`contactUser` | [AuthUser](AuthUser.md)
 `vendorIds` | Array&lt;string&gt;
 `lines` | [Array&lt;RfqLine&gt;](RfqLine.md)
 `quotes` | [Array&lt;RfqQuote&gt;](RfqQuote.md)
@@ -36,6 +42,12 @@ const example = {
   "replyBy": null,
   "currency": IDR,
   "notes": null,
+  "contactUserId": null,
+  "requiredDate": null,
+  "warehouseId": null,
+  "paymentTermsDays": null,
+  "deliveryTerms": null,
+  "contactUser": null,
   "vendorIds": null,
   "lines": null,
   "quotes": null,

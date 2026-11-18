@@ -28,9 +28,17 @@ export interface RfqLineInput {
      */
     description: string;
     /**
+     * Free-text specification of the item, such as size, brand or grade.
+     */
+    specification?: string | null;
+    /**
      * Decimal number as a string. Never a float.
      */
     quantity: string;
+    /**
+     * The unit `quantity` is counted in. With an `item_id`, it defaults to the item's base `unit` and must otherwise be one of the item's `units`, or the call returns 422 `invalid_line` (field `lines`). Without an `item_id` it is free text.
+     */
+    unit?: string | null;
 }
 
 /**
@@ -54,7 +62,9 @@ export function RfqLineInputFromJSONTyped(json: any, ignoreDiscriminator: boolea
         
         'itemId': json['item_id'] === undefined ? undefined : json['item_id'] === null ? null : json['item_id'],
         'description': json['description'],
+        'specification': json['specification'] === undefined ? undefined : json['specification'] === null ? null : json['specification'],
         'quantity': json['quantity'],
+        'unit': json['unit'] === undefined ? undefined : json['unit'] === null ? null : json['unit'],
     };
 }
 
@@ -71,7 +81,9 @@ export function RfqLineInputToJSONTyped(value?: RfqLineInput | null, ignoreDiscr
         
         'item_id': value['itemId'],
         'description': value['description'],
+        'specification': value['specification'],
         'quantity': value['quantity'],
+        'unit': value['unit'],
     };
 }
 
