@@ -29,6 +29,11 @@ import {
     RfqComparisonResponseToJSON,
 } from '../models/RfqComparisonResponse';
 import {
+    type RfqDocumentResponse,
+    RfqDocumentResponseFromJSON,
+    RfqDocumentResponseToJSON,
+} from '../models/RfqDocumentResponse';
+import {
     type RfqInput,
     RfqInputFromJSON,
     RfqInputToJSON,
@@ -58,6 +63,11 @@ import {
     RfqResponseFromJSON,
     RfqResponseToJSON,
 } from '../models/RfqResponse';
+import {
+    type RfqSendInput,
+    RfqSendInputFromJSON,
+    RfqSendInputToJSON,
+} from '../models/RfqSendInput';
 import {
     type RfqUpdate,
     RfqUpdateFromJSON,
@@ -141,6 +151,17 @@ export interface GetRfqComparisonRequest {
     id: string;
 }
 
+export interface GetRfqVendorDocumentRequest {
+    /**
+     * Resource ID.
+     */
+    id: string;
+    /**
+     * One of the vendors invited, from `vendor_ids` of the request.
+     */
+    vendorId: string;
+}
+
 export interface ListRfqsRequest {
     /**
      * Page size.
@@ -181,6 +202,10 @@ export interface SendRfqRequest {
      * Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours.
      */
     idempotencyKey?: string;
+    /**
+     * 
+     */
+    rfqSendInput?: RfqSendInput;
 }
 
 export interface UpdateRfqRequest {
@@ -698,6 +723,77 @@ export class RFQApi extends runtime.BaseAPI {
     }
 
     /**
+     * Creates request options for getRfqVendorDocument without sending the request
+     */
+    async getRfqVendorDocumentRequestOpts(requestParameters: GetRfqVendorDocumentRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getRfqVendorDocument().'
+            );
+        }
+
+        if (requestParameters['vendorId'] == null) {
+            throw new runtime.RequiredError(
+                'vendorId',
+                'Required parameter "vendorId" was null or undefined when calling getRfqVendorDocument().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("ApiKeyAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("UserJWT", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/v1/purchasing/rfqs/{id}/vendors/{vendor_id}/document`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{vendor_id}', encodeURIComponent(String(requestParameters['vendorId'])));
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Returns a link to download the request for quotation as a PDF addressed to one vendor. It shows your company details, the vendor, the lines with their quantities, the `reply_by` date and the notes, and no prices. Use it to send the request yourself, by attaching the file to your own email, a message or a print-out. Each vendor has its own file.  Take the `id` from [`GET /v1/purchasing/rfqs`](#tag/rfq/GET/v1/purchasing/rfqs) and the `vendor_id` from the request\'s `vendor_ids`. It works for a draft too, so you can check the file before [`POST /v1/purchasing/rfqs/{{id}}/send`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/send); send with `deliver_by_email` as false when you send the files yourself. The replies are then typed in with [`POST /v1/purchasing/rfqs/{{id}}/quotes`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/quotes). The link is short-lived: call this again for a new one once it expires.  Error codes: `vendor_not_invited`.  **Response meta** - `meta` is empty. 
+     * Get the RFQ PDF
+     */
+    async getRfqVendorDocumentRaw(requestParameters: GetRfqVendorDocumentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RfqDocumentResponse>> {
+        const requestOptions = await this.getRfqVendorDocumentRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RfqDocumentResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns a link to download the request for quotation as a PDF addressed to one vendor. It shows your company details, the vendor, the lines with their quantities, the `reply_by` date and the notes, and no prices. Use it to send the request yourself, by attaching the file to your own email, a message or a print-out. Each vendor has its own file.  Take the `id` from [`GET /v1/purchasing/rfqs`](#tag/rfq/GET/v1/purchasing/rfqs) and the `vendor_id` from the request\'s `vendor_ids`. It works for a draft too, so you can check the file before [`POST /v1/purchasing/rfqs/{{id}}/send`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/send); send with `deliver_by_email` as false when you send the files yourself. The replies are then typed in with [`POST /v1/purchasing/rfqs/{{id}}/quotes`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/quotes). The link is short-lived: call this again for a new one once it expires.  Error codes: `vendor_not_invited`.  **Response meta** - `meta` is empty. 
+     * Get the RFQ PDF
+     */
+    async getRfqVendorDocument(requestParameters: GetRfqVendorDocumentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RfqDocumentResponse> {
+        const response = await this.getRfqVendorDocumentRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Creates request options for listRfqs without sending the request
      */
     async listRfqsRequestOpts(requestParameters: ListRfqsRequest): Promise<runtime.RequestOpts> {
@@ -795,6 +891,8 @@ export class RFQApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        headerParameters['Content-Type'] = 'application/json';
+
         if (requestParameters['idempotencyKey'] != null) {
             headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
         }
@@ -824,11 +922,12 @@ export class RFQApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
+            body: RfqSendInputToJSON(requestParameters['rfqSendInput']),
         };
     }
 
     /**
-     * Sends a draft request to every vendor invited. Each vendor gets an email with the lines and quantities and the `reply_by` date, and the request becomes `sent`. From then on vendor replies can be recorded. Use it when the draft is ready to go out. A repeated request with the same `Idempotency-Key` returns the first result.  Create and fix the request with [`POST /v1/purchasing/rfqs`](#tag/rfq/POST/v1/purchasing/rfqs) and [`PATCH /v1/purchasing/rfqs/{{id}}`](#tag/rfq/PATCH/v1/purchasing/rfqs/{{id}}) before you send it. Zerpto does not collect the answers: when a vendor replies by email, phone or message, type the prices in with [`POST /v1/purchasing/rfqs/{{id}}/quotes`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/quotes). If you send by mistake, [`POST /v1/purchasing/rfqs/{{id}}/cancel`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/cancel) stops the request.  Error codes: `rfq_not_sendable`, `vendor_email_missing`.  **Response meta** - `meta` is empty. 
+     * Marks a draft request as sent, and by default emails it to every vendor invited. Each vendor gets the lines and quantities and the `reply_by` date. Send `deliver_by_email` as false when you send the request yourself, for example by attaching the PDF to your own email, and nothing is emailed. Either way the request becomes `sent`, and from then on vendor replies can be recorded. Use it when the draft is ready to go out. A repeated request with the same `Idempotency-Key` returns the first result.  Create and fix the request with [`POST /v1/purchasing/rfqs`](#tag/rfq/POST/v1/purchasing/rfqs) and [`PATCH /v1/purchasing/rfqs/{{id}}`](#tag/rfq/PATCH/v1/purchasing/rfqs/{{id}}) before you send it. To send it yourself, download one PDF per vendor with [`GET /v1/purchasing/rfqs/{id}/vendors/{vendor_id}/document`](#tag/rfq/GET/v1/purchasing/rfqs/{id}/vendors/{vendor_id}/document) first. Zerpto does not collect the answers: when a vendor replies by email, phone or message, type the prices in with [`POST /v1/purchasing/rfqs/{{id}}/quotes`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/quotes). If you send by mistake, [`POST /v1/purchasing/rfqs/{{id}}/cancel`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/cancel) stops the request.  Error codes: `rfq_not_sendable`, `vendor_email_missing` (only when emailing).  **Response meta** - `meta` is empty. 
      * Send RFQ to vendors
      */
     async sendRfqRaw(requestParameters: SendRfqRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RfqResponse>> {
@@ -839,7 +938,7 @@ export class RFQApi extends runtime.BaseAPI {
     }
 
     /**
-     * Sends a draft request to every vendor invited. Each vendor gets an email with the lines and quantities and the `reply_by` date, and the request becomes `sent`. From then on vendor replies can be recorded. Use it when the draft is ready to go out. A repeated request with the same `Idempotency-Key` returns the first result.  Create and fix the request with [`POST /v1/purchasing/rfqs`](#tag/rfq/POST/v1/purchasing/rfqs) and [`PATCH /v1/purchasing/rfqs/{{id}}`](#tag/rfq/PATCH/v1/purchasing/rfqs/{{id}}) before you send it. Zerpto does not collect the answers: when a vendor replies by email, phone or message, type the prices in with [`POST /v1/purchasing/rfqs/{{id}}/quotes`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/quotes). If you send by mistake, [`POST /v1/purchasing/rfqs/{{id}}/cancel`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/cancel) stops the request.  Error codes: `rfq_not_sendable`, `vendor_email_missing`.  **Response meta** - `meta` is empty. 
+     * Marks a draft request as sent, and by default emails it to every vendor invited. Each vendor gets the lines and quantities and the `reply_by` date. Send `deliver_by_email` as false when you send the request yourself, for example by attaching the PDF to your own email, and nothing is emailed. Either way the request becomes `sent`, and from then on vendor replies can be recorded. Use it when the draft is ready to go out. A repeated request with the same `Idempotency-Key` returns the first result.  Create and fix the request with [`POST /v1/purchasing/rfqs`](#tag/rfq/POST/v1/purchasing/rfqs) and [`PATCH /v1/purchasing/rfqs/{{id}}`](#tag/rfq/PATCH/v1/purchasing/rfqs/{{id}}) before you send it. To send it yourself, download one PDF per vendor with [`GET /v1/purchasing/rfqs/{id}/vendors/{vendor_id}/document`](#tag/rfq/GET/v1/purchasing/rfqs/{id}/vendors/{vendor_id}/document) first. Zerpto does not collect the answers: when a vendor replies by email, phone or message, type the prices in with [`POST /v1/purchasing/rfqs/{{id}}/quotes`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/quotes). If you send by mistake, [`POST /v1/purchasing/rfqs/{{id}}/cancel`](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/cancel) stops the request.  Error codes: `rfq_not_sendable`, `vendor_email_missing` (only when emailing).  **Response meta** - `meta` is empty. 
      * Send RFQ to vendors
      */
     async sendRfq(requestParameters: SendRfqRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RfqResponse> {

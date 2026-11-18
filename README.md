@@ -268,6 +268,7 @@ All URIs are relative to *https://api.zerpto.com*
 *RFQApi* | [**createRfqQuote**](docs/RFQApi.md#createrfqquote) | **POST** /v1/purchasing/rfqs/{id}/quotes | Record a vendor quote
 *RFQApi* | [**getRfq**](docs/RFQApi.md#getrfq) | **GET** /v1/purchasing/rfqs/{id} | Get RFQ
 *RFQApi* | [**getRfqComparison**](docs/RFQApi.md#getrfqcomparison) | **GET** /v1/purchasing/rfqs/{id}/comparison | Compare vendor quotes
+*RFQApi* | [**getRfqVendorDocument**](docs/RFQApi.md#getrfqvendordocument) | **GET** /v1/purchasing/rfqs/{id}/vendors/{vendor_id}/document | Get the RFQ PDF
 *RFQApi* | [**listRfqs**](docs/RFQApi.md#listrfqs) | **GET** /v1/purchasing/rfqs | List RFQs
 *RFQApi* | [**sendRfq**](docs/RFQApi.md#sendrfq) | **POST** /v1/purchasing/rfqs/{id}/send | Send RFQ to vendors
 *RFQApi* | [**updateRfq**](docs/RFQApi.md#updaterfq) | **PATCH** /v1/purchasing/rfqs/{id} | Update RFQ
@@ -645,6 +646,8 @@ All URIs are relative to *https://api.zerpto.com*
 - [RfqComparisonOffer](docs/RfqComparisonOffer.md)
 - [RfqComparisonResponse](docs/RfqComparisonResponse.md)
 - [RfqComparisonVendor](docs/RfqComparisonVendor.md)
+- [RfqDocument](docs/RfqDocument.md)
+- [RfqDocumentResponse](docs/RfqDocumentResponse.md)
 - [RfqInput](docs/RfqInput.md)
 - [RfqLine](docs/RfqLine.md)
 - [RfqLineInput](docs/RfqLineInput.md)
@@ -656,6 +659,7 @@ All URIs are relative to *https://api.zerpto.com*
 - [RfqQuoteResponse](docs/RfqQuoteResponse.md)
 - [RfqQuoteUpdate](docs/RfqQuoteUpdate.md)
 - [RfqResponse](docs/RfqResponse.md)
+- [RfqSendInput](docs/RfqSendInput.md)
 - [RfqUpdate](docs/RfqUpdate.md)
 - [Role](docs/Role.md)
 - [RoleInput](docs/RoleInput.md)

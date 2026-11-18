@@ -321,6 +321,8 @@ docs/RfqComparisonLine.md
 docs/RfqComparisonOffer.md
 docs/RfqComparisonResponse.md
 docs/RfqComparisonVendor.md
+docs/RfqDocument.md
+docs/RfqDocumentResponse.md
 docs/RfqInput.md
 docs/RfqLine.md
 docs/RfqLineInput.md
@@ -332,6 +334,7 @@ docs/RfqQuoteLineInput.md
 docs/RfqQuoteResponse.md
 docs/RfqQuoteUpdate.md
 docs/RfqResponse.md
+docs/RfqSendInput.md
 docs/RfqUpdate.md
 docs/Role.md
 docs/RoleInput.md
@@ -803,6 +806,8 @@ src/models/RfqComparisonLine.ts
 src/models/RfqComparisonOffer.ts
 src/models/RfqComparisonResponse.ts
 src/models/RfqComparisonVendor.ts
+src/models/RfqDocument.ts
+src/models/RfqDocumentResponse.ts
 src/models/RfqInput.ts
 src/models/RfqLine.ts
 src/models/RfqLineInput.ts
@@ -814,6 +819,7 @@ src/models/RfqQuoteLineInput.ts
 src/models/RfqQuoteResponse.ts
 src/models/RfqQuoteUpdate.ts
 src/models/RfqResponse.ts
+src/models/RfqSendInput.ts
 src/models/RfqUpdate.ts
 src/models/Role.ts
 src/models/RoleInput.ts

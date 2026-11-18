@@ -11,6 +11,7 @@ All URIs are relative to *https://api.zerpto.com*
 | [**createRfqQuote**](RFQApi.md#createrfqquote) | **POST** /v1/purchasing/rfqs/{id}/quotes | Record a vendor quote |
 | [**getRfq**](RFQApi.md#getrfq) | **GET** /v1/purchasing/rfqs/{id} | Get RFQ |
 | [**getRfqComparison**](RFQApi.md#getrfqcomparison) | **GET** /v1/purchasing/rfqs/{id}/comparison | Compare vendor quotes |
+| [**getRfqVendorDocument**](RFQApi.md#getrfqvendordocument) | **GET** /v1/purchasing/rfqs/{id}/vendors/{vendor_id}/document | Get the RFQ PDF |
 | [**listRfqs**](RFQApi.md#listrfqs) | **GET** /v1/purchasing/rfqs | List RFQs |
 | [**sendRfq**](RFQApi.md#sendrfq) | **POST** /v1/purchasing/rfqs/{id}/send | Send RFQ to vendors |
 | [**updateRfq**](RFQApi.md#updaterfq) | **PATCH** /v1/purchasing/rfqs/{id} | Update RFQ |
@@ -587,6 +588,86 @@ example().catch(console.error);
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
+## getRfqVendorDocument
+
+> RfqDocumentResponse getRfqVendorDocument(id, vendorId)
+
+Get the RFQ PDF
+
+Returns a link to download the request for quotation as a PDF addressed to one vendor. It shows your company details, the vendor, the lines with their quantities, the &#x60;reply_by&#x60; date and the notes, and no prices. Use it to send the request yourself, by attaching the file to your own email, a message or a print-out. Each vendor has its own file.  Take the &#x60;id&#x60; from [&#x60;GET /v1/purchasing/rfqs&#x60;](#tag/rfq/GET/v1/purchasing/rfqs) and the &#x60;vendor_id&#x60; from the request\&#39;s &#x60;vendor_ids&#x60;. It works for a draft too, so you can check the file before [&#x60;POST /v1/purchasing/rfqs/{{id}}/send&#x60;](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/send); send with &#x60;deliver_by_email&#x60; as false when you send the files yourself. The replies are then typed in with [&#x60;POST /v1/purchasing/rfqs/{{id}}/quotes&#x60;](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/quotes). The link is short-lived: call this again for a new one once it expires.  Error codes: &#x60;vendor_not_invited&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  RFQApi,
+} from '@zerpto/sdk';
+import type { GetRfqVendorDocumentRequest } from '@zerpto/sdk';
+
+async function example() {
+  console.log("🚀 Testing @zerpto/sdk SDK...");
+  const config = new Configuration({ 
+    // Configure HTTP bearer authorization: ApiKeyAuth
+    accessToken: "YOUR BEARER TOKEN",
+    // Configure HTTP bearer authorization: UserJWT
+    accessToken: "YOUR BEARER TOKEN",
+  });
+  const api = new RFQApi(config);
+
+  const body = {
+    // string | Resource ID.
+    id: id_example,
+    // string | One of the vendors invited, from `vendor_ids` of the request.
+    vendorId: vendorId_example,
+  } satisfies GetRfqVendorDocumentRequest;
+
+  try {
+    const data = await api.getRfqVendorDocument(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **id** | `string` | Resource ID. | [Defaults to `undefined`] |
+| **vendorId** | `string` | One of the vendors invited, from &#x60;vendor_ids&#x60; of the request. | [Defaults to `undefined`] |
+
+### Return type
+
+[**RfqDocumentResponse**](RfqDocumentResponse.md)
+
+### Authorization
+
+[ApiKeyAuth](../README.md#ApiKeyAuth), [UserJWT](../README.md#UserJWT)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Success |  -  |
+| **401** | Missing, invalid or revoked API key. |  -  |
+| **404** | Resource not found in this tenant. |  -  |
+| **422** | Well-formed but fails business rules, e.g. unbalanced entry or closed period. |  -  |
+| **429** | Rate limit exceeded. |  * Retry-After - Seconds to wait before retrying. <br>  * X-RateLimit-Limit - Requests allowed per window. <br>  * X-RateLimit-Remaining - Requests left in the current window. <br>  * X-RateLimit-Reset - Unix time when the window resets. <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
 ## listRfqs
 
 > RfqListResponse listRfqs(perPage, page, sort, createdAfter, createdBefore, status, vendorId)
@@ -683,11 +764,11 @@ example().catch(console.error);
 
 ## sendRfq
 
-> RfqResponse sendRfq(id, idempotencyKey)
+> RfqResponse sendRfq(id, idempotencyKey, rfqSendInput)
 
 Send RFQ to vendors
 
-Sends a draft request to every vendor invited. Each vendor gets an email with the lines and quantities and the &#x60;reply_by&#x60; date, and the request becomes &#x60;sent&#x60;. From then on vendor replies can be recorded. Use it when the draft is ready to go out. A repeated request with the same &#x60;Idempotency-Key&#x60; returns the first result.  Create and fix the request with [&#x60;POST /v1/purchasing/rfqs&#x60;](#tag/rfq/POST/v1/purchasing/rfqs) and [&#x60;PATCH /v1/purchasing/rfqs/{{id}}&#x60;](#tag/rfq/PATCH/v1/purchasing/rfqs/{{id}}) before you send it. Zerpto does not collect the answers: when a vendor replies by email, phone or message, type the prices in with [&#x60;POST /v1/purchasing/rfqs/{{id}}/quotes&#x60;](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/quotes). If you send by mistake, [&#x60;POST /v1/purchasing/rfqs/{{id}}/cancel&#x60;](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/cancel) stops the request.  Error codes: &#x60;rfq_not_sendable&#x60;, &#x60;vendor_email_missing&#x60;.  **Response meta** - &#x60;meta&#x60; is empty. 
+Marks a draft request as sent, and by default emails it to every vendor invited. Each vendor gets the lines and quantities and the &#x60;reply_by&#x60; date. Send &#x60;deliver_by_email&#x60; as false when you send the request yourself, for example by attaching the PDF to your own email, and nothing is emailed. Either way the request becomes &#x60;sent&#x60;, and from then on vendor replies can be recorded. Use it when the draft is ready to go out. A repeated request with the same &#x60;Idempotency-Key&#x60; returns the first result.  Create and fix the request with [&#x60;POST /v1/purchasing/rfqs&#x60;](#tag/rfq/POST/v1/purchasing/rfqs) and [&#x60;PATCH /v1/purchasing/rfqs/{{id}}&#x60;](#tag/rfq/PATCH/v1/purchasing/rfqs/{{id}}) before you send it. To send it yourself, download one PDF per vendor with [&#x60;GET /v1/purchasing/rfqs/{id}/vendors/{vendor_id}/document&#x60;](#tag/rfq/GET/v1/purchasing/rfqs/{id}/vendors/{vendor_id}/document) first. Zerpto does not collect the answers: when a vendor replies by email, phone or message, type the prices in with [&#x60;POST /v1/purchasing/rfqs/{{id}}/quotes&#x60;](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/quotes). If you send by mistake, [&#x60;POST /v1/purchasing/rfqs/{{id}}/cancel&#x60;](#tag/rfq/POST/v1/purchasing/rfqs/{{id}}/cancel) stops the request.  Error codes: &#x60;rfq_not_sendable&#x60;, &#x60;vendor_email_missing&#x60; (only when emailing).  **Response meta** - &#x60;meta&#x60; is empty. 
 
 ### Example
 
@@ -713,6 +794,8 @@ async function example() {
     id: id_example,
     // string | Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours. (optional)
     idempotencyKey: idempotencyKey_example,
+    // RfqSendInput (optional)
+    rfqSendInput: ...,
   } satisfies SendRfqRequest;
 
   try {
@@ -734,6 +817,7 @@ example().catch(console.error);
 |------------- | ------------- | ------------- | -------------|
 | **id** | `string` | Resource ID. | [Defaults to `undefined`] |
 | **idempotencyKey** | `string` | Unique key (e.g. a UUID). Retrying with the same key returns the original result instead of creating a duplicate. Keys are kept for 24 hours. | [Optional] [Defaults to `undefined`] |
+| **rfqSendInput** | [RfqSendInput](RfqSendInput.md) |  | [Optional] |
 
 ### Return type
 
@@ -745,7 +829,7 @@ example().catch(console.error);
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
+- **Content-Type**: `application/json`
 - **Accept**: `application/json`
 
 
