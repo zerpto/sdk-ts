@@ -68,6 +68,10 @@ export interface RfqUpdate {
      */
     requestFreightBreakdown?: boolean;
     /**
+     * How the RFQ detail and the vendor document present the delivery schedule. `item` lists each item with its specification and `total_quantity`, then its deliveries (date, warehouse, quantity). `delivery_date` groups by `required_date` and lists the items under each date with specification, quantity and warehouse. `warehouse` groups by warehouse and lists the items under it with specification, quantity and delivery date. It changes only the presentation, never the data.
+     */
+    groupBy?: RfqUpdateGroupByEnum;
+    /**
      * 
      */
     vendorIds?: Array<string>;
@@ -87,6 +91,16 @@ export const RfqUpdateDeliveryTermsEnum = {
     Either: 'either',
 } as const;
 export type RfqUpdateDeliveryTermsEnum = typeof RfqUpdateDeliveryTermsEnum[keyof typeof RfqUpdateDeliveryTermsEnum];
+
+/**
+ * @export
+ */
+export const RfqUpdateGroupByEnum = {
+    Item: 'item',
+    DeliveryDate: 'delivery_date',
+    Warehouse: 'warehouse',
+} as const;
+export type RfqUpdateGroupByEnum = typeof RfqUpdateGroupByEnum[keyof typeof RfqUpdateGroupByEnum];
 
 
 /**
@@ -116,6 +130,7 @@ export function RfqUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'paymentTermsDays': json['payment_terms_days'] === undefined ? undefined : json['payment_terms_days'] === null ? null : json['payment_terms_days'],
         'deliveryTerms': json['delivery_terms'] === undefined ? undefined : json['delivery_terms'] === null ? null : json['delivery_terms'],
         'requestFreightBreakdown': json['request_freight_breakdown'] == null ? undefined : json['request_freight_breakdown'],
+        'groupBy': json['group_by'] == null ? undefined : json['group_by'],
         'vendorIds': json['vendor_ids'] == null ? undefined : json['vendor_ids'],
         'lines': json['lines'] == null ? undefined : ((json['lines'] as Array<any>).map(RfqLineInputFromJSON)),
     };
@@ -142,6 +157,7 @@ export function RfqUpdateToJSONTyped(value?: RfqUpdate | null, ignoreDiscriminat
         'payment_terms_days': value['paymentTermsDays'],
         'delivery_terms': value['deliveryTerms'],
         'request_freight_breakdown': value['requestFreightBreakdown'],
+        'group_by': value['groupBy'],
         'vendor_ids': value['vendorIds'],
         'lines': value['lines'] == null ? undefined : ((value['lines'] as Array<any>).map(RfqLineInputToJSON)),
     };

@@ -17,6 +17,7 @@ Name | Type
 `paymentTermsDays` | number
 `deliveryTerms` | string
 `requestFreightBreakdown` | boolean
+`groupBy` | string
 `vendorIds` | Array&lt;string&gt;
 `lines` | [Array&lt;RfqLineInput&gt;](RfqLineInput.md)
 
@@ -37,6 +38,7 @@ const example = {
   "paymentTermsDays": null,
   "deliveryTerms": null,
   "requestFreightBreakdown": null,
+  "groupBy": null,
   "vendorIds": null,
   "lines": null,
 } satisfies RfqUpdate

@@ -20,6 +20,7 @@ Name | Type
 `paymentTermsDays` | number
 `deliveryTerms` | string
 `requestFreightBreakdown` | boolean
+`groupBy` | string
 `contactUser` | [AuthUser](AuthUser.md)
 `vendorIds` | Array&lt;string&gt;
 `lines` | [Array&lt;RfqLine&gt;](RfqLine.md)
@@ -49,6 +50,7 @@ const example = {
   "paymentTermsDays": null,
   "deliveryTerms": null,
   "requestFreightBreakdown": null,
+  "groupBy": null,
   "contactUser": null,
   "vendorIds": null,
   "lines": null,

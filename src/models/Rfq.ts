@@ -94,6 +94,10 @@ export interface Rfq {
      */
     requestFreightBreakdown: boolean;
     /**
+     * How the RFQ detail and the vendor document present the delivery schedule. `item` lists each item with its specification and `total_quantity`, then its deliveries (date, warehouse, quantity). `delivery_date` groups by `required_date` and lists the items under each date with specification, quantity and warehouse. `warehouse` groups by warehouse and lists the items under it with specification, quantity and delivery date. It changes only the presentation, never the data.
+     */
+    groupBy: RfqGroupByEnum;
+    /**
      * The contact person, so a client needs no second request. Null when `contact_user_id` is null.
      */
     readonly contactUser: AuthUser | null;
@@ -150,6 +154,16 @@ export const RfqDeliveryTermsEnum = {
 } as const;
 export type RfqDeliveryTermsEnum = typeof RfqDeliveryTermsEnum[keyof typeof RfqDeliveryTermsEnum];
 
+/**
+ * @export
+ */
+export const RfqGroupByEnum = {
+    Item: 'item',
+    DeliveryDate: 'delivery_date',
+    Warehouse: 'warehouse',
+} as const;
+export type RfqGroupByEnum = typeof RfqGroupByEnum[keyof typeof RfqGroupByEnum];
+
 
 /**
  * Check if a given object implements the Rfq interface.
@@ -167,6 +181,7 @@ export function instanceOfRfq(value: object): value is Rfq {
     if ((!('paymentTermsDays' in (value as Record<string, any>)) && !('payment_terms_days' in (value as Record<string, any>))) || ((value as Record<string, any>)['paymentTermsDays'] === undefined && (value as Record<string, any>)['payment_terms_days'] === undefined)) return false;
     if ((!('deliveryTerms' in (value as Record<string, any>)) && !('delivery_terms' in (value as Record<string, any>))) || ((value as Record<string, any>)['deliveryTerms'] === undefined && (value as Record<string, any>)['delivery_terms'] === undefined)) return false;
     if ((!('requestFreightBreakdown' in (value as Record<string, any>)) && !('request_freight_breakdown' in (value as Record<string, any>))) || ((value as Record<string, any>)['requestFreightBreakdown'] === undefined && (value as Record<string, any>)['request_freight_breakdown'] === undefined)) return false;
+    if ((!('groupBy' in (value as Record<string, any>)) && !('group_by' in (value as Record<string, any>))) || ((value as Record<string, any>)['groupBy'] === undefined && (value as Record<string, any>)['group_by'] === undefined)) return false;
     if ((!('contactUser' in (value as Record<string, any>)) && !('contact_user' in (value as Record<string, any>))) || ((value as Record<string, any>)['contactUser'] === undefined && (value as Record<string, any>)['contact_user'] === undefined)) return false;
     if ((!('vendorIds' in (value as Record<string, any>)) && !('vendor_ids' in (value as Record<string, any>))) || ((value as Record<string, any>)['vendorIds'] === undefined && (value as Record<string, any>)['vendor_ids'] === undefined)) return false;
     if (!('lines' in value) || value['lines'] === undefined) return false;
@@ -199,6 +214,7 @@ export function RfqFromJSONTyped(json: any, ignoreDiscriminator: boolean): Rfq {
         'paymentTermsDays': json['payment_terms_days'],
         'deliveryTerms': json['delivery_terms'],
         'requestFreightBreakdown': json['request_freight_breakdown'],
+        'groupBy': json['group_by'],
         'contactUser': AuthUserFromJSON(json['contact_user']),
         'vendorIds': json['vendor_ids'],
         'lines': ((json['lines'] as Array<any>).map(RfqLineFromJSON)),
@@ -232,6 +248,7 @@ export function RfqToJSONTyped(value?: Omit<Rfq, 'id'|'number'|'contactUser'|'cr
         'payment_terms_days': value['paymentTermsDays'],
         'delivery_terms': value['deliveryTerms'],
         'request_freight_breakdown': value['requestFreightBreakdown'],
+        'group_by': value['groupBy'],
         'vendor_ids': value['vendorIds'],
         'lines': ((value['lines'] as Array<any>).map(RfqLineToJSON)),
         'quotes': ((value['quotes'] as Array<any>).map(RfqQuoteToJSON)),
