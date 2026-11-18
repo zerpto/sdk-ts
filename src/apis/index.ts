@@ -37,6 +37,7 @@ export * from './ProductItemsApi';
 export * from './PurchaseBillApi';
 export * from './PurchasingApi';
 export * from './QuotationsApi';
+export * from './RFQApi';
 export * from './RegionsApi';
 export * from './ReportsApi';
 export * from './ReturnApi';

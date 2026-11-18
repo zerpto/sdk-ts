@@ -261,6 +261,17 @@ All URIs are relative to *https://api.zerpto.com*
 *QuotationsApi* | [**getQuotation**](docs/QuotationsApi.md#getquotation) | **GET** /v1/sales/quotations/{id} | Get quotation
 *QuotationsApi* | [**listQuotations**](docs/QuotationsApi.md#listquotations) | **GET** /v1/sales/quotations | List quotations
 *QuotationsApi* | [**updateQuotation**](docs/QuotationsApi.md#updatequotation) | **PATCH** /v1/sales/quotations/{id} | Update quotation
+*RFQApi* | [**awardRfq**](docs/RFQApi.md#awardrfq) | **POST** /v1/purchasing/rfqs/{id}/award | Award a quote
+*RFQApi* | [**cancelRfq**](docs/RFQApi.md#cancelrfq) | **POST** /v1/purchasing/rfqs/{id}/cancel | Cancel RFQ
+*RFQApi* | [**convertRfq**](docs/RFQApi.md#convertrfq) | **POST** /v1/purchasing/rfqs/{id}/convert | Convert RFQ to order
+*RFQApi* | [**createRfq**](docs/RFQApi.md#createrfq) | **POST** /v1/purchasing/rfqs | Create RFQ
+*RFQApi* | [**createRfqQuote**](docs/RFQApi.md#createrfqquote) | **POST** /v1/purchasing/rfqs/{id}/quotes | Record a vendor quote
+*RFQApi* | [**getRfq**](docs/RFQApi.md#getrfq) | **GET** /v1/purchasing/rfqs/{id} | Get RFQ
+*RFQApi* | [**getRfqComparison**](docs/RFQApi.md#getrfqcomparison) | **GET** /v1/purchasing/rfqs/{id}/comparison | Compare vendor quotes
+*RFQApi* | [**listRfqs**](docs/RFQApi.md#listrfqs) | **GET** /v1/purchasing/rfqs | List RFQs
+*RFQApi* | [**sendRfq**](docs/RFQApi.md#sendrfq) | **POST** /v1/purchasing/rfqs/{id}/send | Send RFQ to vendors
+*RFQApi* | [**updateRfq**](docs/RFQApi.md#updaterfq) | **PATCH** /v1/purchasing/rfqs/{id} | Update RFQ
+*RFQApi* | [**updateRfqQuote**](docs/RFQApi.md#updaterfqquote) | **PATCH** /v1/purchasing/rfqs/{id}/quotes/{quote_id} | Update a vendor quote
 *RegionsApi* | [**getRegion**](docs/RegionsApi.md#getregion) | **GET** /v1/regions/{id} | Get a region
 *RegionsApi* | [**listRegions**](docs/RegionsApi.md#listregions) | **GET** /v1/regions | List regions
 *ReportsApi* | [**getApAging**](docs/ReportsApi.md#getapaging) | **GET** /v1/reports/ap-aging | AP aging
@@ -627,6 +638,25 @@ All URIs are relative to *https://api.zerpto.com*
 - [ReportSection](docs/ReportSection.md)
 - [ReportSectionRowsInner](docs/ReportSectionRowsInner.md)
 - [ResetPasswordInput](docs/ResetPasswordInput.md)
+- [Rfq](docs/Rfq.md)
+- [RfqAwardInput](docs/RfqAwardInput.md)
+- [RfqComparison](docs/RfqComparison.md)
+- [RfqComparisonLine](docs/RfqComparisonLine.md)
+- [RfqComparisonOffer](docs/RfqComparisonOffer.md)
+- [RfqComparisonResponse](docs/RfqComparisonResponse.md)
+- [RfqComparisonVendor](docs/RfqComparisonVendor.md)
+- [RfqInput](docs/RfqInput.md)
+- [RfqLine](docs/RfqLine.md)
+- [RfqLineInput](docs/RfqLineInput.md)
+- [RfqListResponse](docs/RfqListResponse.md)
+- [RfqQuote](docs/RfqQuote.md)
+- [RfqQuoteInput](docs/RfqQuoteInput.md)
+- [RfqQuoteLine](docs/RfqQuoteLine.md)
+- [RfqQuoteLineInput](docs/RfqQuoteLineInput.md)
+- [RfqQuoteResponse](docs/RfqQuoteResponse.md)
+- [RfqQuoteUpdate](docs/RfqQuoteUpdate.md)
+- [RfqResponse](docs/RfqResponse.md)
+- [RfqUpdate](docs/RfqUpdate.md)
 - [Role](docs/Role.md)
 - [RoleInput](docs/RoleInput.md)
 - [RoleListResponse](docs/RoleListResponse.md)

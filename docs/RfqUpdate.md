@@ -1,0 +1,45 @@
+
+# RfqUpdate
+
+All fields optional; only those sent are changed.
+
+## Properties
+
+Name | Type
+------------ | -------------
+`rfqDate` | Date
+`replyBy` | Date
+`currency` | string
+`notes` | string
+`vendorIds` | Array&lt;string&gt;
+`lines` | [Array&lt;RfqLineInput&gt;](RfqLineInput.md)
+
+## Example
+
+```typescript
+import type { RfqUpdate } from '@zerpto/sdk'
+
+// TODO: Update the object below with actual values
+const example = {
+  "rfqDate": null,
+  "replyBy": null,
+  "currency": IDR,
+  "notes": null,
+  "vendorIds": null,
+  "lines": null,
+} satisfies RfqUpdate
+
+console.log(example)
+
+// Convert the instance to a JSON string
+const exampleJSON: string = JSON.stringify(example)
+console.log(exampleJSON)
+
+// Parse the JSON string back to an object
+const exampleParsed = JSON.parse(exampleJSON) as RfqUpdate
+console.log(exampleParsed)
+```
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+

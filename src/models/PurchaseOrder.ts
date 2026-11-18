@@ -88,6 +88,10 @@ export interface PurchaseOrder {
      */
     approvalId?: string | null;
     /**
+     * The request for quotation this order was made from with `POST /v1/purchasing/rfqs/{id}/convert`. Null for an order written directly.
+     */
+    rfqId?: string | null;
+    /**
      * 
      */
     readonly createdAt?: Date;
@@ -155,6 +159,7 @@ export function PurchaseOrderFromJSONTyped(json: any, ignoreDiscriminator: boole
         'downPaymentPaid': json['down_payment_paid'] == null ? undefined : json['down_payment_paid'],
         'downPaymentBalance': json['down_payment_balance'] == null ? undefined : json['down_payment_balance'],
         'approvalId': json['approval_id'] === undefined ? undefined : json['approval_id'] === null ? null : json['approval_id'],
+        'rfqId': json['rfq_id'] === undefined ? undefined : json['rfq_id'] === null ? null : json['rfq_id'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
         'updatedAt': json['updated_at'] == null ? undefined : (parseDateTime(json['updated_at'])),
     };
@@ -184,6 +189,7 @@ export function PurchaseOrderToJSONTyped(value?: Omit<PurchaseOrder, 'id'|'numbe
         'down_payment_paid': value['downPaymentPaid'],
         'down_payment_balance': value['downPaymentBalance'],
         'approval_id': value['approvalId'],
+        'rfq_id': value['rfqId'],
     };
 }
 

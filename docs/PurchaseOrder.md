@@ -21,6 +21,7 @@ Name | Type
 `downPaymentPaid` | string
 `downPaymentBalance` | string
 `approvalId` | string
+`rfqId` | string
 `createdAt` | Date
 `updatedAt` | Date
 
@@ -46,6 +47,7 @@ const example = {
   "downPaymentPaid": 1500000.00,
   "downPaymentBalance": 1500000.00,
   "approvalId": null,
+  "rfqId": null,
   "createdAt": null,
   "updatedAt": null,
 } satisfies PurchaseOrder
