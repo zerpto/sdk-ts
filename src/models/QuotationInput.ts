@@ -13,13 +13,13 @@
  */
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
-import type { InvoiceLineInput } from './InvoiceLineInput';
+import type { QuotationLineInput } from './QuotationLineInput';
 import {
-    InvoiceLineInputFromJSON,
-    InvoiceLineInputFromJSONTyped,
-    InvoiceLineInputToJSON,
-    InvoiceLineInputToJSONTyped,
-} from './InvoiceLineInput';
+    QuotationLineInputFromJSON,
+    QuotationLineInputFromJSONTyped,
+    QuotationLineInputToJSON,
+    QuotationLineInputToJSONTyped,
+} from './QuotationLineInput';
 
 /**
  * 
@@ -36,7 +36,7 @@ export interface QuotationInput {
      */
     quoteDate: Date;
     /**
-     * 
+     * The last day the offer holds.
      */
     validUntil?: Date;
     /**
@@ -48,10 +48,69 @@ export interface QuotationInput {
      */
     notes?: string | null;
     /**
+     * The number printed on the buyer's request for quotation that this answers, such as `RFQ-2026-00001`. Reference only: it links to no record. Null when the quotation was not asked for.
+     */
+    rfqNumber?: string | null;
+    /**
+     * The date of the buyer's request.
+     */
+    rfqDate?: Date | null;
+    /**
+     * The date the buyer asked for an answer by.
+     */
+    rfqReplyBy?: Date | null;
+    /**
+     * The payment term you offer, in days. 30 means Net 30. Null when you state none.
+     */
+    paymentTermsDays?: number | null;
+    /**
+     * The terms you offer. `delivered` is delivery to the delivery addresses, `pickup` is the buyer collects.
+     */
+    deliveryTerms?: QuotationInputDeliveryTermsEnum | null;
+    /**
+     * Calendar days from order confirmation to delivery. This is the default for every line; a line can override it. Null means not stated and 0 means ex-stock.
+     */
+    leadTimeDays?: number | null;
+    /**
+     * True when you can send a sample before the order. Null when not stated.
+     */
+    sampleAvailable?: boolean | null;
+    /**
+     * Conditions for the sample, such as the time it takes.
+     */
+    sampleNote?: string | null;
+    /**
+     * Only your separate freight charge on top of the goods, in the quotation currency. Null means not stated, `0.00` means free. With `delivery_terms` `pickup` it may hold your loading or handling charge.
+     */
+    freightCost?: string | null;
+    /**
+     * True when you have put freight inside the goods prices. Then `freight_cost`, `freight_tax_included` and `freight_tax_rate_id` must all be null, or the call returns 422 `freight_included_conflict`, and freight adds nothing to `total_landed`. It must be false with `delivery_terms` `pickup`, or the call returns 422 `freight_pickup_conflict`.
+     */
+    freightIncludedInPrice?: boolean;
+    /**
+     * True when `freight_cost` already contains tax. Requires `freight_tax_rate_id`. Null when there is no `freight_cost`.
+     */
+    freightTaxIncluded?: boolean | null;
+    /**
+     * The tax rate on freight, from the tax rates. Null for untaxed freight.
+     */
+    freightTaxRateId?: string | null;
+    /**
      * 
      */
-    lines: Array<InvoiceLineInput>;
+    lines: Array<QuotationLineInput>;
 }
+
+
+/**
+ * @export
+ */
+export const QuotationInputDeliveryTermsEnum = {
+    Delivered: 'delivered',
+    Pickup: 'pickup',
+} as const;
+export type QuotationInputDeliveryTermsEnum = typeof QuotationInputDeliveryTermsEnum[keyof typeof QuotationInputDeliveryTermsEnum];
+
 
 /**
  * Check if a given object implements the QuotationInput interface.
@@ -79,7 +138,19 @@ export function QuotationInputFromJSONTyped(json: any, ignoreDiscriminator: bool
         'validUntil': json['valid_until'] == null ? undefined : (parseDate(json['valid_until'])),
         'currency': json['currency'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
-        'lines': ((json['lines'] as Array<any>).map(InvoiceLineInputFromJSON)),
+        'rfqNumber': json['rfq_number'] === undefined ? undefined : json['rfq_number'] === null ? null : json['rfq_number'],
+        'rfqDate': json['rfq_date'] === undefined ? undefined : json['rfq_date'] === null ? null : (parseDate(json['rfq_date'])),
+        'rfqReplyBy': json['rfq_reply_by'] === undefined ? undefined : json['rfq_reply_by'] === null ? null : (parseDate(json['rfq_reply_by'])),
+        'paymentTermsDays': json['payment_terms_days'] === undefined ? undefined : json['payment_terms_days'] === null ? null : json['payment_terms_days'],
+        'deliveryTerms': json['delivery_terms'] === undefined ? undefined : json['delivery_terms'] === null ? null : json['delivery_terms'],
+        'leadTimeDays': json['lead_time_days'] === undefined ? undefined : json['lead_time_days'] === null ? null : json['lead_time_days'],
+        'sampleAvailable': json['sample_available'] === undefined ? undefined : json['sample_available'] === null ? null : json['sample_available'],
+        'sampleNote': json['sample_note'] === undefined ? undefined : json['sample_note'] === null ? null : json['sample_note'],
+        'freightCost': json['freight_cost'] === undefined ? undefined : json['freight_cost'] === null ? null : json['freight_cost'],
+        'freightIncludedInPrice': json['freight_included_in_price'] == null ? undefined : json['freight_included_in_price'],
+        'freightTaxIncluded': json['freight_tax_included'] === undefined ? undefined : json['freight_tax_included'] === null ? null : json['freight_tax_included'],
+        'freightTaxRateId': json['freight_tax_rate_id'] === undefined ? undefined : json['freight_tax_rate_id'] === null ? null : json['freight_tax_rate_id'],
+        'lines': ((json['lines'] as Array<any>).map(QuotationLineInputFromJSON)),
     };
 }
 
@@ -99,7 +170,19 @@ export function QuotationInputToJSONTyped(value?: QuotationInput | null, ignoreD
         'valid_until': value['validUntil'] == null ? value['validUntil'] : serializeDate(value['validUntil']),
         'currency': value['currency'],
         'notes': value['notes'],
-        'lines': ((value['lines'] as Array<any>).map(InvoiceLineInputToJSON)),
+        'rfq_number': value['rfqNumber'],
+        'rfq_date': value['rfqDate'] == null ? value['rfqDate'] : serializeDate(value['rfqDate']),
+        'rfq_reply_by': value['rfqReplyBy'] == null ? value['rfqReplyBy'] : serializeDate(value['rfqReplyBy']),
+        'payment_terms_days': value['paymentTermsDays'],
+        'delivery_terms': value['deliveryTerms'],
+        'lead_time_days': value['leadTimeDays'],
+        'sample_available': value['sampleAvailable'],
+        'sample_note': value['sampleNote'],
+        'freight_cost': value['freightCost'],
+        'freight_included_in_price': value['freightIncludedInPrice'],
+        'freight_tax_included': value['freightTaxIncluded'],
+        'freight_tax_rate_id': value['freightTaxRateId'],
+        'lines': ((value['lines'] as Array<any>).map(QuotationLineInputToJSON)),
     };
 }
 

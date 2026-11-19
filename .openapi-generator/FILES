@@ -291,7 +291,11 @@ docs/PurchasingSettings.md
 docs/PurchasingSettingsResponse.md
 docs/PurchasingSettingsUpdate.md
 docs/Quotation.md
+docs/QuotationDelivery.md
+docs/QuotationDeliveryInput.md
 docs/QuotationInput.md
+docs/QuotationLine.md
+docs/QuotationLineInput.md
 docs/QuotationListResponse.md
 docs/QuotationResponse.md
 docs/QuotationUpdate.md
@@ -790,7 +794,11 @@ src/models/PurchasingSettings.ts
 src/models/PurchasingSettingsResponse.ts
 src/models/PurchasingSettingsUpdate.ts
 src/models/Quotation.ts
+src/models/QuotationDelivery.ts
+src/models/QuotationDeliveryInput.ts
 src/models/QuotationInput.ts
+src/models/QuotationLine.ts
+src/models/QuotationLineInput.ts
 src/models/QuotationListResponse.ts
 src/models/QuotationResponse.ts
 src/models/QuotationUpdate.ts

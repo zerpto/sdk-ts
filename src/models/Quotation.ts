@@ -13,22 +13,22 @@
  */
 
 import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
-import type { InvoiceLine } from './InvoiceLine';
+import type { QuotationLine } from './QuotationLine';
 import {
-    InvoiceLineFromJSON,
-    InvoiceLineFromJSONTyped,
-    InvoiceLineToJSON,
-    InvoiceLineToJSONTyped,
-} from './InvoiceLine';
+    QuotationLineFromJSON,
+    QuotationLineFromJSONTyped,
+    QuotationLineToJSON,
+    QuotationLineToJSONTyped,
+} from './QuotationLine';
 
 /**
- * 
+ * A quotation you give a customer. It can answer a request for quotation: then it carries the request reference, the delivery places and dates, and your freight and delivery terms. Totals cover only the lines and quantities you offered.
  * @export
  * @interface Quotation
  */
 export interface Quotation {
     /**
-     * Prefixed resource ID: `quo-` followed by a UUID.
+     * Prefixed resource ID (`quo`).
      */
     readonly id: string;
     /**
@@ -48,7 +48,7 @@ export interface Quotation {
      */
     quoteDate: Date;
     /**
-     * 
+     * The last day the offer holds. An expired quotation cannot be converted.
      */
     validUntil?: Date | null;
     /**
@@ -60,21 +60,81 @@ export interface Quotation {
      */
     notes?: string | null;
     /**
+     * The number printed on the buyer's request for quotation that this answers, such as `RFQ-2026-00001`. Reference only: it links to no record. Null when the quotation was not asked for.
+     */
+    rfqNumber?: string | null;
+    /**
+     * The date of the buyer's request.
+     */
+    rfqDate?: Date | null;
+    /**
+     * The date the buyer asked for an answer by.
+     */
+    rfqReplyBy?: Date | null;
+    /**
+     * The payment term you offer, in days. 30 means Net 30. Null when you state none.
+     */
+    paymentTermsDays: number | null;
+    /**
+     * The terms you offer. `delivered` is delivery to the delivery addresses, `pickup` is the buyer collects.
+     */
+    deliveryTerms: QuotationDeliveryTermsEnum | null;
+    /**
+     * Calendar days from order confirmation to delivery. This is the default for every line; a line can override it. Null means not stated and 0 means ex-stock.
+     */
+    leadTimeDays: number | null;
+    /**
+     * True when you can send a sample before the order. Null when not stated.
+     */
+    sampleAvailable?: boolean | null;
+    /**
+     * Conditions for the sample, such as the time it takes.
+     */
+    sampleNote?: string | null;
+    /**
+     * Only your separate freight charge on top of the goods, in the quotation currency. Null means not stated, `0.00` means free. With `delivery_terms` `pickup` it may hold your loading or handling charge.
+     */
+    freightCost: string | null;
+    /**
+     * True when you have put freight inside the goods prices. Then `freight_cost`, `freight_tax_included` and `freight_tax_rate_id` must all be null, or the call returns 422 `freight_included_conflict`, and freight adds nothing to `total_landed`. It must be false with `delivery_terms` `pickup`, or the call returns 422 `freight_pickup_conflict`.
+     */
+    freightIncludedInPrice: boolean;
+    /**
+     * True when `freight_cost` already contains tax. Requires `freight_tax_rate_id`. Null when there is no `freight_cost`.
+     */
+    freightTaxIncluded?: boolean | null;
+    /**
+     * The tax rate on freight, from the tax rates. Null for untaxed freight.
+     */
+    freightTaxRateId?: string | null;
+    /**
      * 
      */
-    lines: Array<InvoiceLine>;
+    lines: Array<QuotationLine>;
     /**
-     * Decimal number as a string. Never a float.
+     * Freight without tax. Null when `freight_cost` is null.
      */
-    subtotal: string;
+    readonly freightNetTotal: string | null;
     /**
-     * Decimal number as a string. Never a float.
+     * Tax on freight. Null when `freight_cost` is null.
      */
-    taxTotal: string;
+    readonly freightTaxTotal: string | null;
     /**
-     * Decimal number as a string. Never a float.
+     * Goods without tax, summed over the offered lines. Freight is not included.
      */
-    total: string;
+    readonly subtotal: string;
+    /**
+     * Tax on the goods. Freight tax is `freight_tax_total`.
+     */
+    readonly taxTotal: string;
+    /**
+     * Goods with tax: `subtotal` plus `tax_total`. Freight is not included.
+     */
+    readonly total: string;
+    /**
+     * The cost on a common basis: goods without tax, plus freight without tax (0 when `freight_included_in_price`), plus tax on both.
+     */
+    readonly totalLanded: string;
     /**
      * Set once converted.
      */
@@ -102,6 +162,15 @@ export const QuotationStatusEnum = {
 } as const;
 export type QuotationStatusEnum = typeof QuotationStatusEnum[keyof typeof QuotationStatusEnum];
 
+/**
+ * @export
+ */
+export const QuotationDeliveryTermsEnum = {
+    Delivered: 'delivered',
+    Pickup: 'pickup',
+} as const;
+export type QuotationDeliveryTermsEnum = typeof QuotationDeliveryTermsEnum[keyof typeof QuotationDeliveryTermsEnum];
+
 
 /**
  * Check if a given object implements the Quotation interface.
@@ -113,10 +182,18 @@ export function instanceOfQuotation(value: object): value is Quotation {
     if (!('status' in value) || value['status'] === undefined) return false;
     if ((!('quoteDate' in (value as Record<string, any>)) && !('quote_date' in (value as Record<string, any>))) || ((value as Record<string, any>)['quoteDate'] === undefined && (value as Record<string, any>)['quote_date'] === undefined)) return false;
     if (!('currency' in value) || value['currency'] === undefined) return false;
+    if ((!('paymentTermsDays' in (value as Record<string, any>)) && !('payment_terms_days' in (value as Record<string, any>))) || ((value as Record<string, any>)['paymentTermsDays'] === undefined && (value as Record<string, any>)['payment_terms_days'] === undefined)) return false;
+    if ((!('deliveryTerms' in (value as Record<string, any>)) && !('delivery_terms' in (value as Record<string, any>))) || ((value as Record<string, any>)['deliveryTerms'] === undefined && (value as Record<string, any>)['delivery_terms'] === undefined)) return false;
+    if ((!('leadTimeDays' in (value as Record<string, any>)) && !('lead_time_days' in (value as Record<string, any>))) || ((value as Record<string, any>)['leadTimeDays'] === undefined && (value as Record<string, any>)['lead_time_days'] === undefined)) return false;
+    if ((!('freightCost' in (value as Record<string, any>)) && !('freight_cost' in (value as Record<string, any>))) || ((value as Record<string, any>)['freightCost'] === undefined && (value as Record<string, any>)['freight_cost'] === undefined)) return false;
+    if ((!('freightIncludedInPrice' in (value as Record<string, any>)) && !('freight_included_in_price' in (value as Record<string, any>))) || ((value as Record<string, any>)['freightIncludedInPrice'] === undefined && (value as Record<string, any>)['freight_included_in_price'] === undefined)) return false;
     if (!('lines' in value) || value['lines'] === undefined) return false;
+    if ((!('freightNetTotal' in (value as Record<string, any>)) && !('freight_net_total' in (value as Record<string, any>))) || ((value as Record<string, any>)['freightNetTotal'] === undefined && (value as Record<string, any>)['freight_net_total'] === undefined)) return false;
+    if ((!('freightTaxTotal' in (value as Record<string, any>)) && !('freight_tax_total' in (value as Record<string, any>))) || ((value as Record<string, any>)['freightTaxTotal'] === undefined && (value as Record<string, any>)['freight_tax_total'] === undefined)) return false;
     if (!('subtotal' in value) || value['subtotal'] === undefined) return false;
     if ((!('taxTotal' in (value as Record<string, any>)) && !('tax_total' in (value as Record<string, any>))) || ((value as Record<string, any>)['taxTotal'] === undefined && (value as Record<string, any>)['tax_total'] === undefined)) return false;
     if (!('total' in value) || value['total'] === undefined) return false;
+    if ((!('totalLanded' in (value as Record<string, any>)) && !('total_landed' in (value as Record<string, any>))) || ((value as Record<string, any>)['totalLanded'] === undefined && (value as Record<string, any>)['total_landed'] === undefined)) return false;
     return true;
 }
 
@@ -138,10 +215,25 @@ export function QuotationFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'validUntil': json['valid_until'] === undefined ? undefined : json['valid_until'] === null ? null : (parseDate(json['valid_until'])),
         'currency': json['currency'],
         'notes': json['notes'] === undefined ? undefined : json['notes'] === null ? null : json['notes'],
-        'lines': ((json['lines'] as Array<any>).map(InvoiceLineFromJSON)),
+        'rfqNumber': json['rfq_number'] === undefined ? undefined : json['rfq_number'] === null ? null : json['rfq_number'],
+        'rfqDate': json['rfq_date'] === undefined ? undefined : json['rfq_date'] === null ? null : (parseDate(json['rfq_date'])),
+        'rfqReplyBy': json['rfq_reply_by'] === undefined ? undefined : json['rfq_reply_by'] === null ? null : (parseDate(json['rfq_reply_by'])),
+        'paymentTermsDays': json['payment_terms_days'],
+        'deliveryTerms': json['delivery_terms'],
+        'leadTimeDays': json['lead_time_days'],
+        'sampleAvailable': json['sample_available'] === undefined ? undefined : json['sample_available'] === null ? null : json['sample_available'],
+        'sampleNote': json['sample_note'] === undefined ? undefined : json['sample_note'] === null ? null : json['sample_note'],
+        'freightCost': json['freight_cost'],
+        'freightIncludedInPrice': json['freight_included_in_price'],
+        'freightTaxIncluded': json['freight_tax_included'] === undefined ? undefined : json['freight_tax_included'] === null ? null : json['freight_tax_included'],
+        'freightTaxRateId': json['freight_tax_rate_id'] === undefined ? undefined : json['freight_tax_rate_id'] === null ? null : json['freight_tax_rate_id'],
+        'lines': ((json['lines'] as Array<any>).map(QuotationLineFromJSON)),
+        'freightNetTotal': json['freight_net_total'],
+        'freightTaxTotal': json['freight_tax_total'],
         'subtotal': json['subtotal'],
         'taxTotal': json['tax_total'],
         'total': json['total'],
+        'totalLanded': json['total_landed'],
         'salesOrderId': json['sales_order_id'] === undefined ? undefined : json['sales_order_id'] === null ? null : json['sales_order_id'],
         'createdAt': json['created_at'] == null ? undefined : (parseDateTime(json['created_at'])),
         'updatedAt': json['updated_at'] == null ? undefined : (parseDateTime(json['updated_at'])),
@@ -152,7 +244,7 @@ export function QuotationToJSON(json: any): Quotation {
     return QuotationToJSONTyped(json, false);
 }
 
-export function QuotationToJSONTyped(value?: Omit<Quotation, 'id'|'number'|'createdAt'|'updatedAt'> | null, ignoreDiscriminator: boolean = false): any {
+export function QuotationToJSONTyped(value?: Omit<Quotation, 'id'|'number'|'freightNetTotal'|'freightTaxTotal'|'subtotal'|'taxTotal'|'total'|'totalLanded'|'createdAt'|'updatedAt'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -165,10 +257,19 @@ export function QuotationToJSONTyped(value?: Omit<Quotation, 'id'|'number'|'crea
         'valid_until': value['validUntil'] == null ? value['validUntil'] : serializeDate(value['validUntil']),
         'currency': value['currency'],
         'notes': value['notes'],
-        'lines': ((value['lines'] as Array<any>).map(InvoiceLineToJSON)),
-        'subtotal': value['subtotal'],
-        'tax_total': value['taxTotal'],
-        'total': value['total'],
+        'rfq_number': value['rfqNumber'],
+        'rfq_date': value['rfqDate'] == null ? value['rfqDate'] : serializeDate(value['rfqDate']),
+        'rfq_reply_by': value['rfqReplyBy'] == null ? value['rfqReplyBy'] : serializeDate(value['rfqReplyBy']),
+        'payment_terms_days': value['paymentTermsDays'],
+        'delivery_terms': value['deliveryTerms'],
+        'lead_time_days': value['leadTimeDays'],
+        'sample_available': value['sampleAvailable'],
+        'sample_note': value['sampleNote'],
+        'freight_cost': value['freightCost'],
+        'freight_included_in_price': value['freightIncludedInPrice'],
+        'freight_tax_included': value['freightTaxIncluded'],
+        'freight_tax_rate_id': value['freightTaxRateId'],
+        'lines': ((value['lines'] as Array<any>).map(QuotationLineToJSON)),
         'sales_order_id': value['salesOrderId'],
     };
 }

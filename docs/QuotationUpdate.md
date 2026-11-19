@@ -12,8 +12,20 @@ Name | Type
 `validUntil` | Date
 `currency` | string
 `notes` | string
+`rfqNumber` | string
+`rfqDate` | Date
+`rfqReplyBy` | Date
+`paymentTermsDays` | number
+`deliveryTerms` | string
+`leadTimeDays` | number
+`sampleAvailable` | boolean
+`sampleNote` | string
+`freightCost` | string
+`freightIncludedInPrice` | boolean
+`freightTaxIncluded` | boolean
+`freightTaxRateId` | string
 `status` | string
-`lines` | [Array&lt;InvoiceLineInput&gt;](InvoiceLineInput.md)
+`lines` | [Array&lt;QuotationLineInput&gt;](QuotationLineInput.md)
 
 ## Example
 
@@ -27,6 +39,18 @@ const example = {
   "validUntil": null,
   "currency": IDR,
   "notes": null,
+  "rfqNumber": null,
+  "rfqDate": null,
+  "rfqReplyBy": null,
+  "paymentTermsDays": null,
+  "deliveryTerms": null,
+  "leadTimeDays": null,
+  "sampleAvailable": null,
+  "sampleNote": null,
+  "freightCost": null,
+  "freightIncludedInPrice": null,
+  "freightTaxIncluded": null,
+  "freightTaxRateId": null,
   "status": null,
   "lines": null,
 } satisfies QuotationUpdate
